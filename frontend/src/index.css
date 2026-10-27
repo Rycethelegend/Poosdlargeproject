@@ -1,0 +1,75 @@
+body {
+  background: #fff;
+  color: #000;
+}
+
+.menu-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1rem 6rem;
+}
+
+.menu-title {
+  font-size: 3rem;
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.menu-content {
+  width: 100%;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Thick rounded outline used for every button and input, matching the wireframes */
+.sketch-box {
+  border: 4px solid #000;
+  border-radius: 14px;
+  background: #fff;
+  color: #000;
+  padding: 0.6rem 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+input.sketch-box {
+  width: 100%;
+}
+
+input.sketch-box:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+button.sketch-box {
+  min-width: 120px;
+}
+
+button.sketch-box:hover {
+  background: #000;
+  color: #fff;
+}
+
+.menu-button-row {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.form-error {
+  color: #c00;
+  min-height: 1.5rem;
+  text-align: center;
+}
+
+.credits-button {
+  position: fixed;
+  left: 0.5rem;
+  bottom: 0.5rem;
+}
