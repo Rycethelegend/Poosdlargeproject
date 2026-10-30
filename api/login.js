@@ -30,7 +30,18 @@ async function Login() {
                 message: "Invalid username or password."
             });
         }
+
+        else {
+            res.status(200).json({
+                firstName: req.firstName,
+                lastName: req.lastName,
+                
+
+            })
+        }
     });
+
+
     try {
 
     }
