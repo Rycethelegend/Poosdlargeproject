@@ -2,6 +2,7 @@ const express = require('express');
 let MongoClient = require("mongodb").MongoClient;
 let url = 
 require("dotenv").config;
+const nodemailer = require("nodemailer");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
