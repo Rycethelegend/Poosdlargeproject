@@ -123,10 +123,40 @@ async function startServer() {
   // Search Leaderboard Entry
   app.get("/api/highscore/:username", async (req, res) => {
     try {
-      const player = await leaderboard.findOne(
-        { username: req.params.username },
-        { projection: { _id: 0, userid: 1, username: 1, score: 1 } }
+
+      // Check Database for username & leave out whitespaces
+      const search = req.params.username.trim();
+      // Length of user must be less than 50 characters
+      if (!search || search.length > 50) {
+        return res.status(400).json({
+          message: "Search must contain 1–50 characters."
+        });
+      }
+
+      // Accounts for weird characters
+      const escapedSearch = search.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
       );
+
+      const player = await leaderboard.find(
+        {
+        username: {
+          $regex: escapedSearch,
+          $options: "i"
+        }
+      },
+      {
+        projection: {
+          _id: 0,
+          userid: 1,
+          username: 1,
+          score: 1
+        }
+      })
+      .sort({ score: -1, username: 1 })
+      .limit(50)
+      .toArray();
 
       // No player
       if (!player) {
