@@ -9,6 +9,12 @@ app.use(cors());
 app.use(express.json());
 
 async function Register() {
+    const client = new MongoClient(process.env);
+
+    await client.connect();
+    const database = client.db("PoosdDatabase");
+    await database.command({ping: 1});
+    
     try {
 
     }
