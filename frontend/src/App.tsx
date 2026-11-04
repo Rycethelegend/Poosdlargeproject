@@ -1,6 +1,6 @@
 // import './App.css'
 // import { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet, ScrollRestoration } from 'react-router';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router';
 
 // FUTURE: We may need a motion/transition library.
 
@@ -20,11 +20,12 @@ function RootLayout() {
     </main>
   );
 }
+
 // <Suspense fallback={<div className="w-screen h-screen bg-black" />}>
 // </Suspense>
 // <ScrollRestoration />
 
-export const publicRoutes = [
+const publicRoutes = [
     {
         index: true,
         element: <Home />,
@@ -38,7 +39,6 @@ const router = createBrowserRouter ([
     children: publicRoutes, // Your 200+ routes go here
   },
 ]);
-
 
 function App() 
 {

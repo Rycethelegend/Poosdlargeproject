@@ -7,3 +7,9 @@ Also data mode allows us to keep windows/navbars open while users cycle through 
 
 In backend package.json I switched from "type": "commonjs" to "type": "module"
 Need to see if this is allowed.
+
+Frontend package.json
+When replacing react-router-dom with the newer react-router, I changed a few dependencies:
+-removed jsonwebtoken (jwt-decode already does this job)
+-removed dotenv (wasnt being used in any frontend files)
+-removed react-jwt (wasnt being used in any frontend files)

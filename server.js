@@ -2,21 +2,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-// Create express server and policy
-const app = express();
-app.use(cors());
-app.use(bodyParser);
-
-// Load API
-var api = require('./api.js');
-api.setApp( app, client );
-
-// Connect to MongoDB
+// Get mongo URL from .env
 require('dotenv').config();
 const url = process.env.MONGODB_URI;
 
-import { MongoClient } from 'mongodb';
+// Create express server and policy
+const app = express();
+app.use(cors());
 
+// For some reason, app.use(bodyParser.json()) works better than app.use(bodyParser))
+app.use(bodyParser.json());
+
+// Connect to MongoDB
+const { MongoClient } = require('mongodb')
 const client = new MongoClient(url);
 
 // const Username = "PoosdDB_User";
@@ -24,6 +22,7 @@ const client = new MongoClient(url);
 // const name = "Alice";
 // const greeting = `Hello, ${name}!`;
 
+/* This function inserts random info. Going to modify this.
 export async function connectToMongoDB() {
     try {
         await client.connect();
@@ -52,7 +51,7 @@ export async function connectToMongoDB() {
     } finally {
         disconnectFromMongoDB()
     }
-}
+}*/
 
 // Call this only when your application terminates
 export async function disconnectFromMongoDB() {
@@ -60,11 +59,18 @@ export async function disconnectFromMongoDB() {
     console.log("Connection closed.");
 }
 
+// OLD CODE:
 // mongodb+srv://<db_username>:<db_password>@poosdbase.puafigd.mongodb.net/
 // Add this to the bottom of server.js to actually run the code
+// connectToMongoDB();
 
-connectToMongoDB();
 
+// In the mean time, this function has better syntax anyways.
+client.connect()
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection failed:', err.message));
+
+// Headers - DONT EDIT
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
@@ -77,5 +83,9 @@ app.use((req, res, next) => {
     );
     next();
 });
+
+// Load API - Must come after mongoDB connection and app.setHeaders
+var api = require('./old-api/old-api.js');
+api.setApp( app, client );
 
 app.listen(5000); // start Node + Express server on port 5000
