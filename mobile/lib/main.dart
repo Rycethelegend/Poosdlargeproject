@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:poosdalatro/routes/routes.dart';
 
-Future<void> main() async{
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
   runApp(const MyApp());
 }
 
@@ -14,7 +19,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Poosdalatro',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.indigo),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.black,
+          dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+        ),
+      ),
       routes: Routes.getRoutes,
     );
   }

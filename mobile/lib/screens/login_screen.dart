@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/routes/routes.dart';
 import 'package:poosdalatro/utils/api.dart';
@@ -22,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _message = '';
     });
     try {
-      String url = 'http://10.0.2.2:5000/api/login';
+      String url = 'http://poosdbasecontactmanager.casa/api/login';
       final data = await Api.post(url, {
         'username': _username.text.trim(),
         'password': _password.text,
@@ -54,41 +55,51 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Poosdalatro',
-                    style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 24),
-                TextField(
-                  controller: _username,
-                  decoration: const InputDecoration(
-                      labelText: 'Username', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _password,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                      labelText: 'Password', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 12),
-                if (_message.isNotEmpty)
-                  Text(_message, style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _loading ? null : _login,
-                    child: _loading
-                        ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Text('Log in'),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Poosdalatro',
+                      style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _username,
+                    decoration: const InputDecoration(labelText: 'Username'),
                   ),
-                ),
-              ],
+                  TextField(
+                    controller: _password,
+                    obscureText: true,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_message.isNotEmpty) Text(_message),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _loading ? null : _login,
+                        child: Text(_loading ? 'Logging in...' : 'Log in'),
+                      ),
+                      const SizedBox(width: 12),
+                      TextButton(
+                        onPressed: () => Navigator.pushReplacementNamed(
+                            context, Routes.register),
+                        child: const Text('Register'),
+                      ),
+                    ],
+                  ),
+                  if (kDebugMode)
+                    TextButton(
+                      onPressed: () {
+                        Session.username = 'tester';
+                        Navigator.pushReplacementNamed(context, Routes.home);
+                      },
+                      child: const Text('Skip login (debug only)'),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
