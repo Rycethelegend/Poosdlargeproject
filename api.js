@@ -1,30 +1,28 @@
 require('express');
 require('mongodb');
 
+// ONLY IF USING MONGOOSE
+// load user model
+// const User = require("./models/user.js");
+// load card model
+// const Card = require("./models/card.js");
+
+
+// Changed login API to only use username + password
+// Tokens are checked with another api/function. Not sure yet.
+
 exports.setApp = function (app, client) {
 
     app.post('/api/login', async (req, res, next) => {
+
         // incoming: login, password
         // outgoing: id, firstName, lastName, error
 
         var error = '';
 
-        var token = require('./createJWT.js');
+        const { login, password } = req.body;
 
-        const { userId, card, jwtToken } = req.body;
-
-        try {
-            if (token.isExpired(jwtToken)) {
-                var r = { error: 'The JWT is no longer valid', jwtToken: '' };
-                res.status(200).json(r);
-                return;
-            }
-        }
-        catch (e) {
-            console.log(e.message);
-        }
-
-        const db = client.db('COP4331Cards');
+        const db = client.db(DB_NAME);
         const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
 
         var id = -1;
@@ -39,7 +37,6 @@ exports.setApp = function (app, client) {
             ln = results[0].LastName;
 
             try {
-                const token = require("./createJWT.js");
                 ret = token.createToken(fn, ln, id);
             }
             catch (e) {
@@ -53,6 +50,37 @@ exports.setApp = function (app, client) {
         res.status(200).json(ret);
     });
 
+    app.post('/api/checktoken', async (req, res, next) => {
+        // Log in automatically
+        // Shares same token functionality as api/addCard and api/searchCards
+
+        // incoming: jwtToken
+        // outgoing: id, firstName, lastName, jwtToken (refreshed), error
+
+        const { jwtToken } = req.body;
+
+        // Calls jwt.verify() in createJWT.js
+        if (token.isExpired(jwtToken)) 
+        {
+            res.status(200).json({ error: 'JWT no longer valid. Login required.', jwtToken: '' });
+            return;
+        }
+
+        // Refresh the expiration time
+        var refreshedToken = null;
+        try 
+        {
+            refreshedToken = token.refresh(jwtToken);
+        }
+        catch (e) 
+        {
+            console.log(e.message);
+        }
+
+        var ret = { error: error, jwtToken: refreshedToken };
+
+        res.status(200).json({ret});
+    });
 
     app.post('/api/addcard', async (req, res, next) => {
         // incoming: userId, color
@@ -60,14 +88,16 @@ exports.setApp = function (app, client) {
 
         const { userId, card, jwtToken } = req.body;
 
-        try {
+        try 
+        {
             if (token.isExpired(jwtToken)) {
                 var r = { error: 'The JWT is no longer valid', jwtToken: '' };
                 res.status(200).json(r);
                 return;
             }
         }
-        catch (e) {
+        catch (e) 
+        {
             console.log(e.message);
         }
 
@@ -75,8 +105,8 @@ exports.setApp = function (app, client) {
         var error = '';
 
         try {
-            const db = client.db();
-            const result = db.collection('Cards').insertOne(newCard);
+            const db = client.db(DB_NAME);
+            await db.collection('Cards').insertOne(newCard);
         }
         catch (e) {
             error = e.toString();
@@ -103,8 +133,10 @@ exports.setApp = function (app, client) {
 
         const { userId, search, jwtToken } = req.body;
 
-        try {
-            if (token.isExpired(jwtToken)) {
+        try 
+        {
+            if (token.isExpired(jwtToken)) 
+            {
                 var r = { error: 'The JWT is no longer valid', jwtToken: '' };
                 res.status(200).json(r);
                 return;
@@ -116,7 +148,7 @@ exports.setApp = function (app, client) {
 
         var _search = search.trim();
 
-        const db = client.db();
+        const db = client.db(DB_NAME);
         const results = await db.collection('Cards').find({ "Card": { $regex: _search + '.*', $options: 'i' } }).toArray();
 
         var _ret = [];

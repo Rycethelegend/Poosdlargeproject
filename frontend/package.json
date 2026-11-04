@@ -11,13 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "dotenv": "^18.0.9",
-    "jsonwebtoken": "^9.0.3",
     "jwt-decode": "^4.0.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-jwt": "^2.1.1",
-    "react-router-dom": "^7.18.5"
+    "react-router": "^8.5.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

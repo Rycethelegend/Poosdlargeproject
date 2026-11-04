@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { buildPath } from '../path';
-import { storeToken, type UserToken } from '../tokenStorage';
+import { storeToken, retrieveToken, clearToken, type UserToken } from '../tokenStorage';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router';
+
 
 function Login() {
 
@@ -9,17 +11,61 @@ function Login() {
     const [loginName, setLoginName] = React.useState('');
     const [loginPassword, setPassword] = React.useState('');
 
-    async function doLogin(event: any): Promise<void> {
-        event.preventDefault();
+    // Wayyyy faster than changing window.href
+    const navigate = useNavigate();
 
-        var obj = { login: loginName, password: loginPassword };
-        var js = JSON.stringify(obj);
+
+    async function checkToken(): Promise<void> 
+    {
+        const obj = { jwtToken: retrieveToken() };
+        const js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(buildPath('api/login'),
-                { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
-            var res = JSON.parse(await response.text());
+            const response = await fetch(buildPath('api/checktoken'),
+            {
+                method: 'POST', body: js, 
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const res = JSON.parse(await response.text());
+
+            // No need to decode and check userId <= 0.
+            // api/checkToken already calls jwt.verify in createJWT.js
+
+            if (res.error.length > 0) 
+            {
+                clearToken();
+            }
+            else 
+            {
+                storeToken(res.jwtToken);
+                navigate('/cards', { replace: true });
+            }
+        }
+        catch (error: any) 
+        {
+            // Server unreachable
+            console.log(error);
+        }
+    };
+
+    async function doLogin(event: any): Promise<void> {
+
+        event.preventDefault();
+
+        const obj = { login: loginName, password: loginPassword };
+        const js = JSON.stringify(obj);
+
+        try {
+
+            const response = await fetch(buildPath('api/login'),
+            {
+                method: 'POST', body: js,
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const res = JSON.parse(await response.text());
 
             const { accessToken } = res;
             storeToken(res);
@@ -27,33 +73,36 @@ function Login() {
             const decoded = jwtDecode<UserToken>(accessToken);
 
             try {
-                var ud = decoded;
+                const ud = decoded;
 
                 // Not quite sure what to use this for.
-                var iat = ud.iat
+                // const iat = ud.iat
 
                 // UserID should absolutely be separate from IAT (packet arrival time)
-                var userId = ud.userId;
-                var firstName = ud.firstName;
-                var lastName = ud.lastName;
+                const userId = ud.userId;
+                const firstName = ud.firstName;
+                const lastName = ud.lastName;
 
                 if (userId <= 0) {
                     setMessage('User/Password combination incorrect');
                 }
                 else {
-                    var user = { firstName: firstName, lastName: lastName, id: userId }
+                    const user = { firstName: firstName, lastName: lastName, id: userId }
                     localStorage.setItem('user_data', JSON.stringify(user));
 
                     setMessage('');
-                    window.location.href = '/cards';
+                    navigate('/cards', { replace: true });
+                    // window.location.href = '/cards';
                 }
             }
-            catch (e) {
+            catch (e) 
+            {
                 console.log(e);
                 return;
             }
         }
-        catch (error: any) {
+        catch (error: any) 
+        {
             alert(error.toString());
             return;
         }
@@ -66,6 +115,12 @@ function Login() {
     function handleSetPassword(e: any): void {
         setPassword(e.target.value);
     }
+
+    useEffect(() => {
+
+        checkToken();
+
+    }, []);
 
     return (
         <div id="loginDiv">

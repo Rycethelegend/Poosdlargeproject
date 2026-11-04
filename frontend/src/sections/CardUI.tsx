@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { buildPath } from '../path';
-import { retrieveToken, storeToken } from '../../tokenStorage';
+import { retrieveToken, storeToken } from '../tokenStorage';
 
 function CardUI()
 {
@@ -11,9 +11,9 @@ function CardUI()
     const [search,setSearchValue] = React.useState('');
     const [card,setCardNameValue] = React.useState('');
     
-    var _ud = localStorage.getItem('user_data');
-    var ud = JSON.parse(String(_ud));
-    var userId = ud.id;
+    const _ud = localStorage.getItem('user_data');
+    const ud = JSON.parse(String(_ud));
+    const userId = ud.id;
 //    var firstName = ud.firstName;
 //    var lastName = ud.lastName;
     
@@ -21,16 +21,18 @@ function CardUI()
     {
         e.preventDefault();
 
-        var obj = {userId:userId,card:card,jwtToken:retrieveToken()};
-        var js = JSON.stringify(obj);
+        const obj = {userId:userId,card:card,jwtToken:retrieveToken()};
+        const js = JSON.stringify(obj);
 
         try
         {
             const response = await fetch(buildPath('api/addcard'),
-            {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+            {
+                method:'POST',body:js,headers:{'Content-Type': 'application/json'}
+            });
 
-            let txt = await response.text();
-            let res = JSON.parse(txt);
+            const txt = await response.text();
+            const res = JSON.parse(txt);
 
             if( res.error.length > 0 )
             {
@@ -52,18 +54,23 @@ function CardUI()
     {
         e.preventDefault();
         
-        var obj = {userId:userId,search:search,jwtToken:retrieveToken()};
-        var js = JSON.stringify(obj);
+        const obj = {userId:userId,search:search,jwtToken:retrieveToken()};
+        const js = JSON.stringify(obj);
 
         try
         {
             const response = await fetch(buildPath('api/searchcards'),
-            {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+            {
+                method:'POST',body:js,headers:{'Content-Type': 'application/json'}
+            });
 
-            let txt = await response.text();
-            let res = JSON.parse(txt);
-            let _results = res.results;
+            const txt = await response.text();
+
+            const res = JSON.parse(txt);
+            const _results = res.results;
+            
             let resultText = '';
+
             for( let i=0; i<_results.length; i++ )
             {
                 resultText += _results[i];
