@@ -2,10 +2,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - npm-setup
   pull_request:
     branches:
-      - master
+      - npm-setup
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
         run: |
           sshpass -p "${SSH_KEY}" ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
           cd /var/www/Ganttify.xyz/html
-          git pull origin master
+          git pull origin npm-setup
           npm install
           npm run build
           systemctl restart nginx
