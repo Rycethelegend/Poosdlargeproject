@@ -68,13 +68,6 @@ function Login() {
 
             const txt = await response.text();
             const res = JSON.parse(txt);
-
-            // Added for safety
-            if( res.error.length > 0 )
-            {
-                setMessage( "API Error:" + res.error );
-                return;
-            }
             
             const { accessToken } = res;
             storeToken(res);
