@@ -1,6 +1,6 @@
-// import './App.css'
 // import { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router';
+import './App.css'
 
 // FUTURE: We may need a motion/transition library.
 

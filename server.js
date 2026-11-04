@@ -17,9 +17,9 @@ app.use(bodyParser.json());
 const { MongoClient } = require('mongodb')
 const client = new MongoClient(url);
 
-// const Username = "PoosdDB_User";
-// const Password = "BGqVpIHdmmpZjkWP";
-// const name = "Alice";
+// const Username = "###########";
+// const Password = "###########";
+// const name = "###########";
 // const greeting = `Hello, ${name}!`;
 
 /* This function inserts random info. Going to modify this.

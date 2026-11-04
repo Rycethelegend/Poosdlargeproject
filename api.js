@@ -59,6 +59,8 @@ exports.setApp = function (app, client) {
         // incoming: jwtToken
         // outgoing: id, firstName, lastName, jwtToken (refreshed), error
 
+        let error = '';
+
         const { jwtToken } = req.body;
 
         // Calls jwt.verify() in createJWT.js
@@ -149,7 +151,7 @@ exports.setApp = function (app, client) {
             console.log(e.message);
         }
 
-        const _search = search.trim();
+        const _search = (search ?? '').trim();
 
         const db = client.db("PoosdDatabase");
         const results = await db.collection('Cards').find({ "Card": { $regex: _search + '.*', $options: 'i' } }).toArray();
