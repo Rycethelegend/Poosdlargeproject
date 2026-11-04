@@ -1,4 +1,2 @@
 # Poosdlargeproject
 Mern stack 
-
-damn
