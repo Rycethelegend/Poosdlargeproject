@@ -53,11 +53,12 @@ export async function connectToMongoDB() {
     }
 }*/
 
+/* CAUSING PROBLEMS
 // Call this only when your application terminates
 export async function disconnectFromMongoDB() {
     await client.close();
     console.log("Connection closed.");
-}
+}*/
 
 // OLD CODE:
 // mongodb+srv://<db_username>:<db_password>@poosdbase.puafigd.mongodb.net/
@@ -85,7 +86,7 @@ app.use((req, res, next) => {
 });
 
 // Load API - Must come after mongoDB connection and app.setHeaders
-var api = require('./old-api/old-api.js');
+var api = require('./api.js');
 api.setApp( app, client );
 
 app.listen(5000); // start Node + Express server on port 5000

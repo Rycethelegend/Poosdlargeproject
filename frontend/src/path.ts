@@ -4,11 +4,11 @@ const app_name = 'poosdbasecontactmanager.casa'
 export function buildPath(route: string) : string {
 
     // Case: "npm run dev"
-    if (import.meta.env.NODE_ENV != 'development') 
+    // if (import.meta.env.NODE_ENV  != 'development') was not working.
+    if (import.meta.env.DEV) 
     {
         return 'http://localhost:5000/' + route;
     }
-
     // Case: "npm run build"
     else 
     {

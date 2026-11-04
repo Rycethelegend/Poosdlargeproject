@@ -28,7 +28,8 @@ function Login() {
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            const res = JSON.parse(await response.text());
+            const txt = await response.text();
+            const res = JSON.parse(txt);
 
             // No need to decode and check userId <= 0.
             // api/checkToken already calls jwt.verify in createJWT.js
@@ -65,8 +66,16 @@ function Login() {
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            const res = JSON.parse(await response.text());
+            const txt = await response.text();
+            const res = JSON.parse(txt);
 
+            // Added for safety
+            if( res.error.length > 0 )
+            {
+                setMessage( "API Error:" + res.error );
+                return;
+            }
+            
             const { accessToken } = res;
             storeToken(res);
 

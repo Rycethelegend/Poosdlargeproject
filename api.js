@@ -1,6 +1,8 @@
 require('express');
 require('mongodb');
 
+const token = require('./createJWT.js');
+
 // ONLY IF USING MONGOOSE
 // load user model
 // const User = require("./models/user.js");
@@ -18,18 +20,18 @@ exports.setApp = function (app, client) {
         // incoming: login, password
         // outgoing: id, firstName, lastName, error
 
-        var error = '';
+        let error = '';
 
         const { login, password } = req.body;
 
-        const db = client.db(DB_NAME);
+        const db = client.db("PoosdDatabase");
         const results = await db.collection('Users').find({ Login: login, Password: password }).toArray();
 
-        var id = -1;
-        var fn = '';
-        var ln = '';
+        let id = -1;
+        let fn = '';
+        let ln = '';
 
-        var ret;
+        let ret;
 
         if (results.length > 0) {
             id = results[0].UserId;
@@ -91,7 +93,7 @@ exports.setApp = function (app, client) {
         try 
         {
             if (token.isExpired(jwtToken)) {
-                var r = { error: 'The JWT is no longer valid', jwtToken: '' };
+                const r = { error: 'The JWT is no longer valid', jwtToken: '' };
                 res.status(200).json(r);
                 return;
             }
@@ -102,25 +104,26 @@ exports.setApp = function (app, client) {
         }
 
         const newCard = { Card: card, UserId: userId };
-        var error = '';
+        let error = '';
 
         try {
-            const db = client.db(DB_NAME);
+            const db = client.db("PoosdDatabase");
             await db.collection('Cards').insertOne(newCard);
         }
         catch (e) {
             error = e.toString();
         }
 
-        var refreshedToken = null;
-        try {
+        let refreshedToken = null;
+        try 
+        {
             refreshedToken = token.refresh(jwtToken);
         }
         catch (e) {
             console.log(e.message);
         }
 
-        var ret = { error: error, jwtToken: refreshedToken };
+        const ret = { error: error, jwtToken: refreshedToken };
 
         res.status(200).json(ret);
     });
@@ -129,7 +132,7 @@ exports.setApp = function (app, client) {
         // incoming: userId, search
         // outgoing: results[], error
 
-        var error = '';
+        let error = '';
 
         const { userId, search, jwtToken } = req.body;
 
@@ -146,17 +149,17 @@ exports.setApp = function (app, client) {
             console.log(e.message);
         }
 
-        var _search = search.trim();
+        const _search = search.trim();
 
-        const db = client.db(DB_NAME);
+        const db = client.db("PoosdDatabase");
         const results = await db.collection('Cards').find({ "Card": { $regex: _search + '.*', $options: 'i' } }).toArray();
 
-        var _ret = [];
-        for (var i = 0; i < results.length; i++) {
+        let _ret = [];
+        for (let i = 0; i < results.length; i++) {
             _ret.push(results[i].Card);
         }
 
-        var refreshedToken = null;
+        let refreshedToken = null;
         try {
             refreshedToken = token.refresh(jwtToken);
         }
@@ -164,7 +167,7 @@ exports.setApp = function (app, client) {
             console.log(e.message);
         }
 
-        var ret = { results: _ret, error: error, jwtToken: refreshedToken };
+        const ret = { results: _ret, error: error, jwtToken: refreshedToken };
 
         res.status(200).json(ret);
     });
