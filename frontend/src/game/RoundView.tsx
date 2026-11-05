@@ -1,18 +1,34 @@
 import { useMemo } from 'react';
-import { sortCards } from './cards';
+import { cardChips, cardName, sortCards, SUIT_SYMBOL, type Card } from './cards';
 import { MAX_JOKERS } from './jokers';
 import { formatMult, stepText } from './format';
 import { BlindLabel, JokerRow, ChipsTimesMult } from './GamePieces';
-import { HANDS } from './hands';
+import { evaluateHand, HANDS } from './hands';
 import { rulesFor, scorePlay, selectedCards, type RunAction, type RunState } from './run';
 import { CardFace, DeckBox } from './sprites';
+
+const CARD_SIZE = 'w-[clamp(2.6rem,10vw,5.5rem)] rounded-md shadow-md';
+
+// What a selected card adds: its chips, or why it adds none
+function cardBadge(card: Card, partOfHand: Set<string>, scoringIds: string[]) {
+    if (scoringIds.includes(card.id)) {
+        return { text: `+${cardChips(card)}`, className: 'bg-chips text-white', label: `adds ${cardChips(card)} chips` };
+    }
+    if (partOfHand.has(card.id)) {
+        return { text: 'Blocked', className: 'bg-danger text-[#f2e8cf]', label: 'blocked by the Blind, adds no chips' };
+    }
+    return { text: 'No chips', className: 'bg-black/40 text-white', label: 'not part of the poker hand, adds no chips' };
+}
 
 // The playing phase: hand of cards, Play / Discard, and what the last hand scored
 const RoundView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunAction) => void }) => {
     const rules = rulesFor(state);
     const selected = selectedCards(state);
     const preview = useMemo(() => scorePlay(state, selected), [state, selected]);
-    const hand = sortCards(state.hand, state.sortMode);
+    // Selected cards move up to the middle; the rest stay in the hand
+    const hand = sortCards(state.hand.filter(c => !state.selected.includes(c.id)), state.sortMode);
+    const inPlay = sortCards(selected, state.sortMode);
+    const partOfHand = new Set(evaluateHand(selected)?.scoring.map(c => c.id) ?? []);
     const last = state.lastPlay;
 
     return (
@@ -30,6 +46,25 @@ const RoundView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActi
             <div className="bg-black/15 rounded-2xl p-3 min-h-28 flex flex-col items-center justify-center gap-2 text-center">
                 {preview ? (
                     <>
+                        {/* The selected cards, each showing what it adds. Click one to put it back. */}
+                        <div className="flex flex-wrap justify-center gap-1 sm:gap-2 pt-12">
+                            {inPlay.map((card) => {
+                                const badge = cardBadge(card, partOfHand, preview.scoringIds);
+                                return (
+                                    <button
+                                        key={card.id}
+                                        aria-label={`${cardName(card)}, ${badge.label}. Click to put it back in your hand.`}
+                                        onClick={() => dispatch({ type: 'toggleSelect', cardId: card.id })}
+                                        className="relative rounded-md animate-[popIn_0.25s_ease-out] hover:translate-y-1 transition-transform focus-visible:outline-4 focus-visible:outline-wood">
+                                        <span className={`absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-0.5 leading-tight flex flex-col items-center ${badge.className}`}>
+                                            <span className="text-sm font-semibold tabular-nums">{badge.text}</span>
+                                            <span className="text-xs">{SUIT_SYMBOL[card.suit]} {card.suit[0].toUpperCase() + card.suit.slice(1)}</span>
+                                        </span>
+                                        <CardFace card={card} className={`${CARD_SIZE} ring-4 ring-money`} />
+                                    </button>
+                                );
+                            })}
+                        </div>
                         <p className="text-xl font-semibold">
                             {HANDS[preview.handType].name} <span className="opacity-70 text-base">level {preview.level}</span>
                         </p>
@@ -63,20 +98,20 @@ const RoundView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActi
             </div>
 
             {/* The hand */}
-            <div className="flex flex-wrap justify-center gap-1 sm:gap-2 pt-4">
-                {hand.map((card) => {
-                    const isSelected = state.selected.includes(card.id);
-                    return (
-                        <button
-                            key={card.id}
-                            aria-pressed={isSelected}
-                            onClick={() => dispatch({ type: 'toggleSelect', cardId: card.id })}
-                            className={`rounded-md transition-transform duration-150 focus-visible:outline-4 focus-visible:outline-wood ${isSelected ? '-translate-y-4 ring-4 ring-money' : 'hover:-translate-y-1'}`}>
-                            <CardFace card={card} className="w-[clamp(2.6rem,10vw,5.5rem)] rounded-md shadow-md" />
-                        </button>
-                    );
-                })}
+            <div className="flex flex-wrap justify-center gap-1 sm:gap-2 min-h-[clamp(3.5rem,13.3vw,7.4rem)]">
+                {hand.map((card) => (
+                    <button
+                        key={card.id}
+                        aria-label={`${cardName(card)}. Click to select it.`}
+                        onClick={() => dispatch({ type: 'toggleSelect', cardId: card.id })}
+                        className="rounded-md transition-transform duration-150 hover:-translate-y-1 focus-visible:outline-4 focus-visible:outline-wood">
+                        <CardFace card={card} className={CARD_SIZE} />
+                    </button>
+                ))}
             </div>
+            {state.selected.length >= rules.maxSelect && (
+                <p className="text-sm text-center -mt-2">That's the most cards you can play at once.</p>
+            )}
 
             <div className="flex flex-wrap items-center justify-center gap-2">
                 <button
