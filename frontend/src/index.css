@@ -3,6 +3,9 @@
 /* stops buttons from sticking on mobile */
 @custom-variant hover (&:hover);
 
+/* dark: classes follow the Settings toggle (a "dark" class on <html>), not the OS setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @font-face {
     font-family: 'Excalifont';
     src: url('./fonts/Excalifont-Regular.woff2') format('woff2');
@@ -20,15 +23,63 @@
     --color-lilac: #d4b8ff;
     --color-linkBlue: #0000ee;
 
+    /* Table colors. Light mode values here, dark mode values in .dark below. */
+    --color-cream: #f2e8cf;       /* page background, inputs */
+    --color-felt: #6a994e;        /* table surface */
+    --color-felt-edge: #386641;   /* table border */
+    --color-wood: #bc6c25;        /* panels (settings, shop) */
+    --color-wood-light: #dda15e;  /* buttons */
+    --color-ink: #1a1a1a;         /* text */
+    --color-danger: #bc4749;
+    --color-chips: #2f6fb5;       /* score: chips */
+    --color-mult: #c8383c;        /* score: mult */
+    --color-money: #d99a1e;
+
     --font-rubik: RubikDirt, "sans-serif";
     --font-playfair: PlayfairDisplay, "sans-serif";
     --font-excal: Excalifont, "sans-serif";
 }
 
+@layer base {
+    .dark {
+        --color-cream: #1e1b16;
+        --color-felt: #2f4a2a;
+        --color-felt-edge: #1b2e19;
+        --color-wood: #6e3f18;
+        --color-wood-light: #8f5a2c;
+        --color-ink: #f2e8cf;
+        --color-danger: #a33a3c;
+        --color-chips: #4d8fd6;
+        --color-mult: #e0575b;
+        --color-money: #e8b04a;
+    }
+
+    /* Make the window the size of the screen */
+    html, body, #root {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--color-cream);
+        color: var(--color-ink);
+        font-family: "Inter", sans-serif;
+    }
+
+    .font-serif {
+        font-family: "Playfair Display", serif;
+    }
+}
+
 @layer components {
 
     .clearButton {
-        @apply bg-black/10 hover:bg-black/20 text-2xl px-4 py-2 rounded-2xl
+        @apply bg-black/10 hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20 text-2xl px-4 py-2 rounded-2xl
     }
 
     .commonButton {
@@ -52,30 +103,51 @@
     }
 
     .title {
-        @apply lg:text-8xl text-7xl;
+        @apply lg:text-8xl text-6xl;
+    }
+
+    /* Inputs and buttons on the green felt (login pages, profile, leaderboard, game) */
+    .feltInput {
+        @apply w-full bg-cream text-ink text-xl px-4 py-2 rounded-2xl border-4 border-felt-edge placeholder:text-ink/40 focus:outline-none focus:border-wood;
+    }
+
+    .feltButton {
+        @apply w-full bg-wood-light hover:bg-wood text-ink text-2xl font-semibold px-4 py-2 rounded-2xl transition-colors disabled:opacity-50 disabled:hover:bg-wood-light;
+    }
+
+    .feltLink {
+        @apply text-lg underline underline-offset-4 hover:text-cream transition-colors disabled:opacity-60 disabled:no-underline disabled:hover:text-inherit;
+    }
+
+    .formError {
+        @apply bg-danger text-[#f2e8cf] text-lg px-4 py-2 rounded-2xl text-center;
+    }
+
+    .formInfo {
+        @apply bg-cream/80 text-lg px-4 py-2 rounded-2xl text-center;
+    }
+
+    /* A panel of the main menu sections (Profile, Leaderboard, game) */
+    .feltPanel {
+        @apply relative bg-felt rounded-4xl border-8 sm:border-16 border-felt-edge;
+    }
+
+    .gameButton {
+        @apply bg-wood-light hover:bg-wood text-ink font-semibold px-4 py-2 rounded-2xl transition-colors disabled:opacity-40 disabled:hover:bg-wood-light;
+    }
+
+    .pixelated {
+        image-rendering: pixelated;
     }
 }
 
-@layer base {
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
 
-    /* Make the window the size of the screen */
-    html, body, #root {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    html {
-        scroll-behavior: smooth;
-    }
-
-    body {
-        background-color: var(--color-black);
-        color: var(--color-foreground);
-        font-family: "Inter", sans-serif;
-    }
-
-    .font-serif {
-        font-family: "Playfair Display", serif;
-    }
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    60% { opacity: 1; transform: scale(1.05); }
+    100% { transform: scale(1); }
 }

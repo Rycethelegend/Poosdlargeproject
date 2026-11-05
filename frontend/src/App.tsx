@@ -1,5 +1,5 @@
-// import { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router';
+import type { ReactNode } from 'react';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router';
 import './App.css'
 
 // FUTURE: We may need a motion/transition library.
@@ -11,6 +11,11 @@ import './App.css'
 
 import Navbar from './components/Navbar.tsx';
 import Home from './sections/Home.tsx';
+import LoginPage from './auth/LoginPage.tsx';
+import RegisterPage from './auth/RegisterPage.tsx';
+import ForgotPasswordPage from './auth/ForgotPasswordPage.tsx';
+import ResetPasswordPage from './auth/ResetPasswordPage.tsx';
+import { validToken } from './tokenStorage.ts';
 
 function RootLayout() {
   return (
@@ -21,26 +26,37 @@ function RootLayout() {
   );
 }
 
-// <Suspense fallback={<div className="w-screen h-screen bg-black" />}>
-// </Suspense>
-// <ScrollRestoration />
+// Logged-out visitors land on the login page first
+function RequireLogin({ children }: { children: ReactNode }) {
+  return validToken() ? children : <Navigate to="/login" replace />;
+}
 
-const publicRoutes = [
+// Logged-in users skip the login and register pages
+function GuestOnly({ children }: { children: ReactNode }) {
+  return validToken() ? <Navigate to="/" replace /> : children;
+}
+
+const routes = [
     {
         index: true,
-        element: <Home />,
+        element: <RequireLogin><Home /></RequireLogin>,
     },
+    { path: 'login', element: <GuestOnly><LoginPage /></GuestOnly> },
+    { path: 'register', element: <GuestOnly><RegisterPage /></GuestOnly> },
+    { path: 'forgot-password', element: <GuestOnly><ForgotPasswordPage /></GuestOnly> },
+    { path: 'reset-password', element: <GuestOnly><ResetPasswordPage /></GuestOnly> },
+    { path: '*', element: <Navigate to="/" replace /> },
 ];
 
 const router = createBrowserRouter ([
   {
     path: "/",
     element: <RootLayout />,
-    children: publicRoutes, // Your 200+ routes go here
+    children: routes,
   },
 ]);
 
-function App() 
+function App()
 {
   return <RouterProvider router={router} />;
 }

@@ -1,28 +1,13 @@
 const app_name = 'poosdbasecontactmanager.casa'
 
-// The order was switched for localhost and URL. Strange. Also, default not required (idk why)
-export function buildPath(route: string) : string {
+export function buildPath(route: string): string {
 
-    // Case: "npm run dev"
-    // if (import.meta.env.NODE_ENV  != 'development') was not working.
-    if (import.meta.env.DEV) 
-    {
+    // "npm run dev": talk to the Express server on this computer
+    if (import.meta.env.DEV) {
         return 'http://localhost:5000/' + route;
     }
-    // Case: "npm run build"
-    else 
-    {
-        return 'http://' + app_name + ':5000/' + route;
-    }
+
+    // "npm run build": the live site. nginx serves it over https and passes
+    // /api/ requests on to Express (port 5000 on the server).
+    return 'https://' + app_name + '/' + route;
 }
-
-// OLD .JS CODE:
-/* exports.buildPath =
-function buildPath(route) {
-    if (process.env.NODE_ENV != 'development') {
-        return 'http://' + app_name + ':5000/' + route;
-    }
-    else {
-        return 'http://localhost:5000/' + route;
-    }
-} */
