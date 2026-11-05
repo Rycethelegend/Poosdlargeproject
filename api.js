@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongodb');
 
 const token = require('./createJWT.js');
-const { sendCodeEmail } = require('./mailer.js');
+const { sendCodeEmail, showCodesInBrowser } = require('./mailer.js');
 
 const DB_NAME = 'PoosdDatabase';
 
@@ -216,7 +216,11 @@ exports.setApp = function (app, client) {
             return fail(res, 502, "We couldn't send the email. Please try again.");
         }
 
-        res.status(200).json({ error: '', expiresInMinutes: CODE_MINUTES_VALID });
+        const ret = { error: '', expiresInMinutes: CODE_MINUTES_VALID };
+        if (showCodesInBrowser) {
+            ret.devCode = code; // testing only, see DEV_SHOW_CODES in mailer.js
+        }
+        res.status(200).json(ret);
     }));
 
     // ---------------------------------------------------------------------------

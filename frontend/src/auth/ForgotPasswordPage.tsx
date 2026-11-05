@@ -14,6 +14,7 @@ const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [devCode, setDevCode] = useState<string | undefined>();
 
     async function handleEmail(e: FormEvent) {
         e.preventDefault();
@@ -26,7 +27,7 @@ const ForgotPasswordPage = () => {
 
         setLoading(true);
         try {
-            await sendCode(email.trim(), 'reset');
+            setDevCode(await sendCode(email.trim(), 'reset'));
             setStep('code');
         }
         catch (err) {
@@ -49,6 +50,7 @@ const ForgotPasswordPage = () => {
                     email={email.trim()}
                     purpose="reset"
                     submitLabel="Continue"
+                    initialDevCode={devCode}
                     onVerify={handleVerify}
                     onBack={() => setStep('email')}
                 />

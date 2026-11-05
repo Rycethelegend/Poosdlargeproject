@@ -9,6 +9,8 @@ type Props = {
     purpose: CodePurpose;
     username?: string;
     submitLabel: string;
+    // The code from the first send, when the server is in testing mode
+    initialDevCode?: string;
     // Called with the typed code. Throw an Error to show its message here.
     onVerify: (code: string) => Promise<void>;
     onBack: () => void;
@@ -16,8 +18,9 @@ type Props = {
 
 // "Enter the code we emailed you" step, shared by registration and password reset.
 // Assumes the first code has already been sent when it appears.
-const CodeStep = ({ email, purpose, username, submitLabel, onVerify, onBack }: Props) => {
+const CodeStep = ({ email, purpose, username, submitLabel, initialDevCode, onVerify, onBack }: Props) => {
     const [code, setCode] = useState('');
+    const [devCode, setDevCode] = useState(initialDevCode);
     const [error, setError] = useState('');
     const [info, setInfo] = useState(`We sent a 6-digit code to ${email}. It expires in 10 minutes.`);
     const [loading, setLoading] = useState(false);
@@ -52,7 +55,7 @@ const CodeStep = ({ email, purpose, username, submitLabel, onVerify, onBack }: P
         setError('');
         setInfo('');
         try {
-            await sendCode(email, purpose, username);
+            setDevCode(await sendCode(email, purpose, username));
             setCode('');
             setInfo(`A new code is on its way to ${email}.`);
             setCooldown(RESEND_COOLDOWN_SECONDS);
@@ -90,6 +93,17 @@ const CodeStep = ({ email, purpose, username, submitLabel, onVerify, onBack }: P
                     {cooldown > 0 ? `Resend code (${cooldown}s)` : 'Resend code'}
                 </button>
             </div>
+
+            {/* Testing only: shown while the server can't send email yet */}
+            {devCode && (
+                <div className="border-4 border-dashed border-cream/70 rounded-2xl p-3 text-center">
+                    <p className="text-sm">Testing mode: email isn't set up yet, so here's your code</p>
+                    <p className="text-3xl font-semibold tracking-[0.3em] tabular-nums">{devCode}</p>
+                    <button type="button" className="feltLink text-base" onClick={() => setCode(devCode)}>
+                        Fill it in
+                    </button>
+                </div>
+            )}
         </form>
     );
 }

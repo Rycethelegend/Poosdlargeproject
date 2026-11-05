@@ -14,8 +14,16 @@ const transporter = SMTP_HOST
     })
     : null;
 
+// Temporary, for testing before email is set up: DEV_SHOW_CODES=true in .env
+// sends each code back to the browser so it can be shown on the page. It only
+// works while SMTP_HOST is empty, so it turns itself off once real email is
+// configured. Never turn it on for the live site.
+exports.showCodesInBrowser = !transporter && process.env.DEV_SHOW_CODES === 'true';
+
 if (!transporter) {
-    console.warn('SMTP_HOST is not set: verification codes will be printed to this console instead of emailed.');
+    console.warn(exports.showCodesInBrowser
+        ? 'SMTP_HOST is not set: verification codes are printed here AND shown in the browser (DEV_SHOW_CODES=true).'
+        : 'SMTP_HOST is not set: verification codes will be printed to this console instead of emailed.');
 }
 
 const SUBJECTS = {

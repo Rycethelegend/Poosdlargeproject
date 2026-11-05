@@ -27,8 +27,11 @@ export async function postJson<T>(route: string, body: unknown): Promise<T> {
 
 // Emails a 6-digit code. Registration sends the username too so a taken name is
 // caught before the user goes to check their email.
-export async function sendCode(email: string, purpose: CodePurpose, username?: string): Promise<void> {
-    await postJson('api/sendcode', { email, purpose, username });
+// Returns the code itself only while the server is in testing mode (no email set
+// up and DEV_SHOW_CODES=true); otherwise undefined.
+export async function sendCode(email: string, purpose: CodePurpose, username?: string): Promise<string | undefined> {
+    const { devCode } = await postJson<{ devCode?: string }>('api/sendcode', { email, purpose, username });
+    return devCode;
 }
 
 export async function register(username: string, email: string, password: string, code: string): Promise<void> {

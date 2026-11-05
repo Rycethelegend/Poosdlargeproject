@@ -17,6 +17,7 @@ const RegisterPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [devCode, setDevCode] = useState<string | undefined>();
 
     async function handleDetails(e: FormEvent) {
         e.preventDefault();
@@ -41,7 +42,7 @@ const RegisterPage = () => {
 
         setLoading(true);
         try {
-            await sendCode(email.trim(), 'register', username.trim());
+            setDevCode(await sendCode(email.trim(), 'register', username.trim()));
             setStep('code');
         }
         catch (err) {
@@ -65,6 +66,7 @@ const RegisterPage = () => {
                     purpose="register"
                     username={username.trim()}
                     submitLabel="Create Account"
+                    initialDevCode={devCode}
                     onVerify={handleVerify}
                     onBack={() => setStep('details')}
                 />
