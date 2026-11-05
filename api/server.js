@@ -39,8 +39,7 @@ function homeRouteHandler(req, res) {
     res.send()
 }
 app.get('/', homeRouteHandler);
-//app function use http requests and apply their content to their parameters.
-//any function used in the parameters are just functions in the apps function
+
 app.listen(PORT, function() {
     console.log("PORT: " + PORT);
 })
