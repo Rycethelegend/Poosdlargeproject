@@ -2,11 +2,11 @@
 const express = require('express');
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const jsonWebToken = require("jsonwebtoken");
+//const jsonWebToken = require("jsonwebtoken");
 const cors = require('cors');
 const User = require('../models/user.js');
 const Server = require('../server.js');
-const nodemaile = require(nodemailer);
+const nodemailer = require(nodemailer);
 
 const app = express();
 
@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 5000;
 
 
 //console.log(process.env.MONGO_URI);
+
 
 connectToDatabase();
 
@@ -38,9 +39,12 @@ async function connectToDatabase() { // == const connectToDatabase = async () =>
 
 }
 
-app.post('/login', Login);
+console.log(process.env.SMTP_HOST);
 
-async function Login(req, res) {
+//Invoke-RestMethod -Uri "http://localhost:5000/api/highscore/FirstUser" -Method Put -ContentType "application/json" -Body '{"score":101}'
+LoginIfVerified();
+app.post('/login', LoginIfVerified);
+async function LoginIfVerified(req, res) {
     try {
         email = req.body.email
         password = req.body.password;
@@ -52,83 +56,150 @@ async function Login(req, res) {
             });
         }
         
-        const foundUser = await User.findOne(email);
+        const foundUser = await User.findOne({
+            email
+        });
+
         if (!foundUser) {
-            return res.status(401).json({
+            res.status(401).json({
                 message:"Invalid email"
             });
         }
 
         if (!foundUser.isVerified) {
-            return res.status(403).json({
+            res.status(403).json({
                 message: "Your account is unverified. Check your email",
             });
         }
 
         const isMatch = await foundUser.comparePassword(password);
         if (!isMatch) {
-            
+            res.status(401).json({
+                message: "Invalid password",
+            })
         }
+
+        if (!foundUser.isVerified) {
+            return res.status.json({
+                message: "Please register your email"
+            })
+        }
+
+        /*
+
+        const token = jsonWebToken.sign(
+            {
+                userId: foundUser._id,
+                email: foundUser.email,
+            },
+        )*/
+       console.log(res);
+    }
+        
+
+    catch (err) {
+        res.status(500).json( {
+            message: err.message,
+        })
+    }
+}
+
+
+
+app.post("/login", RegisterAndVerify);
+
+async function RegisterAndVerify(req, res) {
+    try {
+        const username = req.body.username;
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const presentUser = User.findOne( {
+            email,
+        });
+
+        if (presentUser) {
+            res.status(400).json({
+                message: "User already exists",
+            })
+        }
+
+        const newUser = new User({ 
+            username, 
+            email,
+            password,
+            isVerified: false
+        });
+
+        await newUser.save();
+
+        res.status(201).json({
+            message: "User registered successfully",
+        });
     }
 
-    catch {
+    catch (err) {
+        res.status(500).json ( {
+            message: err.message,
+        });
+    }
+}
+
+
+app.get('/login', EmailVerification);
+async function EmailVerification(req, res) {
+    try {
+        const token = req.body.token;
+
+        const email = req.body.email;
+        const recipientUser = await User.findOne({
+            email
+        });
+
+
+        const mailer = createTransport({
+            host: process.env.SMTP_HOST,
+            port: 465,
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+    });
+
 
     }
     
 
-    const database = mongoose.db("PoosdDatabase");
-    await database.command({ping: 1});
+    catch(err) {
+        res.status(500).json({
+            message: err.message,
+        })
+    }
+
 }
 
-async function Register() {
+function createTransport(mailSettings) {
+    const transport = nodemailer.createTransport({
+        host: mailSettings.host,
+        port: mailSettings.port || 465,
+        secure: mailSettings.secure ?? (mailSettings.port === 465),
+        auth: {
+            user: mailSettings.user,
+            pass: mailSettings.pass,
+        }
+            
+    });
+    
+    return transport;
+ }
 
-}
 /*
-async function Login() {
-
-    console.log(client);
+console.log(client);
 
     await client.connect();
     const session = client.startSession();
 
     const database = client.db("PoosdDatabase");
     await database.command({ping: 1});
-    
-    //const userName = database.collection("Username");
-    console.log(username);
-    
-    try {
-    app.post("/login", async (req, res) => {
-        const username = req.body;
-        const password = req.body;
 
-        console.log(PORT);
-        //document.write(req.body)
-    
-        if (!username || !password) {
-            res.status(400).json({
-                error: "Missing parameter",
-                message: "Invalid username or password."
-            });
-        }
+*/
 
-        else {
-            res.status(200).json({
-                firstName: req.firstName,
-                lastName: req.lastName,
-                id: req.id,
-            })
-        }
-    });
-    }
-    
 
-    
-
-    catch {
-        console.log(username);
-    }
-
-    client.close();
-}
-    */

@@ -36,7 +36,8 @@ app.use('./routes/auth.js', homeRouteHandler());
 
 //the part that actually process http requests and return a json
 function homeRouteHandler(req, res) {
-    res.send()
+    //res.send()
+    //console.log("\ndone\n");
 }
 app.get('/', homeRouteHandler);
 

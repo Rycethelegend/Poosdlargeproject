@@ -44,8 +44,11 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true,
         sparse: true,
-    },
+    },   
     
+    verifcationTokenExpires: {
+        type: Date,
+    },
 
 }, {
     timestamps: true, //adds createdAt and updatedAt fields for tracking time away
