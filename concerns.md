@@ -13,3 +13,5 @@ When replacing react-router-dom with the newer react-router, I changed a few dep
 -removed jsonwebtoken (jwt-decode already does this job)
 -removed dotenv (wasnt being used in any frontend files)
 -removed react-jwt (wasnt being used in any frontend files)
+
+Table.tsx would be nice.

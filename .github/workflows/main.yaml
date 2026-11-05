@@ -6,11 +6,9 @@ name: CI/CD Pipeline
 on:
     push:
         branches:
-            - npm-setup
             - main
     pull_request:
         branches:
-            - npm-setup
             - main
     workflow_dispatch:
 
@@ -24,7 +22,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 20.16.0
+                  node-version: 22
             - name: Install backend dependencies
               run: npm install
             - name: Install and build frontend

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Singleplayer from './Singleplayer.tsx';
-import Multiplayer from './Singleplayer.tsx';
-import Inventory from './Singleplayer.tsx';
-import Leaderboard from './Singleplayer.tsx';
+// import Multiplayer from './Singleplayer.tsx';
+// import Inventory from './Singleplayer.tsx';
+// import Leaderboard from './Singleplayer.tsx';
 
 const Home = () => {
 
@@ -15,18 +15,6 @@ const Home = () => {
 
     // GAMEPLAY WINDOWS
     const [singleplayerWindow, setSingleplayerWindow] = useState<boolean>(false);
-
-    function zoomPos(value: number) {
-        switch (value) {
-            case 0:
-
-                break;
-            case 1:
-                setOffsetX(-30);
-                setOffsetY(30);
-                setScale(1);
-        }
-    }
 
     function topLeft() {
         setTitleVisible(false);
