@@ -2,9 +2,9 @@ import { useState } from "react";
 
 const Profile = () => {
 
-    const [firstName, setFirstName] = useState('Firstname');
-    const [lastName, setLastName] = useState('Lastname');
-    const [roundsWon, setRoundsWon] = useState(0);
+    const [firstName] = useState('Firstname');
+    const [lastName] = useState('Lastname');
+    const [roundsWon] = useState(0);
 
     return (
         <div className="relative w-full h-full pt-6 px-2 text-xs">
