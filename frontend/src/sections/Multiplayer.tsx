@@ -1,8 +1,8 @@
 const Multiplayer = () => {
 
     return (
-        <div>
-
+        <div className="w-full h-full">
+            MULTIPLAYER
         </div>
     );
 }

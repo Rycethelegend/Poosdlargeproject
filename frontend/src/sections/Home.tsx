@@ -1,8 +1,12 @@
 import { useState } from "react";
+
 import Singleplayer from './Singleplayer.tsx';
-// import Multiplayer from './Singleplayer.tsx';
-// import Inventory from './Singleplayer.tsx';
-// import Leaderboard from './Singleplayer.tsx';
+import Multiplayer from "./Multiplayer.tsx";
+import Profile from "./Profile.tsx";
+import Leaderboard from "./Leaderboard.tsx";
+
+const percentOffsetX = 12;
+const percentOffsetY = 12;
 
 const Home = () => {
 
@@ -14,44 +18,43 @@ const Home = () => {
     const [titleVisible, setTitleVisible] = useState<boolean>(true);
 
     // GAMEPLAY WINDOWS
-    const [singleplayerWindow, setSingleplayerWindow] = useState<boolean>(false);
+    const [openWindow, setOpenWindow] = useState<number>(0);
 
     function topLeft() {
         setTitleVisible(false);
-        setOffsetX(3);
-        setOffsetY(3);
-        setScale(5);
-        toggleSingleplayerWindow();
+        setOffsetX(percentOffsetX);
+        setOffsetY(percentOffsetY);
+        setScale(4);
+        setOpenWindow(1);
     }
     function topRight() {
         setTitleVisible(false);
-        setOffsetX(-3);
-        setOffsetY(3);
-        setScale(5);
+        setOffsetX(-percentOffsetX);
+        setOffsetY(percentOffsetY);
+        setScale(4);
+        setOpenWindow(2);
     }
     function bottomLeft() {
         setTitleVisible(false);
-        setOffsetX(3);
-        setOffsetY(-3);
-        setScale(5);
+        setOffsetX(percentOffsetX);
+        setOffsetY(-percentOffsetY);
+        setScale(4);
+        setOpenWindow(3);
     }
     function bottomRight() {
         setTitleVisible(false);
-        setOffsetX(-3);
-        setOffsetY(-3);
-        setScale(5);
+        setOffsetX(-percentOffsetX);
+        setOffsetY(-percentOffsetY);
+        setScale(4);
+        setOpenWindow(4);
     }
 
     function zoomOut() {
-        setSingleplayerWindow(false);
         setTitleVisible(true);
         setOffsetX(0);
         setOffsetY(0);
         setScale(1);
-    }
-
-    function toggleSingleplayerWindow() {
-        setSingleplayerWindow(!singleplayerWindow)
+        setOpenWindow(0);
     }
 
     function toggleSettingsWindow() {
@@ -100,7 +103,7 @@ const Home = () => {
 
                 <div className="absolute top-8 left-8 z-10">
                     <button
-                        className=" bg-black/10 hover:bg-black/20 text-2xl px-4 py-2 rounded-2xl"
+                        className="clearButton"
                         onClick={zoomOut}>
 
                         Go back
@@ -109,18 +112,19 @@ const Home = () => {
             )}
 
             <div
-                style={{ transform: `translateX(${offsetX * scale}%) translateY(${offsetY * scale}%)`, scale: `${scale}` }}
+                style={{ transform: `translateX(${offsetX}%) translateY(${offsetY}%)`, scale: `${scale}` }}
                 className="inset-0 w-full h-full flex items-center justify-center absolute transition-transform duration-1000">
 
                 <div className="relative w-[50%] h-[50%] bg-[#6a994e] rounded-4xl border-16 border-[#386641]">
 
-                    <div className="absolute pointer-events-none w-full rounded-2xl h-full bg-black/10 mask-size-[40px] mask-[url(/patterns/parkay-floor.svg)]">
+                    <div className="absolute pointer-events-none w-full rounded-2xl h-full bg-black/5 mask-size-[40px] mask-[url(/patterns/parkay-floor.svg)]">
 
                     </div>
                     {titleVisible ? (
                         <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full p-4">
                             <div className="w-full h-full">
-                                <button className="w-full h-full font-semibold truncate text-3xl hover:bg-white/20 rounded-tl-4xl"
+                                <button 
+                                    className="w-full h-full font-semibold truncate text-3xl hover:bg-white/20 rounded-tl-4xl"
                                     onClick={topLeft}>
                                     SINGLEPLAYER
                                 </button>
@@ -133,13 +137,15 @@ const Home = () => {
                                 </button>
                             </div>
                             <div className="w-full h-full">
-                                <button className="w-full h-full font-semibold truncate text-3xl hover:bg-white/20 rounded-bl-4xl"
+                                <button 
+                                    className="w-full h-full font-semibold truncate text-3xl hover:bg-white/20 rounded-bl-4xl"
                                     onClick={bottomLeft}>
-                                    INVENTORY
+                                    PROFILE
                                 </button>
                             </div>
                             <div className="w-full h-full">
-                                <button className="w-full h-full font-semibold truncate text-3xl hover:bg-white/20 rounded-br-4xl"
+                                <button 
+                                    className="w-full h-full font-semibold truncate text-3xl hover:bg-white/20 rounded-br-4xl"
                                     onClick={bottomRight}>
                                     LEADERBOARD
                                 </button>
@@ -149,19 +155,26 @@ const Home = () => {
 
                     ) : (
 
-                        <div className="grid grid-cols-2 grid-rows-2 gap-x-[22%] gap-y-[22%] z-10 w-full h-full">
+                        <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full">
                             <div className="bg-red-500/20">
-                                {singleplayerWindow ? (
+                                {openWindow === 1 && (
                                     <Singleplayer />
-                                ) : (
-                                    <div className="hidden pointer-events-none" />
                                 )}
                             </div>
-                            <div className="bg-red-500/20">
+                            <div className="bg-blue-500/20">
+                                {openWindow === 2 && (
+                                    <Multiplayer />
+                                )}
                             </div>
-                            <div className="bg-red-500/20">
+                            <div className="bg-green-500/20">
+                                {openWindow === 3 && (
+                                    <Profile />
+                                )}
                             </div>
-                            <div className="bg-red-500/20">
+                            <div className="bg-yellow-500/20">
+                                {openWindow === 4 && (
+                                    <Leaderboard />
+                                )}
                             </div>
                         </div>
                     )}

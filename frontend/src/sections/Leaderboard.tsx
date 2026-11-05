@@ -1,8 +1,8 @@
 const Leaderboard = () => {
 
     return (
-        <div>
-
+        <div className="w-full h-full">
+            LEADERBOARD
         </div>
     );
 }
