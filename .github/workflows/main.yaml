@@ -45,17 +45,16 @@ jobs:
         # Two pushes won't deploy on top of each other
         concurrency: deploy
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: Install sshpass
-              run: sudo apt-get install -y sshpass
             - name: Deploy to DigitalOcean Droplet
               env:
                   SSH_HOST: ${{ secrets.SSH_HOST }}
                   SSH_KEY: ${{ secrets.SSH_KEY }}  # PRIVATE KEY
                   SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
               run: |
-                  sshpass -p "${SSH_KEY}" ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+                  mkdir -p ~/.ssh
+                  echo "$SSH_KEY" > ~/.ssh/deploy_key
+                  chmod 600 ~/.ssh/deploy_key
+                  ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o ConnectTimeout=20 -o BatchMode=yes ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
 
                   set -e
                   cd /var/Poosdlargeproject
