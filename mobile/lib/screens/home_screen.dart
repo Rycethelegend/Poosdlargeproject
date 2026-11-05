@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
                   width: 200,
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.play),
+                    onPressed: () => Navigator.pushNamed(context, Routes.game),
                     child: const Text('Start', style: TextStyle(fontSize: 18)),
                   ),
                 ),

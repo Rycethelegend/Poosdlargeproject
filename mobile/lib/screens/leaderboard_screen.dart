@@ -10,11 +10,11 @@ class LeaderboardScreen extends StatefulWidget {
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   // Placeholder rows until the leaderboard API is connected
   final List<Map<String, dynamic>> _entries = const [
-    {'rank': 1, 'username': 'ace_high', 'score': 4820},
-    {'rank': 2, 'username': 'flushqueen', 'score': 3990},
-    {'rank': 3, 'username': 'SpaceCadet', 'score': 2110},
-    {'rank': 4, 'username': 'lowball', 'score': 1450},
-    {'rank': 5, 'username': 'jokerwild', 'score': 980},
+    {'rank': 1, 'username': 'jokest', 'score': 4820},
+    {'rank': 2, 'username': 'jokish', 'score': 3990},
+    {'rank': 3, 'username': 'jokey', 'score': 2110},
+    {'rank': 4, 'username': 'joker', 'score': 1450},
+    {'rank': 5, 'username': 'joke', 'score': 980},
   ];
   String _search = '';
 

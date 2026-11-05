@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:poosdalatro/screens/game_screen.dart';
+import 'package:poosdalatro/screens/game_screen.dart';
 import 'package:poosdalatro/screens/leaderboard_screen.dart';
 import 'package:poosdalatro/screens/login_screen.dart';
 import 'package:poosdalatro/screens/home_screen.dart';
@@ -18,7 +18,7 @@ class Routes {
     login: (context) => const LoginScreen(),
     register: (context) => const RegisterScreen(),
     home: (context) => const HomeScreen(),
-    // game: (context) => const GameScreen(),
+    game: (context) => const GameScreen(),
     leaderboard: (context) => const LeaderboardScreen(),
   };
 }
