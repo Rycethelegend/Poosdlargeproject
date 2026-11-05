@@ -27,7 +27,7 @@ async function connectToDatabase() { // == const connectToDatabase = async () =>
         await mongoose.connect(process.env.MONGO_URI); 
         
         console.log("\nConnection successful.\n");
-        process.exit(0);
+        //process.exit(0);
     }
 
     catch (error) {
@@ -48,10 +48,10 @@ console.log();
 app.post('/login', LoginIfVerified);
 async function LoginIfVerified(req, res) {
     try {
-        email = req.body.email
-        password = req.body.password;
+        const email = req.body.email
+        const password = req.body.password;
 
-        if (!username || !password) {
+        if (!email || !password) {
             res.status(400).json({
                 error: "Missing parameter",
                 message: "Invalid username or password."
@@ -106,7 +106,7 @@ async function LoginIfVerified(req, res) {
 
 
 
-app.post("/login", RegisterAndVerify);
+app.post("/register", RegisterAndVerify);
 
 async function RegisterAndVerify(req, res) {
     try {
@@ -114,12 +114,12 @@ async function RegisterAndVerify(req, res) {
         const email = req.body.email;
         const password = req.body.password;
 
-        const presentUser = User.findOne( {
+        const presentUser = await User.findOne( {
             email,
         });
 
         if (presentUser) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "User already exists",
             })
         }
@@ -128,7 +128,7 @@ async function RegisterAndVerify(req, res) {
             username, 
             email,
             password,
-            isVerified: false
+            //isVerified: false
         });
 
         await newUser.save();
