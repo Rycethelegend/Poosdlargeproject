@@ -92,7 +92,12 @@ const Singleplayer = () => {
                 <ul className="text-lg text-left max-w-lg space-y-1 bg-cream/85 rounded-2xl p-4">
                     <li>Play poker hands from your 8 cards. Each hand scores <b>chips × mult</b>.</li>
                     <li>Reach the round's target within 4 hands. You can discard up to 3 times to redraw.</li>
-                    <li>Each table has three rounds. The third, the <b>High Roller</b>, adds a <b>Blind</b> that changes the rules.</li>
+                    <li>
+                        A <b>Table</b> is how far into the run you are. Each Table has three rounds: <b>Warm-up</b>,{' '}
+                        <b>Main Event</b> and <b>High Roller</b>, each with a bigger target. The High Roller also has
+                        a <b>Blind</b> that changes the rules.
+                    </li>
+                    <li>Beat the High Roller to move on to the next Table, where every target is higher.</li>
                     <li>Spend your winnings in the shop on <b>Jokers</b> and <b>Study Guides</b>.</li>
                     <li>The run ends when you miss a target. Every chip you scored goes on the leaderboard.</li>
                 </ul>
