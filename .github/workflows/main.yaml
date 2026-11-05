@@ -1,41 +1,76 @@
 name: CI/CD Pipeline
+
+# Public key exists in server at /.ssh/config
+# Private key exists in GitHub secrets
+
 on:
-  push:
-    branches:
-      - npm-setup
-  pull_request:
-    branches:
-      - npm-setup
+    push:
+        branches:
+            - npm-setup
+            - main
+    pull_request:
+        branches:
+            - npm-setup
+            - main
+    workflow_dispatch:
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 20.16.0
-    - name: Install dependencies
-      run: npm install
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-      - name: Deploy to DigitalOcean Droplet
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_USERNAME : ${{secrets.SSH_USERNAME}}
-        run: |
-          sshpass -p "${SSH_KEY}" ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
-          cd /var/www/Ganttify.xyz/html
-          git pull origin npm-setup
-          npm install
-          npm run build
-          systemctl restart nginx
-          EOF
+    # Build checks if the server even works, and builds correctly
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20.16.0
+            - name: Install backend dependencies
+              run: npm install
+            - name: Install and build frontend
+              working-directory: frontend
+              run: |
+                  npm install
+                  npm run build
+
+    # Once this is done, we proceed to build it on the server.
+    deploy:
+        needs: build
+
+        # Dont deploy unmerged pull requests
+        if: github.event_name != 'pull_request'
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+
+        # Two pushes won't deploy on top of each other
+        concurrency: deploy
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Install sshpass
+              run: sudo apt-get install -y sshpass
+            - name: Deploy to DigitalOcean Droplet
+              env:
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_KEY: ${{ secrets.SSH_KEY }}  # PRIVATE KEY
+                  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+              run: |
+                  sshpass -p "${SSH_KEY}" ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+
+                  set -e
+                  cd /var/Poosdlargeproject
+                  git fetch origin
+                  git checkout ${{ github.ref_name }}
+                  git pull origin ${{ github.ref_name }}
+
+                  npm install
+                  cd frontend
+                  npm install
+                  npm run build
+
+                  rm -rf /var/www/html/*
+                  cp -r dist/* /var/www/html/
+
+                  pm2 restart express-server
+                  systemctl restart nginx
+                  EOF
