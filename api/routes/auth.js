@@ -5,8 +5,8 @@ const dotenv = require("dotenv");
 //const jsonWebToken = require("jsonwebtoken");
 const cors = require('cors');
 const User = require('../models/user.js');
-const Server = require('../server.js');
-const nodemailer = require(nodemailer);
+//const Server = require('../server.js');
+//const nodemailer = require(nodemailer);
 
 const app = express();
 
@@ -38,11 +38,13 @@ async function connectToDatabase() { // == const connectToDatabase = async () =>
     //mongoose.close();
 
 }
-
-console.log(process.env.SMTP_HOST);
+app.listen(PORT, function() {
+    console.log("PORT: " + PORT);
+})
+console.log();
 
 //Invoke-RestMethod -Uri "http://localhost:5000/api/highscore/FirstUser" -Method Put -ContentType "application/json" -Body '{"score":101}'
-LoginIfVerified();
+//LoginIfVerified();
 app.post('/login', LoginIfVerified);
 async function LoginIfVerified(req, res) {
     try {
@@ -78,23 +80,21 @@ async function LoginIfVerified(req, res) {
                 message: "Invalid password",
             })
         }
+        /*
 
         if (!foundUser.isVerified) {
             return res.status.json({
                 message: "Please register your email"
             })
         }
-
-        /*
-
-        const token = jsonWebToken.sign(
-            {
-                userId: foundUser._id,
-                email: foundUser.email,
-            },
-        )*/
-       console.log(res);
-    }
+        */
+        return res.status(200).json({
+            message: "Login successful.",
+            user: {
+            id: foundUser._id,
+            email: foundUser.email,
+      }
+});}
         
 
     catch (err) {
@@ -133,7 +133,7 @@ async function RegisterAndVerify(req, res) {
 
         await newUser.save();
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "User registered successfully",
         });
     }
@@ -144,7 +144,7 @@ async function RegisterAndVerify(req, res) {
         });
     }
 }
-
+/*
 
 app.get('/login', EmailVerification);
 async function EmailVerification(req, res) {
@@ -163,8 +163,6 @@ async function EmailVerification(req, res) {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
     });
-
-
     }
     
 
@@ -175,6 +173,7 @@ async function EmailVerification(req, res) {
     }
 
 }
+
 
 function createTransport(mailSettings) {
     const transport = nodemailer.createTransport({
@@ -190,7 +189,7 @@ function createTransport(mailSettings) {
     
     return transport;
  }
-
+*/
 /*
 console.log(client);
 
