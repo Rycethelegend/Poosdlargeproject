@@ -1,59 +1,76 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// WE CURRENTLY HAVE NO EXPIRATION DATES
+// Login tokens last this long. Every authenticated API call hands back a
+// refreshed token, so active users stay logged in.
+const LOGIN_TOKEN_LIFETIME = '24h';
 
-exports.createToken = function (fn, ln, id) {
-    return _createToken(fn, ln, id);
+// Password reset tokens are only good for finishing one reset.
+const RESET_TOKEN_LIFETIME = '15m';
+
+function secret() {
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+        throw new Error('ACCESS_TOKEN_SECRET is missing from .env');
+    }
+    return process.env.ACCESS_TOKEN_SECRET;
 }
 
-_createToken = function (fn, ln, id) {
+// Returns { accessToken } on success or { error } on failure
+exports.createToken = function (userId, username) {
     try {
-        const expiration = new Date();
-        const user = { userId: id, firstName: fn, lastName: ln };
-
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-
-        // In order to exoire with a value other than the default, use the 
-        // following
-        /*
-        const accessToken= jwt.sign(user,process.env.ACCESS_TOKEN_SECRET, 
-           { expiresIn: '30m'} );
-                         '24h'
-                        '365d'
-        */
-
-        var ret = { accessToken: accessToken };
+        const user = { userId: String(userId), username: username };
+        const accessToken = jwt.sign(user, secret(), { expiresIn: LOGIN_TOKEN_LIFETIME });
+        return { accessToken: accessToken };
     }
     catch (e) {
-        var ret = { error: e.message };
+        return { error: e.message };
     }
-    return ret;
 }
 
+// True when the token is missing, tampered with, or past its expiry
 exports.isExpired = function (token) {
-
-    var isError = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,
-        (err, verifiedJwt) => {
-            if (err) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        });
-
-    return isError;
-
+    try {
+        jwt.verify(token, secret());
+        return false;
+    }
+    catch (e) {
+        return true;
+    }
 }
 
+// Issues a fresh login token for the same user
 exports.refresh = function (token) {
-    var ud = jwt.decode(token, { complete: true });
+    const payload = jwt.decode(token);
+    return exports.createToken(payload.userId, payload.username);
+}
 
-    // var userId = ud.payload.id;
-    var userId = ud.payload.userId;
-    var firstName = ud.payload.firstName;
-    var lastName = ud.payload.lastName;
+// Reads the userId out of a token that has already passed isExpired()
+exports.getUserId = function (token) {
+    return jwt.decode(token).userId;
+}
 
-    return _createToken(firstName, lastName, userId);
+// The reset token is signed with the user's current password hash added to the
+// secret, so it stops working as soon as the password changes (one use only).
+exports.createResetToken = function (email, passwordHash) {
+    return jwt.sign({ email: email, purpose: 'reset' }, secret() + passwordHash,
+        { expiresIn: RESET_TOKEN_LIFETIME });
+}
+
+// Returns the email inside an unverified reset token, or null if it is malformed
+exports.peekResetEmail = function (token) {
+    const payload = jwt.decode(token);
+    if (!payload || payload.purpose !== 'reset' || typeof payload.email !== 'string') {
+        return null;
+    }
+    return payload.email;
+}
+
+exports.verifyResetToken = function (token, passwordHash) {
+    try {
+        const payload = jwt.verify(token, secret() + passwordHash);
+        return payload.purpose === 'reset';
+    }
+    catch (e) {
+        return false;
+    }
 }
