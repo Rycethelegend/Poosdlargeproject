@@ -5,6 +5,8 @@ import 'package:poosdalatro/screens/login_screen.dart';
 import 'package:poosdalatro/screens/home_screen.dart';
 import 'package:poosdalatro/screens/register_screen.dart';
 
+/// Every screen's route name, and which screen each one opens.
+/// Navigate with constants like Routes.hom) rather than typing the strings
 class Routes {
   static const String login = '/login';
   static const String register = '/register';

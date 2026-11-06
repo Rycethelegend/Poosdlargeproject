@@ -114,7 +114,7 @@ class _GameScreenState extends State<GameScreen> {
       ),
     );
   }
-
+  /// Right side: the selection message, the hand, and the action buttons
   Widget _tableArea() {
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -160,6 +160,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  /// One card, selected cards move up and get wider border
   Widget _card(int index) {
     final selected = _selected.contains(index);
     return GestureDetector(

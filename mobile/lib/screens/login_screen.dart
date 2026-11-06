@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/routes/routes.dart';
+import 'package:poosdalatro/screens/auth_layout.dart';
 import 'package:poosdalatro/utils/api.dart';
 import 'package:poosdalatro/utils/session.dart';
 
@@ -12,30 +13,34 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _username = TextEditingController();
+  final _loginName = TextEditingController();
   final _password = TextEditingController();
-  String _message = '';
+  String _error = '';
   bool _loading = false;
 
-  Future<void> _login() async {
-    setState(() {
-      _loading = true;
-      _message = '';
-    });
+  Future<void> _submit() async {
+    setState(() => _error = '');
+    if (_loginName.text.trim().isEmpty || _password.text.isEmpty) {
+      setState(() =>
+      _error = 'Please enter your username or email and your password');
+      return;
+    }
+
+    setState(() => _loading = true);
     try {
-      String url = 'http://poosdbasecontactmanager.casa/api/login';
+      String url = 'https://poosdbasecontactmanager.casa/api/login';
       final data = await Api.post(url, {
-        'username': _username.text.trim(),
+        'login': _loginName.text.trim(),
         'password': _password.text,
       });
-      Session.token = data['token'];
-      Session.username = data['username'];
+      Session.saveToken(data['accessToken']);
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, Routes.home);
     } on ApiException catch (e) {
-      setState(() => _message = e.message);
+      setState(() => _error = e.message);
     } catch (_) {
-      setState(() => _message = 'Could not reach the server.');
+      setState(() => _error =
+      "Can't reach the server. Check your connection and try again.");
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -43,67 +48,61 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _username.dispose();
+    _loginName.dispose();
     _password.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Poosdalatro',
-                      style: Theme.of(context).textTheme.headlineMedium),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _username,
-                    decoration: const InputDecoration(labelText: 'Username'),
-                  ),
-                  TextField(
-                    controller: _password,
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                  ),
-                  const SizedBox(height: 12),
-                  if (_message.isNotEmpty) Text(_message),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _loading ? null : _login,
-                        child: Text(_loading ? 'Logging in...' : 'Log in'),
-                      ),
-                      const SizedBox(width: 12),
-                      TextButton(
-                        onPressed: () => Navigator.pushReplacementNamed(
-                            context, Routes.register),
-                        child: const Text('Register'),
-                      ),
-                    ],
-                  ),
-                  if (kDebugMode)
-                    TextButton(
-                      onPressed: () {
-                        Session.username = 'tester';
-                        Navigator.pushReplacementNamed(context, Routes.home);
-                      },
-                      child: const Text('Skip login (debug only)'),
-                    ),
-                ],
-              ),
+    return AuthLayout(
+      heading: 'Log In',
+      children: [
+        if (_error.isNotEmpty) Text(_error, textAlign: TextAlign.center),
+        TextField(
+          controller: _loginName,
+          decoration: const InputDecoration(labelText: 'Username or email'),
+        ),
+        TextField(
+          controller: _password,
+          obscureText: true,
+          decoration: const InputDecoration(labelText: 'Password'),
+          onSubmitted: (_) => _submit(),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text("Password reset isn't in the app yet")),
             ),
+            child: const Text('Forgot password?'),
           ),
         ),
-      ),
+        ElevatedButton(
+          onPressed: _loading ? null : _submit,
+          child: Text(_loading ? '...' : 'Log In'),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('New here?'),
+            TextButton(
+              onPressed: () =>
+                  Navigator.pushReplacementNamed(context, Routes.register),
+              child: const Text('Create an account'),
+            ),
+          ],
+        ),
+        if (kDebugMode)
+          TextButton(
+            onPressed: () {
+              Session.username = 'tester';
+              Navigator.pushReplacementNamed(context, Routes.home);
+            },
+            child: const Text('Skip login (debug only)'),
+          ),
+      ],
     );
   }
 }
