@@ -2,7 +2,9 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const { ObjectId } = require('mongodb');
+//const { ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
+
 require('dotenv').config();
 
 // =============================================================================
@@ -222,17 +224,17 @@ function requireLogin(req, res) {
     if (!token.isExpired(jwtToken)) {
         const userId = token.getUserId(jwtToken);
         const refreshed = token.refresh(jwtToken);
-        if (ObjectId.isValid(userId) && refreshed.accessToken) {
-            return { userId: new ObjectId(userId), jwtToken: refreshed.accessToken };
+        if (mongoose.Types.ObjectId.isValid(userId) && refreshed.accessToken) {
+            return { userId:  new mongoose.Types.ObjectId(userId), jwtToken: refreshed.accessToken };
         }
     }
     fail(res, 401, 'Your login has expired. Please log in again.');
     return null;
 }
 
-exports.setApp = function (app, client) {
+exports.setApp = function (app, mongoose) {
 
-    const db = client.db(DB_NAME);
+    const db = mongoose.connection.db;  //client.db(DB_NAME);
     const users = db.collection('Users');
     const codes = db.collection('VerificationCodes');
     const leaderboard = db.collection('Leaderboard');

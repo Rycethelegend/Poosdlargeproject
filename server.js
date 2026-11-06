@@ -4,7 +4,7 @@ const cors = require('cors');
 
 // Get mongo URL from .env
 require('dotenv').config();
-const url = process.env.MONGODB_URI;
+const url = process.env.DATABASE_LINK;
 
 // Create express server and policy
 const app = express();
@@ -14,8 +14,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-const { MongoClient } = require('mongodb')
-const client = new MongoClient(url);
+const mongoose = require('mongoose');
+
+////const { MongoClient } = require('mongodb')
+
+//const client = new MongoClient(url);
 
 // const Username = "###########";
 // const Password = "###########";
@@ -67,9 +70,14 @@ export async function disconnectFromMongoDB() {
 
 
 // In the mean time, this function has better syntax anyways.
-client.connect()
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection failed:', err.message));
+//client.connect()
+//    .then(() => console.log('MongoDB connected'))
+//    .catch(err => console.error('MongoDB connection failed:', err.message));
+
+mongoose.connect(url)
+  .then(() => console.log('MongoDB connected successfully via Mongoose'))
+  .catch(err => console.error('MongoDB connection failed:', err.message));
+
 
 // Headers - DONT EDIT
 app.use((req, res, next) => {
@@ -87,6 +95,6 @@ app.use((req, res, next) => {
 
 // Load API - Must come after mongoDB connection and app.setHeaders
 var api = require('./api.js');
-api.setApp( app, client );
+api.setApp( app, mongoose );
 
 app.listen(5000); // start Node + Express server on port 5000
