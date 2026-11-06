@@ -1,9 +1,149 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const { ObjectId } = require('mongodb');
+require('dotenv').config();
 
-const token = require('./createJWT.js');
-const { sendCodeEmail, showCodesInBrowser } = require('./mailer.js');
+// =============================================================================
+// Login tokens (JWT)
+// =============================================================================
+
+// Login tokens last this long. Every authenticated API call hands back a
+// refreshed token, so active users stay logged in.
+const LOGIN_TOKEN_LIFETIME = '24h';
+
+// Password reset tokens are only good for finishing one reset.
+const RESET_TOKEN_LIFETIME = '15m';
+
+function tokenSecret() {
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+        throw new Error('ACCESS_TOKEN_SECRET is missing from .env');
+    }
+    return process.env.ACCESS_TOKEN_SECRET;
+}
+
+const token = {
+    // Returns { accessToken } on success or { error } on failure
+    createToken(userId, username) {
+        try {
+            const user = { userId: String(userId), username: username };
+            return { accessToken: jwt.sign(user, tokenSecret(), { expiresIn: LOGIN_TOKEN_LIFETIME }) };
+        }
+        catch (e) {
+            return { error: e.message };
+        }
+    },
+
+    // True when the token is missing, tampered with, or past its expiry
+    isExpired(jwtToken) {
+        try {
+            jwt.verify(jwtToken, tokenSecret());
+            return false;
+        }
+        catch (e) {
+            return true;
+        }
+    },
+
+    // Issues a fresh login token for the same user
+    refresh(jwtToken) {
+        const payload = jwt.decode(jwtToken);
+        return token.createToken(payload.userId, payload.username);
+    },
+
+    // Reads the userId out of a token that has already passed isExpired()
+    getUserId(jwtToken) {
+        return jwt.decode(jwtToken).userId;
+    },
+
+    // The reset token is signed with the user's current password hash added to the
+    // secret, so it stops working as soon as the password changes (one use only).
+    createResetToken(email, passwordHash) {
+        return jwt.sign({ email: email, purpose: 'reset' }, tokenSecret() + passwordHash,
+            { expiresIn: RESET_TOKEN_LIFETIME });
+    },
+
+    // Returns the email inside an unverified reset token, or null if it is malformed
+    peekResetEmail(resetToken) {
+        const payload = jwt.decode(resetToken);
+        if (!payload || payload.purpose !== 'reset' || typeof payload.email !== 'string') {
+            return null;
+        }
+        return payload.email;
+    },
+
+    verifyResetToken(resetToken, passwordHash) {
+        try {
+            return jwt.verify(resetToken, tokenSecret() + passwordHash).purpose === 'reset';
+        }
+        catch (e) {
+            return false;
+        }
+    },
+};
+
+// =============================================================================
+// Email (NodeMailer through SendGrid, or any SMTP server set in .env)
+// =============================================================================
+
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env;
+
+const transporter = SMTP_HOST
+    ? nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: Number(SMTP_PORT) || 587,
+        secure: Number(SMTP_PORT) === 465,
+        auth: { user: SMTP_USER, pass: SMTP_PASS },
+    })
+    : null;
+
+// Temporary, for testing before email is set up: DEV_SHOW_CODES=true in .env
+// sends each code back to the browser so it can be shown on the page. It only
+// works while SMTP_HOST is empty, so it turns itself off once real email is
+// configured. Never turn it on for the live site.
+const showCodesInBrowser = !transporter && process.env.DEV_SHOW_CODES === 'true';
+
+if (!transporter) {
+    console.warn(showCodesInBrowser
+        ? 'SMTP_HOST is not set: verification codes are printed here AND shown in the browser (DEV_SHOW_CODES=true).'
+        : 'SMTP_HOST is not set: verification codes will be printed to this console instead of emailed.');
+}
+
+const EMAIL_SUBJECTS = {
+    register: 'Your Poosdalatro verification code',
+    reset: 'Your Poosdalatro password reset code',
+};
+
+const EMAIL_INTROS = {
+    register: 'Use this code to finish creating your Poosdalatro account:',
+    reset: 'Use this code to reset your Poosdalatro password:',
+};
+
+// Sends a one-time code. purpose is 'register' or 'reset'.
+async function sendCodeEmail(to, code, purpose, minutesValid) {
+    const intro = EMAIL_INTROS[purpose];
+    const footer = `This code expires in ${minutesValid} minutes. If you didn't ask for it, you can ignore this email.`;
+
+    if (!transporter) {
+        console.log(`[dev email] ${purpose} code for ${to}: ${code}`);
+        return;
+    }
+
+    await transporter.sendMail({
+        from: MAIL_FROM || SMTP_USER,
+        to: to,
+        subject: EMAIL_SUBJECTS[purpose],
+        text: `${intro}\n\n${code}\n\n${footer}`,
+        html: `<p>${intro}</p>`
+            + `<p style="font-size:28px;font-weight:bold;letter-spacing:6px">${code}</p>`
+            + `<p style="color:#666">${footer}</p>`,
+    });
+}
+
+// =============================================================================
+// API endpoints
+// =============================================================================
 
 const DB_NAME = 'PoosdDatabase';
 
@@ -218,7 +358,7 @@ exports.setApp = function (app, client) {
 
         const ret = { error: '', expiresInMinutes: CODE_MINUTES_VALID };
         if (showCodesInBrowser) {
-            ret.devCode = code; // testing only, see DEV_SHOW_CODES in mailer.js
+            ret.devCode = code; // testing only, see DEV_SHOW_CODES near the top of this file
         }
         res.status(200).json(ret);
     }));
@@ -437,9 +577,10 @@ exports.setApp = function (app, client) {
 
     // ---------------------------------------------------------------------------
     // POST /api/myscores
-    // The Profile page: the user's best score and every score they've had, newest
-    // first. search partially matches the date ("2026-11" = every game in November).
-    // incoming: jwtToken, search
+    // The Profile page: the user's best score and every score they've had.
+    // search partially matches the date ("2026-11" = every game in November).
+    // sort: 'date' (newest first, the default) or 'score' (highest first).
+    // incoming: jwtToken, search, sort
     // outgoing: username, bestScore, gamesPlayed, scores[{score, table, date, day}], jwtToken, error
     // ---------------------------------------------------------------------------
     app.post('/api/myscores', route(async (req, res) => {
@@ -464,7 +605,7 @@ exports.setApp = function (app, client) {
             pipeline.push({ $match: { day: { $regex: escapeRegex(search), $options: 'i' } } });
         }
         pipeline.push(
-            { $sort: { date: -1 } },
+            { $sort: req.body.sort === 'score' ? { score: -1, date: -1 } : { date: -1 } },
             { $project: { _id: 0, score: 1, table: 1, date: 1, day: 1 } }
         );
 

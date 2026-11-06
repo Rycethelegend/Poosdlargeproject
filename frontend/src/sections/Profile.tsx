@@ -1,26 +1,33 @@
 import { useEffect, useState } from "react";
-import { fetchMyScores, formatTime, type MyScores } from "../scoresApi";
+import { fetchMyScores, formatTime, type MyScores, type ScoreSort } from "../scoresApi";
 import { getUser } from "../tokenStorage";
 import { useDebounced } from "../useDebounced";
+
+const SORTS: { value: ScoreSort; label: string }[] = [
+    { value: 'date', label: 'Newest first' },
+    { value: 'score', label: 'Highest score' },
+];
 
 const Profile = () => {
 
     const [search, setSearch] = useState('');
     const debouncedSearch = useDebounced(search);
+    const [sort, setSort] = useState<ScoreSort>('date');
     const [data, setData] = useState<MyScores | null>(null);
     const [error, setError] = useState('');
-    // The search the shown results belong to; while it differs, a request is in flight
-    const [loadedSearch, setLoadedSearch] = useState<string | null>(null);
-    const loading = loadedSearch !== debouncedSearch;
+    // The search + sort the shown results belong to; while it differs, a request is in flight
+    const requestKey = `${sort}|${debouncedSearch}`;
+    const [loadedKey, setLoadedKey] = useState<string | null>(null);
+    const loading = loadedKey !== requestKey;
 
     useEffect(() => {
         let cancelled = false;
-        fetchMyScores(debouncedSearch)
+        fetchMyScores(debouncedSearch, sort)
             .then((result) => { if (!cancelled) { setData(result); setError(''); } })
             .catch((err) => { if (!cancelled) setError((err as Error).message); })
-            .finally(() => { if (!cancelled) setLoadedSearch(debouncedSearch); });
+            .finally(() => { if (!cancelled) setLoadedKey(`${sort}|${debouncedSearch}`); });
         return () => { cancelled = true; };
-    }, [debouncedSearch]);
+    }, [debouncedSearch, sort]);
 
     const username = data?.username ?? getUser()?.username ?? '';
 
@@ -38,6 +45,21 @@ const Profile = () => {
                         <p className="text-sm uppercase tracking-wide">Games</p>
                         <p className="text-2xl font-semibold">{data?.gamesPlayed ?? 0}</p>
                     </div>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <span className="font-semibold">Sort by</span>
+                <div className="flex rounded-2xl overflow-hidden" role="group" aria-label="Sort your scores">
+                    {SORTS.map((option) => (
+                        <button
+                            key={option.value}
+                            aria-pressed={sort === option.value}
+                            className={`px-4 py-2 font-semibold transition-colors ${sort === option.value ? 'bg-wood' : 'bg-wood-light hover:bg-wood'}`}
+                            onClick={() => setSort(option.value)}>
+                            {option.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 

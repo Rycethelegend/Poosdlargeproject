@@ -40,8 +40,10 @@ export async function saveScore(runId: string, score: number, table: number): Pr
     return postWithLogin('api/savescore', { runId, score, table, tzOffset: new Date().getTimezoneOffset() });
 }
 
-export async function fetchMyScores(search: string): Promise<MyScores> {
-    return postWithLogin('api/myscores', { search });
+export type ScoreSort = 'date' | 'score';
+
+export async function fetchMyScores(search: string, sort: ScoreSort): Promise<MyScores> {
+    return postWithLogin('api/myscores', { search, sort });
 }
 
 export async function fetchLeaderboard(search: string): Promise<LeaderboardEntry[]> {
