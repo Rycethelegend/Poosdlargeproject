@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { JOKERS_BY_ID, type JokerDef } from './jokers';
 import { formatMult } from './format';
 import type { OwnedJoker } from './run';
-import { BLINDS_BY_ID } from './rounds';
+import { BOSSES_BY_ID } from './rounds';
 import { ChipStack, type ChipColor } from './sprites';
 
 export function Stat({ label, children, chip, className = '' }: { label: string; children: ReactNode; chip?: ChipColor; className?: string }) {
@@ -44,14 +44,14 @@ export function JokerCard({ joker, footer, dim = false }: { joker: JokerDef; foo
     );
 }
 
-// A Blind's name and description, with its picture when it has one
-export function BlindLabel({ blindId, prefix }: { blindId: string; prefix: string }) {
-    const blind = BLINDS_BY_ID[blindId];
-    if (!blind) return null;
+// A Boss's name and description, with its picture when it has one
+export function BossLabel({ bossId, prefix }: { bossId: string; prefix: string }) {
+    const boss = BOSSES_BY_ID[bossId];
+    if (!boss) return null;
     return (
         <span className="inline-flex items-center gap-2 align-middle">
-            {blind.image && <img src={blind.image} alt="" className="w-6 pixelated" />}
-            <span>{prefix} <span className="font-semibold">{blind.name}</span>: {blind.description}</span>
+            {boss.image && <img src={boss.image} alt="" className="w-6 pixelated" />}
+            <span>{prefix} <span className="font-semibold">{boss.name}</span>: {boss.description}</span>
         </span>
     );
 }

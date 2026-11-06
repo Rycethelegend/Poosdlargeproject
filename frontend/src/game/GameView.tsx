@@ -3,7 +3,7 @@ import { HANDS } from './hands';
 import { HIGH_ROLLER, ROUNDS } from './rounds';
 import RoundView from './RoundView';
 import ShopView from './ShopView';
-import { BlindLabel, Stat } from './GamePieces';
+import { BossLabel, Stat } from './GamePieces';
 import type { RunAction, RunState } from './run';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -44,7 +44,7 @@ const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, 
                     </div>
                     {state.round !== HIGH_ROLLER && (
                         <p className="text-sm text-center -mt-2">
-                            <BlindLabel blindId={state.blind} prefix="This table's High Roller blind:" />
+                            <BossLabel bossId={state.boss} prefix="This table's High Roller boss:" />
                         </p>
                     )}
                     <RoundView state={state} dispatch={dispatch} />

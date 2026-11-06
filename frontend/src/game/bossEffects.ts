@@ -1,10 +1,10 @@
 import { isFace, type Card } from './cards';
 
-// How each Blind in data/blinds.ts works, by id. The names and descriptions
-// live in data/blinds.ts; keep the description there matching what's written here.
-// Every field is optional: leave out whatever the Blind doesn't change.
+// How each Boss in data/bosses.ts works, by id. The names and descriptions
+// live in data/bosses.ts; keep the description there matching what's written here.
+// Every field is optional: leave out whatever the Boss doesn't change.
 
-export interface BlindRules {
+export interface BossRules {
     hands?: number;              // hands this round (normally 4)
     discards?: number;           // discards this round (normally 3)
     handSizeChange?: number;     // added to the hand size (normally 8)
@@ -14,14 +14,10 @@ export interface BlindRules {
     costPerHand?: number;        // $ taken for every hand played
 }
 
-export const BLIND_EFFECTS: Record<string, BlindRules> = {
+export const BOSS_EFFECTS: Record<string, BossRules> = {
     shortStack: { hands: 3 },
-    noRedraws: { discards: 0 },
+    nodiscards: { discards: 0 },
     heartbreak: { blocksCard: (card) => card.suit === 'hearts' },
     clubClosed: { blocksCard: (card) => card.suit === 'clubs' },
-    smallTalk: { maxSelect: 4 },
-    royalSnub: { blocksCard: (card) => isFace(card) },
-    tightGrip: { handSizeChange: -2 },
-    payToPlay: { costPerHand: 1 },
-    halftime: { halveBase: true },
+    downWithRoyals: { blocksCard: (card) => isFace(card) },
 };

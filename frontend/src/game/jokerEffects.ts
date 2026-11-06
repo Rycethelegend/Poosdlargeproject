@@ -1,5 +1,7 @@
-import { cardChips, isFace, isRed, type Card } from './cards';
-import { containsPair, containsTwoPair, isFlushType, isStraightType, type HandType } from './hands';
+import { isRed, type Card } from './cards';
+import type { HandType } from './hands';
+// More helpers for writing effects: cardChips, isFace (./cards) and
+// containsPair, containsTwoPair, isFlushType, isStraightType (./hands)
 
 // How each Joker in data/jokers.ts works, by id. The names and descriptions
 // live in data/jokers.ts; keep the description there matching what's written here.
@@ -31,52 +33,16 @@ export const JOKER_EFFECTS: Record<string, JokerEffect> = {
     rubberDuck: {
         onHand: () => ({ mult: 4 }),
     },
-    coffeeMug: {
-        onHand: () => ({ chips: 30 }),
+    chuckElephant: {
+        onHand: () => ({ chips: 10, mult: 2 }),
     },
-    pairProgramming: {
-        onHand: (ctx) => containsPair(ctx.handType) ? { mult: 9 } : null,
-    },
-    codeReview: {
-        onHand: (ctx) => containsTwoPair(ctx.handType) ? { chips: 70 } : null,
-    },
-    hotFix: {
-        onHand: (ctx) => ctx.played.length <= 3 ? { mult: 14 } : null,
+    moneyBags: {
+        onRoundEnd: () => 1,
     },
     redTeam: {
         onCard: (card) => isRed(card) ? { mult: 2 } : null,
     },
     blueTeam: {
         onCard: (card) => isRed(card) ? null : { chips: 18 },
-    },
-    faceValidation: {
-        onCard: (card) => isFace(card) ? { chips: 25 } : null,
-    },
-    offByOne: {
-        onCard: (card) => card.rank === 14 || card.rank === 2 ? { mult: 5 } : null,
-    },
-    evenSplit: {
-        onCard: (card) => card.rank <= 10 && card.rank % 2 === 0 ? { chips: cardChips(card) } : null,
-    },
-    mergeConflict: {
-        onHand: (ctx) => isFlushType(ctx.handType) ? { xmult: 2 } : null,
-    },
-    stackOverflow: {
-        onHand: (ctx) => isStraightType(ctx.handType) ? { xmult: 2 } : null,
-    },
-    recursion: {
-        onHand: (ctx) => ({ mult: ctx.handsPlayedRun }),
-    },
-    cleanCode: {
-        onHand: (ctx) => ctx.discardsUsed === 0 ? { mult: 18 } : null,
-    },
-    legacyCode: {
-        onHand: (ctx) => ({ mult: 3 * ctx.jokerCount }),
-    },
-    finalExam: {
-        onHand: (ctx) => ctx.handsLeftBefore === 1 ? { xmult: 3 } : null,
-    },
-    ventureCapital: {
-        onRoundEnd: () => 3,
     },
 };

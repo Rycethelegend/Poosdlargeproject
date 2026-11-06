@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { cardChips, cardName, sortCards, SUIT_SYMBOL, type Card } from './cards';
 import { MAX_JOKERS } from './jokers';
 import { formatMult, stepText } from './format';
-import { BlindLabel, JokerRow, ChipsTimesMult } from './GamePieces';
+import { BossLabel, JokerRow, ChipsTimesMult } from './GamePieces';
 import { evaluateHand, HANDS } from './hands';
 import { rulesFor, scorePlay, selectedCards, type RunAction, type RunState } from './run';
 import { CardFace, DeckBox } from './sprites';
@@ -15,7 +15,7 @@ function cardBadge(card: Card, partOfHand: Set<string>, scoringIds: string[]) {
         return { text: `+${cardChips(card)}`, className: 'bg-chips text-white', label: `adds ${cardChips(card)} chips` };
     }
     if (partOfHand.has(card.id)) {
-        return { text: 'Blocked', className: 'bg-danger text-[#f2e8cf]', label: 'blocked by the Blind, adds no chips' };
+        return { text: 'Blocked', className: 'bg-danger text-[#f2e8cf]', label: 'blocked by the Boss, adds no chips' };
     }
     return { text: 'No chips', className: 'bg-black/40 text-white', label: 'not part of the poker hand, adds no chips' };
 }
@@ -34,9 +34,9 @@ const RoundView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActi
     return (
         <div className="flex flex-col gap-4">
 
-            {rules.activeBlind && (
+            {rules.activeBoss && (
                 <div className="bg-danger text-[#f2e8cf] rounded-2xl px-4 py-2 text-center">
-                    <BlindLabel blindId={rules.activeBlind} prefix="Blind" />
+                    <BossLabel bossId={rules.activeBoss} prefix="Boss" />
                 </div>
             )}
 

@@ -2,7 +2,7 @@ import { cardChips, cardLabel, createDeck, shuffle, type Card, type SortMode } f
 import { JOKERS_BY_ID, MAX_JOKERS, sellPrice, SHOP_JOKER_IDS, type Effect, type PlayContext } from './jokers';
 import { evaluateHand, HAND_TYPES, HANDS, handValues, startingLevels, type HandLevels, type HandType } from './hands';
 import {
-    activeBlindRules, HIGH_ROLLER, isBlocked, randomBlind, ROUNDS, roundRules, roundTarget, savingsBonus,
+    activeBossRules, HIGH_ROLLER, isBlocked, randomBoss, ROUNDS, roundRules, roundTarget, savingsBonus,
     type RoundIndex,
 } from './rounds';
 
@@ -52,13 +52,13 @@ export interface ShopState {
 }
 
 export interface RunState {
-    version: 2;
+    version: 3;
     runId: string;
     phase: Phase;
 
     table: number;
     round: RoundIndex;
-    blind: string;             // id from data/blinds.ts: the High Roller blind for this table
+    boss: string;             // id from data/bosses.ts: the High Roller boss for this table
 
     target: number;
     roundScore: number;
@@ -108,8 +108,8 @@ function newRunId(): string {
         : `run-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-export function rulesFor(state: Pick<RunState, 'round' | 'blind'>) {
-    return roundRules(state.round, state.blind);
+export function rulesFor(state: Pick<RunState, 'round' | 'boss'>) {
+    return roundRules(state.round, state.boss);
 }
 
 // Deals a fresh, fully shuffled deck for the current round
@@ -135,12 +135,12 @@ function startRound(state: RunState): RunState {
 
 export function newRun(): RunState {
     return startRound({
-        version: 2,
+        version: 3,
         runId: newRunId(),
         phase: 'playing',
         table: 1,
         round: 0,
-        blind: randomBlind(),
+        boss: randomBoss(),
         target: 0,
         roundScore: 0,
         totalScore: 0,
@@ -177,7 +177,7 @@ export function scorePlay(state: RunState, played: Card[]): PlayResult | null {
 
     const level = state.handLevels[hand.type];
     const base = handValues(hand.type, level);
-    if (activeBlindRules(state.round, state.blind)?.halveBase) {
+    if (activeBossRules(state.round, state.boss)?.halveBase) {
         base.chips = Math.ceil(base.chips / 2);
         base.mult = Math.max(1, Math.ceil(base.mult / 2));
     }
@@ -198,7 +198,7 @@ export function scorePlay(state: RunState, played: Card[]): PlayResult | null {
 
     const scoringIds: string[] = [];
     for (const card of hand.scoring) {
-        if (isBlocked(card, state.round, state.blind)) {
+        if (isBlocked(card, state.round, state.boss)) {
             steps.push({ source: `${cardLabel(card)} (blocked)` });
             continue;
         }
@@ -313,7 +313,7 @@ export function runReducer(state: RunState, action: RunAction): RunState {
                 handsLeft: state.handsLeft - 1,
                 handsPlayedRun: state.handsPlayedRun + 1,
                 bestHand: Math.max(state.bestHand, result.score),
-                money: Math.max(0, state.money - (activeBlindRules(state.round, state.blind)?.costPerHand ?? 0)),
+                money: Math.max(0, state.money - (activeBossRules(state.round, state.boss)?.costPerHand ?? 0)),
                 lastPlay: result,
             };
 
@@ -400,7 +400,7 @@ export function runReducer(state: RunState, action: RunAction): RunState {
                 ...state,
                 table: nextTable ? state.table + 1 : state.table,
                 round: nextTable ? 0 : (state.round + 1) as RoundIndex,
-                blind: nextTable ? randomBlind() : state.blind,
+                boss: nextTable ? randomBoss() : state.boss,
             });
         }
 
@@ -413,13 +413,19 @@ export function runReducer(state: RunState, action: RunAction): RunState {
     }
 }
 
-// Loads a saved run from localStorage, or null if it's missing or from an older version
-// (version 1 runs used the old Charm names and are dropped)
+// Loads a saved run from localStorage, or null if it's missing or unusable.
+// Version 2 runs called the boss "blind" and are converted; version 1 runs used
+// the old Charm names and are dropped.
 export function parseSavedRun(json: string | null): RunState | null {
     if (!json) return null;
     try {
-        const state = JSON.parse(json) as RunState;
-        return state && state.version === 2 && Array.isArray(state.hand) ? state : null;
+        const saved = JSON.parse(json);
+        if (!saved || !Array.isArray(saved.hand)) return null;
+        if (saved.version === 2) {
+            const { blind, ...rest } = saved;
+            return { ...rest, boss: blind, version: 3 } as RunState;
+        }
+        return saved.version === 3 ? saved as RunState : null;
     }
     catch {
         return null;

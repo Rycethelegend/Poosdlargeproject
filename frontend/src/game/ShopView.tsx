@@ -1,5 +1,5 @@
 import { JOKERS_BY_ID, MAX_JOKERS, sellPrice } from './jokers';
-import { BlindLabel, JokerCard, JokerRow } from './GamePieces';
+import { BossLabel, JokerCard, JokerRow } from './GamePieces';
 import { HANDS, handValues } from './hands';
 import { HIGH_ROLLER, ROUNDS, roundTarget } from './rounds';
 import { STUDY_PRICE, type RunAction, type RunState } from './run';
@@ -13,7 +13,7 @@ const ShopView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActio
     const nextIsNewTable = state.round === HIGH_ROLLER;
     const nextTable = nextIsNewTable ? state.table + 1 : state.table;
     const nextRound = nextIsNewTable ? 0 : state.round + 1;
-    const nextBlind = nextRound === HIGH_ROLLER;
+    const nextBoss = nextRound === HIGH_ROLLER;
 
     return (
         <div className="flex flex-col gap-5">
@@ -98,8 +98,8 @@ const ShopView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActio
                 <div>
                     <p className="font-semibold">Next: Table {nextTable}, {ROUNDS[nextRound].name}</p>
                     <p>Target {roundTarget(nextTable, nextRound as 0 | 1 | 2).toLocaleString()} chips</p>
-                    {nextBlind && <p className="text-danger"><BlindLabel blindId={state.blind} prefix="Blind" /></p>}
-                    {nextIsNewTable && <p className="text-sm opacity-80">The new table's High Roller blind is revealed when you reach it.</p>}
+                    {nextBoss && <p className="text-danger"><BossLabel bossId={state.boss} prefix="Boss" /></p>}
+                    {nextIsNewTable && <p className="text-sm opacity-80">The new table's High Roller boss is revealed when you reach it.</p>}
                 </div>
                 <button className="gameButton text-xl" onClick={() => dispatch({ type: 'nextRound' })}>
                     Next round

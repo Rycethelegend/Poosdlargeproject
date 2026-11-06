@@ -1,9 +1,9 @@
 import type { Card } from './cards';
-import { BLIND_EFFECTS, type BlindRules } from './blindEffects';
-import { BLINDS, type BlindInfo } from './data/blinds';
+import { BOSS_EFFECTS, type BossRules } from './bossEffects';
+import { BOSSES, type BossInfo } from './data/bosses';
 
 // A run is a series of Tables. Each Table has three rounds; the third one uses
-// a Blind from data/blinds.ts. The run goes on until a round's target is missed.
+// a Boss from data/bosses.ts. The run goes on until a round's target is missed.
 
 export const ROUNDS = [
     { name: 'Warm-up',     targetScale: 1,   reward: 3 },
@@ -30,40 +30,40 @@ export function roundTarget(table: number, round: RoundIndex): number {
     return Math.round(tableBaseTarget(table) * ROUNDS[round].targetScale);
 }
 
-export const BLINDS_BY_ID: Record<string, BlindInfo> = Object.fromEntries(BLINDS.map(b => [b.id, b]));
+export const BOSSES_BY_ID: Record<string, BossInfo> = Object.fromEntries(BOSSES.map(b => [b.id, b]));
 
-// Only Blinds whose rules have been written get picked
-const PLAYABLE_BLIND_IDS = BLINDS.filter(b => BLIND_EFFECTS[b.id]).map(b => b.id);
+// Only Bosses whose rules have been written get picked
+const PLAYABLE_BOSS_IDS = BOSSES.filter(b => BOSS_EFFECTS[b.id]).map(b => b.id);
 
-const missing = BLINDS.filter(b => !BLIND_EFFECTS[b.id]).map(b => b.name);
+const missing = BOSSES.filter(b => !BOSS_EFFECTS[b.id]).map(b => b.name);
 if (missing.length && import.meta.env?.DEV) {
-    console.info(`Blinds without rules yet (never picked): ${missing.join(', ')}`);
+    console.info(`Bosses without rules yet (never picked): ${missing.join(', ')}`);
 }
 
-export function randomBlind(): string {
-    return PLAYABLE_BLIND_IDS[Math.floor(Math.random() * PLAYABLE_BLIND_IDS.length)];
+export function randomBoss(): string {
+    return PLAYABLE_BOSS_IDS[Math.floor(Math.random() * PLAYABLE_BOSS_IDS.length)];
 }
 
-// The rules of the Blind in play this round, or null outside the High Roller
-export function activeBlindRules(round: RoundIndex, blindId: string): BlindRules | null {
-    return round === HIGH_ROLLER ? BLIND_EFFECTS[blindId] ?? null : null;
+// The rules of the Boss in play this round, or null outside the High Roller
+export function activeBossRules(round: RoundIndex, bossId: string): BossRules | null {
+    return round === HIGH_ROLLER ? BOSS_EFFECTS[bossId] ?? null : null;
 }
 
 // Starting hands, discards and hand size for a round
-export function roundRules(round: RoundIndex, blindId: string) {
-    const blind = activeBlindRules(round, blindId);
+export function roundRules(round: RoundIndex, bossId: string) {
+    const boss = activeBossRules(round, bossId);
     return {
-        activeBlind: blind ? blindId : null,
-        hands: blind?.hands ?? 4,
-        discards: blind?.discards ?? 3,
-        handSize: 8 + (blind?.handSizeChange ?? 0),
-        maxSelect: blind?.maxSelect ?? 5,
+        activeBoss: boss ? bossId : null,
+        hands: boss?.hands ?? 4,
+        discards: boss?.discards ?? 3,
+        handSize: 8 + (boss?.handSizeChange ?? 0),
+        maxSelect: boss?.maxSelect ?? 5,
     };
 }
 
-// True when the Blind in play stops this card from scoring
-export function isBlocked(card: Card, round: RoundIndex, blindId: string): boolean {
-    return activeBlindRules(round, blindId)?.blocksCard?.(card) ?? false;
+// True when the Boss in play stops this card from scoring
+export function isBlocked(card: Card, round: RoundIndex, bossId: string): boolean {
+    return activeBossRules(round, bossId)?.blocksCard?.(card) ?? false;
 }
 
 // Money for winning a round

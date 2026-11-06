@@ -95,7 +95,7 @@ const Singleplayer = () => {
                     <li>
                         A <b>Table</b> is how far into the run you are. Each Table has three rounds: <b>Warm-up</b>,{' '}
                         <b>Main Event</b> and <b>High Roller</b>, each with a bigger target. The High Roller also has
-                        a <b>Blind</b> that changes the rules.
+                        a <b>Boss</b> that changes the rules.
                     </li>
                     <li>Beat the High Roller to move on to the next Table, where every target is higher.</li>
                     <li>Spend your winnings in the shop on <b>Jokers</b> and <b>Study Guides</b>.</li>
