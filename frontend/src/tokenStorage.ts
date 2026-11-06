@@ -1,11 +1,12 @@
 import { jwtDecode } from 'jwt-decode';
 
-export type UserToken = { iat: number, userId: number; firstName: string; lastName: string };
+export type UserToken = { userId: string; username: string; iat: number; exp: number };
 
-export function storeToken(tok: any): boolean 
-{
+const TOKEN_KEY = 'token_data';
+
+export function storeToken(accessToken: string): boolean {
     try {
-        localStorage.setItem('token_data', tok.accessToken);
+        localStorage.setItem(TOKEN_KEY, accessToken);
         return true;
     }
     catch (e) {
@@ -14,24 +15,20 @@ export function storeToken(tok: any): boolean
     }
 }
 
-export function retrieveToken(): any 
-{
-    let ud;
+export function retrieveToken(): string | null {
     try {
-        ud = localStorage.getItem('token_data');
+        return localStorage.getItem(TOKEN_KEY);
     }
     catch (e) {
         console.log(e);
+        return null;
     }
-    return ud;
 }
 
 // Used for logout
-export function clearToken(): boolean 
-{
+export function clearToken(): boolean {
     try {
-        localStorage.removeItem('token_data');
-        localStorage.removeItem('user_data');
+        localStorage.removeItem(TOKEN_KEY);
         return true;
     }
     catch (e) {
@@ -40,26 +37,23 @@ export function clearToken(): boolean
     }
 }
 
-// Verify token is valid and isnt expired.
-// Perhaps, it should be called each time the page is changed.
-
-// Tokens are fetched from localStorage. Users can spoof them easily.
-// For critical checks (like login), use the API functions.
-export function validToken(): boolean 
-{
+// The logged-in user's details, or null when not logged in or the token has expired.
+// Tokens live in localStorage, so users can edit them. This is only for deciding
+// what to show; the server checks the token again on every protected API call.
+export function getUser(): UserToken | null {
     const tok = retrieveToken();
+    if (!tok) return null;
 
-    if (!tok) return false;
-
-    try 
-    {
-        const { exp } = jwtDecode(tok);
-        
-        return exp !== undefined && exp * 1000 > Date.now();
+    try {
+        const user = jwtDecode<UserToken>(tok);
+        return user.exp * 1000 > Date.now() ? user : null;
     }
-    catch (e) 
-    {
+    catch (e) {
         console.log(e);
-        return false;
+        return null;
     }
+}
+
+export function validToken(): boolean {
+    return getUser() !== null;
 }
