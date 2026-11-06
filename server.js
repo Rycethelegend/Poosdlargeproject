@@ -4,7 +4,7 @@ const cors = require('cors');
 
 // Get mongo URL from .env
 require('dotenv').config();
-const url = process.env.MONGODB_URI;
+const url = process.env.DATABASE_LINK;
 
 // Create express server and policy
 const app = express();
