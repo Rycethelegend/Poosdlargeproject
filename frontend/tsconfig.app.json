@@ -23,5 +23,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "exclude": ["src/example-components"]
+  "exclude": ["src/example-components", "src/old-game-files"]
 }
