@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+// import type { ReactNode } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router';
 import './App.css'
 
@@ -15,7 +15,7 @@ import LoginPage from './auth/LoginPage.tsx';
 import RegisterPage from './auth/RegisterPage.tsx';
 import ForgotPasswordPage from './auth/ForgotPasswordPage.tsx';
 import ResetPasswordPage from './auth/ResetPasswordPage.tsx';
-import { validToken } from './tokenStorage.ts';
+// import { validToken } from './tokenStorage.ts';
 
 function RootLayout() {
     return (
@@ -27,15 +27,15 @@ function RootLayout() {
 }
 
 // Logged-out visitors land on the login page first
-function RequireLogin({ children }: { children: ReactNode }) 
+/*function RequireLogin({ children }: { children: ReactNode }) 
 {
     return validToken() ? children : <Navigate to="/login" replace />;
-}
+}*/
 
-// Logged-in users skip the login and register pages
+/* Logged-in users skip the login and register pages
 function GuestOnly({ children }: { children: ReactNode }) {
     return validToken() ? <Navigate to="/" replace /> : children;
-}
+}*/
 
 /*
 const routes = [
