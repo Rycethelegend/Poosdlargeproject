@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { HANDS } from './hands';
 import { HIGH_ROLLER, ROUNDS } from './rounds';
 import RoundView from './RoundView';
@@ -16,9 +16,15 @@ type Props = {
     saveStatus: SaveStatus;
     saveError: string;
     onRetrySave: () => void;
+    // Multiplayer extras: shown under the HUD, a reason the shop can't move on
+    // yet, and different wording for ending the run
+    banner?: ReactNode;
+    nextLocked?: string;
+    giveUpPrompt?: string;
+    giveUpLabel?: string;
 };
 
-const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, onRetrySave }: Props) => {
+const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, onRetrySave, banner, nextLocked, giveUpPrompt, giveUpLabel = 'End run' }: Props) => {
     const [confirmGiveUp, setConfirmGiveUp] = useState(false);
     const round = ROUNDS[state.round];
     const progress = Math.min(100, (state.roundScore / state.target) * 100);
@@ -36,6 +42,8 @@ const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, 
                 <Stat label="Money" chip="orange">${state.money}</Stat>
                 <Stat label="Run total" chip="black">{state.totalScore.toLocaleString()}</Stat>
             </div>
+
+            {banner}
 
             {state.phase === 'playing' && (
                 <>
@@ -72,7 +80,7 @@ const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, 
                 </div>
             )}
 
-            {state.phase === 'shop' && <ShopView state={state} dispatch={dispatch} />}
+            {state.phase === 'shop' && <ShopView state={state} dispatch={dispatch} nextLocked={nextLocked} />}
 
             {state.phase === 'gameOver' && (
                 <div className="bg-cream/85 rounded-2xl p-5 max-w-md w-full mx-auto flex flex-col gap-2 text-center animate-[popIn_0.35s_ease-out]">
@@ -112,13 +120,13 @@ const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, 
                 <div className="flex justify-end">
                     {confirmGiveUp ? (
                         <div className="flex items-center gap-2 bg-cream/85 rounded-2xl px-3 py-1">
-                            <span>End this run and save {state.totalScore.toLocaleString()} chips?</span>
-                            <button className="gameButton py-1" onClick={() => { setConfirmGiveUp(false); onGiveUp(); }}>End run</button>
+                            <span>{giveUpPrompt ?? `End this run and save ${state.totalScore.toLocaleString()} chips?`}</span>
+                            <button className="gameButton py-1" onClick={() => { setConfirmGiveUp(false); onGiveUp(); }}>{giveUpLabel}</button>
                             <button className="underline" onClick={() => setConfirmGiveUp(false)}>Keep playing</button>
                         </div>
                     ) : (
                         <button className="text-sm underline underline-offset-4" onClick={() => setConfirmGiveUp(true)}>
-                            End run
+                            {giveUpLabel}
                         </button>
                     )}
                 </div>

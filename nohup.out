@@ -1,0 +1,4 @@
+◇ injected env (7) from .env
+◇ injected env (0) from .env
+MongoDB connected successfully via Mongoose
+API listening on port 5000
