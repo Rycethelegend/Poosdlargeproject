@@ -14,11 +14,6 @@ const percentOffsetX: number = 12.5;
 const percentOffsetY: number = 12.5;
 
 
-// True - Render game windows in a screen overlay (better for mobile)
-// False - Render games directly on the table (looks cooler on desktop)
-const overlayMode: boolean = false;
-
-
 const Home = () => {
 
     const navigate = useNavigate();
@@ -30,8 +25,13 @@ const Home = () => {
     const [titleVisible, setTitleVisible] = useState<boolean>(true);
     const [theme, setThemeState] = useState<Theme>(getTheme());
 
+    // True - Render game windows in a screen overlay (better for mobile)
+    // False - Render games directly on the table (looks cooler on desktop)
+    const [overlayMode, setOverlayMode] = useState<boolean>(true);
+
     // GAMEPLAY WINDOWS
     const [openWindow, setOpenWindow] = useState<number>(0);
+
 
     function topLeft() {
         setTitleVisible(false);
@@ -79,6 +79,9 @@ const Home = () => {
         setTheme(next);
         setThemeState(next);
     }
+    function toggleOverlayMode() {
+        setOverlayMode(!overlayMode);
+    }
 
     function logout() {
         clearToken();
@@ -91,10 +94,10 @@ const Home = () => {
 
             <div className="absolute left-0 top-8 bottom-8 w-80 flex items-center">
 
-                <div className={`relative flex w-full h-[50%] min-h-64 rounded-r-2xl transition-transform duration-300 z-10 overflow-hidden ${settingsWindow ? '-translate-x-72' : ''}`}>
+                <div className={`relative flex w-full h-[30%] min-h-64 rounded-r-2xl transition-transform duration-300 z-10 overflow-hidden ${settingsWindow ? '-translate-x-74' : ''}`}>
 
                     <div className="bg-wood w-full flex flex-col p-4 gap-4">
-                        <p className="text-2xl font-semibold px-2">Settings</p>
+                        <p className="hidden text-2xl font-semibold px-2">Settings</p>
 
                         <button
                             role="switch"
@@ -108,6 +111,17 @@ const Home = () => {
                         </button>
 
                         <button
+                            role="switch"
+                            aria-checked={overlayMode}
+                            className="w-full flex items-center justify-between px-3 bg-wood-light rounded-2xl py-2 text-2xl hover:bg-black/10"
+                            onClick={toggleOverlayMode}>
+                            <span>Overlay mode</span>
+                            <span className={`relative w-12 h-7 rounded-full transition-colors ${overlayMode ? 'bg-felt-edge' : 'bg-cream'}`}>
+                                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-ink transition-transform ${overlayMode ? 'translate-x-5' : ''}`} />
+                            </span>
+                        </button>
+
+                        <button
                             className="w-full text-left px-3 bg-wood-light rounded-2xl py-2 text-2xl hover:bg-black/10 mt-auto"
                             onClick={logout}>
                             Log out
@@ -115,10 +129,10 @@ const Home = () => {
                     </div>
 
                     <button
-                        className="relative h-full w-8 bg-wood-light z-20"
+                        className="relative h-full w-6 bg-wood-light z-20"
                         aria-label={settingsWindow ? 'Open settings' : 'Close settings'}
                         onClick={toggleSettingsWindow}>
-                        <p className="text-2xl -rotate-90">
+                        <p className="text-xl -rotate-90">
                             Settings
                         </p>
                     </button>
@@ -197,21 +211,21 @@ const Home = () => {
 
                             {openWindow === 1 && (
                                 <div className="absolute top-0 left-0 origin-top-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="m-auto w-full max-w-5xl p-4">
+                                    <div className="w-full max-w-5xl p-8">
                                         <Singleplayer />
                                     </div>
                                 </div>
                             )}
                             {openWindow === 2 && (
                                 <div className="absolute top-0 right-0 origin-top-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="m-auto w-full max-w-5xl">
+                                    <div className="w-full max-w-5xl p-8">
                                         <Multiplayer />
                                     </div>
                                 </div>
                             )}
                             {openWindow === 3 && (
                                 <div className="absolute bottom-0 left-0 origin-bottom-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="m-auto w-full max-w-5xl">
+                                    <div className="w-full max-w-5xl pt-24 p-8">
                                         <Profile />
                                     </div>
                                 </div>
@@ -219,7 +233,7 @@ const Home = () => {
                             )}
                             {openWindow === 4 && (
                                 <div className="absolute bottom-0 right-0 origin-bottom-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="m-auto w-full max-w-5xl">
+                                    <div className="w-full max-w-5xl pt-24 p-8">
                                         <Leaderboard />
                                     </div>
                                 </div>
@@ -232,16 +246,30 @@ const Home = () => {
 
             </div>
 
-            {overlayMode && (
+            {(overlayMode && openWindow !== 0) && (
 
-                <div
-                    className="absolute inset-0 z-5 overflow-y-auto animate-[fadeIn_0.4s_ease-out_0.8s_both]">
-                    <div className="mx-auto max-w-5xl">
-                        {openWindow === 1 && <Singleplayer />}
-                        {openWindow === 2 && <Multiplayer />}
-                        {openWindow === 3 && <Profile />}
-                        {openWindow === 4 && <Leaderboard />}
-                    </div>
+                <div className="absolute inset-0 z-5 overflow-y-auto animate-[fadeIn_0.4s_ease-out_0.8s_both] flex justify-center">
+
+                    {openWindow === 1 && (
+                        <div className="pt-24 pl-24 pr-8 w-full max-w-5xl">
+                            <Singleplayer />
+                        </div>
+                    )}
+                    {openWindow === 2 && (
+                        <div className="pt-24 pl-8 pr-24 w-full max-w-5xl">
+                            <Multiplayer />
+                        </div>
+                    )}
+                    {openWindow === 3 && (
+                        <div className="pt-20 pb-24 pl-24 pr-8 w-full max-w-5xl">
+                            <Profile />
+                        </div>
+                    )}
+                    {openWindow === 4 && (
+                        <div className="pt-20 pb-24 pl-8 pr-24 w-full max-w-5xl">
+                            <Leaderboard />
+                        </div>
+                    )}
                 </div>
             )}
         </div>
