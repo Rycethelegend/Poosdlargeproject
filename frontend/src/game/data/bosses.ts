@@ -1,22 +1,10 @@
-// ============================================================================
-// BOSS LIST
-//
-// Each Table's third round (the High Roller) uses one of these Bosses, picked
-// at random. To add one, copy the template below into the list and fill it in:
-//
+// Example boss:
 //   {
-//       id: 'myBoss',                               // unique, no spaces
-//       name: 'My Boss',                            // shown in the game
+//       id: 'myBoss',                               // can't be the same as other ids
+//       name: 'My Boss',                            // what is shown in game
 //       description: 'Spades score no chips',        // what it does
-//       image: '/sprites/bosses/my-boss.png',       // optional; file in frontend/public/sprites/bosses/
+//       image: '/sprites/bosses/my-boss.png',       // image file which is optional
 //   },
-//
-// Leave image out (or use PLACEHOLDER_IMAGE) when there's no art yet.
-//
-// A new Boss is only picked once its rules are written in ../bossEffects.ts
-// under the same id. Until then it's listed but skipped, and the browser
-// console says which Bosses are still missing rules.
-// ============================================================================
 
 export const PLACEHOLDER_IMAGE = '/sprites/bosses/placeholder.png';
 
