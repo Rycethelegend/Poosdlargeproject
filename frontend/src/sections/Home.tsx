@@ -211,21 +211,21 @@ const Home = () => {
 
                             {openWindow === 1 && (
                                 <div className="absolute top-0 left-0 origin-top-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="w-full max-w-5xl p-8">
+                                    <div className="mx-auto w-full max-w-5xl p-8">
                                         <Singleplayer />
                                     </div>
                                 </div>
                             )}
                             {openWindow === 2 && (
                                 <div className="absolute top-0 right-0 origin-top-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="w-full max-w-5xl p-8">
+                                    <div className="mx-auto w-full max-w-5xl p-8">
                                         <Multiplayer />
                                     </div>
                                 </div>
                             )}
                             {openWindow === 3 && (
                                 <div className="absolute bottom-0 left-0 origin-bottom-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="w-full max-w-5xl pt-24 p-8">
+                                    <div className="mx-auto w-full max-w-5xl pt-24 p-8">
                                         <Profile />
                                     </div>
                                 </div>
@@ -233,7 +233,7 @@ const Home = () => {
                             )}
                             {openWindow === 4 && (
                                 <div className="absolute bottom-0 right-0 origin-bottom-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
-                                    <div className="w-full max-w-5xl pt-24 p-8">
+                                    <div className="mx-auto w-full max-w-5xl pt-24 p-8">
                                         <Leaderboard />
                                     </div>
                                 </div>
