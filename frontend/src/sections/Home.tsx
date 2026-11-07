@@ -128,9 +128,9 @@ const Home = () => {
 
             ) : (
 
-                <div className="absolute top-8 left-10 z-10">
+                <div className="absolute top-4 left-4 z-10">
                     <button
-                        className="bg-cream/90 hover:bg-cream text-2xl px-4 py-2 rounded-2xl shadow-md"
+                        className="bg-cream/90 hover:bg-cream lg:text-2xl px-4 py-2 rounded-2xl shadow-md"
                         onClick={zoomOut}>
 
                         Go back
@@ -144,11 +144,11 @@ const Home = () => {
 
                 <div className="relative w-[50%] h-[50%] bg-felt rounded-4xl border-16 border-felt-edge">
 
-                    <div className="absolute pointer-events-none w-full rounded-2xl h-full bg-black/5 mask-size-[40px] mask-[url(/patterns/parkay-floor.svg)]">
+                    <div className="absolute pointer-events-none w-full rounded-2xl h-full bg-black/3 mask-size-[40px] mask-[url(/patterns/parkay-floor.svg)]">
 
                     </div>
                     {titleVisible ? (
-                        <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full p-4">
+                        <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full">
                             <div className="w-full h-full">
                                 <button
                                     className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-tl-4xl"
@@ -184,19 +184,32 @@ const Home = () => {
 
                         // The zoomed-in quarter is the backdrop; the section itself is drawn
                         // full size in the layer below so it isn't scaled up 4×.
-                        <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full">
-                            <div className="bg-red-500/20">
+                        <div className="relative w-full h-full animate-[fadeIn_0.4s_ease-out_0.8s_both]">
 
+                            <div className="absolute pl-4 pt-4 top-0 left-0 origin-top-left w-[200%] h-[200%] scale-25 overflow-y-auto flex">
+                                <div className="m-auto w-full max-w-5xl">
+                                    <Singleplayer />
+                                </div>
                             </div>
-                            <div className='bg-blue-500/20'>
 
+                            <div className="absolute top-0 right-0 origin-top-right w-[200%] h-[200%] scale-25 overflow-y-auto flex">
+                                <div className="m-auto w-full max-w-5xl">
+                                    <Multiplayer />
+                                </div>
                             </div>
-                            <div className='bg-green-500/20'>
 
+                            <div className="absolute bottom-0 left-0 origin-bottom-left w-[200%] h-[200%] scale-25 overflow-y-auto flex">
+                                <div className="m-auto w-full max-w-5xl">
+                                    <Profile />
+                                </div>
                             </div>
-                            <div className='bg-yellow-500/20'>
 
+                            <div className="absolute bottom-0 right-0 origin-bottom-right w-[200%] h-[200%] scale-25 overflow-y-auto flex">
+                                <div className="m-auto w-full max-w-5xl">
+                                    <Leaderboard />
+                                </div>
                             </div>
+
                         </div>
                     )}
 
@@ -204,9 +217,15 @@ const Home = () => {
 
             </div>
 
-            {openWindow !== 0 && (
+            <div>
+
+            </div>
+
+            {false && (
+
+
                 <div
-                    className={`absolute inset-0 z-5 overflow-y-auto transition-opacity duration-500 ${openWindow !== 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'} `}>
+                    className="absolute inset-0 z-5 overflow-y-auto animate-[fadeIn_0.4s_ease-out_0.8s_both]">
                     <div className="mx-auto max-w-5xl">
                         {openWindow === 1 && <Singleplayer />}
                         {openWindow === 2 && <Multiplayer />}
@@ -214,6 +233,7 @@ const Home = () => {
                         {openWindow === 4 && <Leaderboard />}
                     </div>
                 </div>
+
             )}
 
         </div>

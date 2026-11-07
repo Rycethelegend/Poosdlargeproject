@@ -37,6 +37,7 @@ function GuestOnly({ children }: { children: ReactNode }) {
     return validToken() ? <Navigate to="/" replace /> : children;
 }
 
+/*
 const routes = [
     {
         index: true,
@@ -46,6 +47,18 @@ const routes = [
     { path: 'register', element: <GuestOnly><RegisterPage /></GuestOnly> },
     { path: 'forgot-password', element: <GuestOnly><ForgotPasswordPage /></GuestOnly> },
     { path: 'reset-password', element: <GuestOnly><ResetPasswordPage /></GuestOnly> },
+    { path: '*', element: <Navigate to="/" replace /> },
+];*/
+
+const routes = [
+    {
+        index: true,
+        element: <Home />,
+    },
+    { path: 'login', element: <LoginPage />},
+    { path: 'register', element: <RegisterPage /> },
+    { path: 'forgot-password', element: <ForgotPasswordPage />},
+    { path: 'reset-password', element: <ResetPasswordPage /> },
     { path: '*', element: <Navigate to="/" replace /> },
 ];
 
