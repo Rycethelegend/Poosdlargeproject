@@ -22,6 +22,11 @@
 // ============================================================================
 
 export const PLACEHOLDER_IMAGE = '/sprites/jokers/placeholder.png';
+export const duck = '/sprites/jokers/duck.png';
+export const redteam = '/sprites/jokers/redteam.png';
+export const blueteam = '/sprites/jokers/blueteam.png';
+export const elephant = '/sprites/jokers/elephant.png';
+export const moneybags = '/sprites/jokers/moneybags.png';
 
 export interface JokerInfo {
     id: string;
