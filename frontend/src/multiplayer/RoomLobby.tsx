@@ -3,8 +3,10 @@ import { leaveRoom, startRoom, type Room, type RoomPlayer } from '../multiplayer
 import { HowItWorks } from './MatchPanels';
 import type { SendRoomRequest } from './useRoom';
 
+
 // The waiting room before the host starts the tournament
 const RoomLobby = ({ room, me, send, onExit }: { room: Room; me: RoomPlayer; send: SendRoomRequest; onExit: () => void }) => {
+
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
@@ -13,9 +15,12 @@ const RoomLobby = ({ room, me, send, onExit }: { room: Room; me: RoomPlayer; sen
     const host = room.players.find(p => p.userId === room.hostId);
     const enoughPlayers = room.players.length >= room.settings.minPlayers;
 
+
     async function act(action: () => Promise<unknown>) {
+
         setBusy(true);
         setError('');
+
         try {
             await action();
         }
@@ -28,6 +33,7 @@ const RoomLobby = ({ room, me, send, onExit }: { room: Room; me: RoomPlayer; sen
     }
 
     function copyCode() {
+
         navigator.clipboard?.writeText(room.code)
             .then(() => {
                 setCopied(true);
@@ -37,12 +43,15 @@ const RoomLobby = ({ room, me, send, onExit }: { room: Room; me: RoomPlayer; sen
     }
 
     return (
+
         <div className="feltPanel p-4 sm:p-6 flex flex-col gap-4">
             <div className="flex flex-wrap items-end justify-between gap-4">
+
                 <div>
                     <p className="text-3xl sm:text-4xl font-semibold">{host ? `${host.username}'s room` : 'Room'}</p>
                     <p className="text-lg">{room.isPrivate ? 'Private: share the code to invite people.' : 'Open: anyone can join from the rooms list.'}</p>
                 </div>
+
                 <button
                     className="bg-cream/85 hover:bg-cream rounded-2xl px-4 w-full max-w-40 py-2 text-center"
                     onClick={copyCode}
@@ -56,11 +65,13 @@ const RoomLobby = ({ room, me, send, onExit }: { room: Room; me: RoomPlayer; sen
 
                     </div>
                 </button>
+
             </div>
 
             {error && <p role="alert" className="formError">{error}</p>}
 
             <div className="bg-cream/85 rounded-2xl overflow-hidden">
+
                 <p className="px-4 py-2 font-semibold text-lg border-b-2 border-felt-edge/40">
                     Players {room.players.length}/{room.settings.maxPlayers}
                 </p>
@@ -73,6 +84,7 @@ const RoomLobby = ({ room, me, send, onExit }: { room: Room; me: RoomPlayer; sen
                         </li>
                     ))}
                 </ul>
+
             </div>
 
             <details className="bg-cream/85 rounded-2xl p-4" open>
@@ -81,6 +93,7 @@ const RoomLobby = ({ room, me, send, onExit }: { room: Room; me: RoomPlayer; sen
             </details>
 
             <div className="flex flex-wrap items-center justify-between gap-3">
+
                 <button className="underline underline-offset-4" disabled={busy} onClick={() => act(async () => { await leaveRoom(room.id); onExit(); })}>
                     Leave room
                 </button>

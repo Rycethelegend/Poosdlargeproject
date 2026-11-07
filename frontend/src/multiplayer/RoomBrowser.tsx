@@ -1,11 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { createRoom, fetchRoom, joinRoom, listRooms, type OpenRoom, type RoomResponse } from '../multiplayerApi';
 
+
 const REFRESH_MS = 3000;
 
 // Create a room, join one by code, or pick an open one. If this user is already
 // in a room (say, after a reload), it goes straight back to it.
 const RoomBrowser = ({ onEnter }: { onEnter: (res: RoomResponse) => void }) => {
+
     const [rooms, setRooms] = useState<OpenRoom[] | null>(null);
     const [code, setCode] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
@@ -13,10 +15,12 @@ const RoomBrowser = ({ onEnter }: { onEnter: (res: RoomResponse) => void }) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+
         let cancelled = false;
         let timer: ReturnType<typeof setTimeout> | undefined;
 
         async function load(first: boolean) {
+
             try {
                 const { rooms, currentRoom } = await listRooms();
                 if (cancelled) return;
@@ -28,38 +32,50 @@ const RoomBrowser = ({ onEnter }: { onEnter: (res: RoomResponse) => void }) => {
                 setRooms(rooms);
             }
             catch (err) {
+
                 if (!cancelled) setError((err as Error).message);
             }
             if (!cancelled) timer = setTimeout(() => load(false), REFRESH_MS);
         }
 
         load(true);
+
         return () => {
+
             cancelled = true;
             clearTimeout(timer);
         };
+
     }, [onEnter]);
 
+
     async function enter(request: () => Promise<RoomResponse>) {
+
         setBusy(true);
         setError('');
+
         try {
             const res = await request();
             if (res.room) onEnter(res);
         }
         catch (err) {
+
             setError((err as Error).message);
             setBusy(false);
         }
     }
 
+
     function submitCode(e: FormEvent) {
+
         e.preventDefault();
         if (code.trim()) enter(() => joinRoom(code));
     }
 
     return (
+
         <div className="feltPanel p-4 sm:p-6 flex flex-col gap-4">
+
             <div>
                 <p className="text-3xl sm:text-4xl font-semibold">Multiplayer</p>
                 <p className="text-lg">A score tournament: everyone plays the same tables at once, and the lowest scores drop out until one player is left.</p>

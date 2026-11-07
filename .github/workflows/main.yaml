@@ -6,10 +6,10 @@ name: CI/CD Pipeline
 on:
     push:
         branches:
-            - nate-frontend
+            - multiplayer
     pull_request:
         branches:
-            - nate-frontend
+            - multiplayer
     workflow_dispatch:
 
 jobs:

@@ -2,30 +2,38 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import GameView from '../game/GameView';
 import { HIGH_ROLLER } from '../game/rounds';
 import { newRun, parseSavedRun, runReducer, type RunAction, type RunState } from '../game/run';
+
 import { fetchRoom, leaveRoom, reportRun, type ReportEvent, type Room, type RoomPlayer } from '../multiplayerApi';
 import { clock, timeOf } from './matchFormat';
 import { FinalStandings, MatchHeader, OutPanel, Scoreboard, TableBanner, TableResults, WaitPanel } from './MatchPanels';
 import type { SendRoomRequest } from './useRoom';
 
+
 // Each player's run is the normal singleplayer game (runReducer), played in this
 // browser. This component starts it when Table 1 begins, moves it on to the next
 // Table when the server starts one, and reports every hand to the server.
 
+
 type Props = {
+
     room: Room;
     me: RoomPlayer;
     now: number;
     serverTime: () => number;
     send: SendRoomRequest;
     onExit: () => void;
+
 };
 
 // Kept on this device so a reload doesn't lose the run
 function storageKey(roomId: string, userId: string): string {
+
     return `poosdalatro-mp-run-${roomId}-${userId}`;
 }
 
+
 function loadRun(key: string): RunState | null {
+
     try {
         return parseSavedRun(localStorage.getItem(key));
     }
@@ -34,33 +42,41 @@ function loadRun(key: string): RunState | null {
     }
 }
 
+
 // Where the run should be, given the room: a new run when Table 1 starts, or on
 // to the next Table once the server has started it. Otherwise unchanged.
 function syncRun(run: RunState | null, room: Room, me: RoomPlayer, now: number): RunState | null {
+
     if (room.status !== 'table' || now < timeOf(room.startsAt)) return run;
+
     if (me.status !== 'alive' || me.tableStatus !== 'playing') return run;
 
     if (!run) return room.table === 1 ? newRun() : null;
 
-    const clearedLastTable = run.table === room.table - 1 && run.round === HIGH_ROLLER
-        && (run.phase === 'roundWon' || run.phase === 'shop');
+    const clearedLastTable = run.table === room.table - 1 && run.round === HIGH_ROLLER && (run.phase === 'roundWon' || run.phase === 'shop');
+
     if (clearedLastTable) {
+
         const inShop = run.phase === 'roundWon' ? runReducer(run, { type: 'collectReward' }) : run;
         return runReducer(inShop, { type: 'nextRound' });
     }
     return run;
 }
 
+
 function eventFor(run: RunState): ReportEvent {
+
     if (run.phase === 'gameOver') return 'busted';
     if (run.round === HIGH_ROLLER && (run.phase === 'roundWon' || run.phase === 'shop')) return 'finished';
     return 'progress';
 }
 
+
 // GameView's run-over screen isn't used in multiplayer (the panels below are)
 const NO_SAVE = { onNewRun: () => {}, saveStatus: 'idle', saveError: '', onRetrySave: () => {} } as const;
 
 const MatchView = ({ room, me, now, serverTime, send, onExit }: Props) => {
+
     const key = storageKey(room.id, me.userId);
     const [run, setRun] = useState<RunState | null>(() => loadRun(key));
     const [retryReport, setRetryReport] = useState(0);
@@ -70,22 +86,29 @@ const MatchView = ({ room, me, now, serverTime, send, onExit }: Props) => {
     const timeUp = room.status === 'table' && now >= timeOf(room.deadline);
     const frozen = me.status !== 'alive' || me.tableStatus === 'busted' || (me.tableStatus === 'playing' && timeUp);
 
+
     // The interval and dispatch below read the latest props from here
     const latest = useRef({ room, me, frozen });
     useEffect(() => {
+
         latest.current = { room, me, frozen };
     });
 
+
     // Start or move on the run when a Table begins (checked a few times a second)
     useEffect(() => {
+
         const id = setInterval(() => {
             const { room, me } = latest.current;
             setRun(current => syncRun(current, room, me, serverTime()));
         }, 250);
         return () => clearInterval(id);
+
     }, [serverTime]);
 
+
     useEffect(() => {
+
         try {
             if (run && me.status === 'alive') localStorage.setItem(key, JSON.stringify(run));
             else if (me.status !== 'alive') localStorage.removeItem(key);
@@ -93,36 +116,46 @@ const MatchView = ({ room, me, now, serverTime, send, onExit }: Props) => {
         catch {
             // Storage full or blocked: the run still works, it just won't survive a reload
         }
+
     }, [run, key, me.status]);
+
 
     // Tell the server about every hand, the finish, or a bust. A failed report is
     // sent again a second later.
     useEffect(() => {
+
         if (!run || room.status !== 'table' || run.table !== room.table) return;
         if (me.status !== 'alive' || me.tableStatus !== 'playing') return;
 
         const report = { table: run.table, round: run.round, totalScore: run.totalScore, event: eventFor(run) };
         const id = JSON.stringify(report);
+
         if (id === lastReport.current) return;
+
         lastReport.current = id;
+
         if (report.event === 'progress' && report.totalScore === me.chips && report.round === me.round) return;
 
         send(() => reportRun(room.id, report)).catch(() => {
             lastReport.current = '';
             setTimeout(() => setRetryReport(n => n + 1), 1000);
         });
+
     }, [run, room.id, room.status, room.table, me.status, me.tableStatus, me.chips, me.round, send, retryReport]);
 
     const dispatch = useCallback((action: RunAction) => {
+
         setRun((current) => {
             if (!current || latest.current.frozen) return current;
             // The server starts the next Table for everyone at once
             if (action.type === 'nextRound' && current.round === HIGH_ROLLER) return current;
             return runReducer(current, action);
         });
+
     }, []);
 
     async function forfeit() {
+
         setError('');
         try {
             await leaveRoom(room.id);
@@ -137,6 +170,7 @@ const MatchView = ({ room, me, now, serverTime, send, onExit }: Props) => {
     const tableStart = me.chips - me.tableChips;  // the run's total when this Table began
 
     const forfeitProps = {
+
         onGiveUp: forfeit,
         giveUpLabel: 'Forfeit',
         giveUpPrompt: 'Leave the tournament? Your score so far still goes on the leaderboard.',
@@ -163,6 +197,7 @@ const MatchView = ({ room, me, now, serverTime, send, onExit }: Props) => {
         );
     }
     else if (room.status === 'results') {
+
         const startsIn = clock(timeOf(room.nextTableAt) - now);
         panels = lastResult && (
             <TableResults

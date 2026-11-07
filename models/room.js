@@ -109,5 +109,4 @@ RoomSchema.index({ 'players.userId': 1, status: 1 });
 RoomSchema.index({ status: 1, deadline: 1 });
 RoomSchema.index({ status: 1, nextTableAt: 1 });
 
-
 module.exports = mongoose.models.Room || mongoose.model('Room', RoomSchema);
