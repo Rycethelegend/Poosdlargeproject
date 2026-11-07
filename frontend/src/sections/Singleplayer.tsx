@@ -3,7 +3,6 @@ import GameView, { type SaveStatus } from "../game/GameView";
 import { newRun, parseSavedRun, runReducer, type RunAction, type RunState } from "../game/run";
 import { ROUNDS } from "../game/rounds";
 import { CardFace, ChipStack } from "../game/sprites";
-import { GAME_TITLE } from "../gameInfo";
 import { saveScore } from "../scoresApi";
 import { getUser } from "../tokenStorage";
 
@@ -88,7 +87,7 @@ const Singleplayer = () => {
                     <ChipStack color="blue" height={3} className="w-10" />
                     <ChipStack color="red" height={2} className="w-10" />
                 </div>
-                <p className="text-4xl font-semibold">{GAME_TITLE}</p>
+                <p className="text-4xl font-semibold">Poosdbalatro</p>
                 <ul className="text-lg text-left max-w-lg space-y-1 bg-cream/85 rounded-2xl p-4">
                     <li>Play poker hands from your 8 cards. Each hand scores <b>chips × mult</b>.</li>
                     <li>Reach the round's target within 4 hands. You can discard up to 3 times to redraw.</li>

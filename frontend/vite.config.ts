@@ -7,3 +7,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
 })
+
+// OLD CODE - UPDATED TO ALLOW API CALLS ON LOCALHOST
+// REPLACE IN PROD

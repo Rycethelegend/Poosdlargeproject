@@ -5,22 +5,11 @@ import Singleplayer from './Singleplayer.tsx';
 import Multiplayer from "./Multiplayer.tsx";
 import Profile from "./Profile.tsx";
 import Leaderboard from "./Leaderboard.tsx";
-import { GAME_TITLE } from "../gameInfo.ts";
 import { clearToken } from "../tokenStorage.ts";
 import { getTheme, setTheme, type Theme } from "../theme.ts";
 
 const percentOffsetX = 12;
 const percentOffsetY = 12;
-
-// The table quarter each section zooms into: [offsetX, offsetY, tint]
-const SECTIONS = {
-    1: { x: percentOffsetX, y: percentOffsetY, tint: 'bg-red-500/20' },
-    2: { x: -percentOffsetX, y: percentOffsetY, tint: 'bg-blue-500/20' },
-    3: { x: percentOffsetX, y: -percentOffsetY, tint: 'bg-green-500/20' },
-    4: { x: -percentOffsetX, y: -percentOffsetY, tint: 'bg-yellow-500/20' },
-} as const;
-
-type SectionId = keyof typeof SECTIONS;
 
 const Home = () => {
 
@@ -34,14 +23,35 @@ const Home = () => {
     const [theme, setThemeState] = useState<Theme>(getTheme());
 
     // GAMEPLAY WINDOWS
-    const [openWindow, setOpenWindow] = useState<0 | SectionId>(0);
+    const [openWindow, setOpenWindow] = useState<number>(0);
 
-    function openSection(id: SectionId) {
+    function topLeft() {
         setTitleVisible(false);
-        setOffsetX(SECTIONS[id].x);
-        setOffsetY(SECTIONS[id].y);
+        setOffsetX(percentOffsetX);
+        setOffsetY(percentOffsetY);
         setScale(4);
-        setOpenWindow(id);
+        setOpenWindow(1);
+    }
+    function topRight() {
+        setTitleVisible(false);
+        setOffsetX(-percentOffsetX);
+        setOffsetY(percentOffsetY);
+        setScale(4);
+        setOpenWindow(2);
+    }
+    function bottomLeft() {
+        setTitleVisible(false);
+        setOffsetX(percentOffsetX);
+        setOffsetY(-percentOffsetY);
+        setScale(4);
+        setOpenWindow(3);
+    }
+    function bottomRight() {
+        setTitleVisible(false);
+        setOffsetX(-percentOffsetX);
+        setOffsetY(-percentOffsetY);
+        setScale(4);
+        setOpenWindow(4);
     }
 
     function zoomOut() {
@@ -112,7 +122,7 @@ const Home = () => {
             {titleVisible ? (
                 <div className="relative w-full h-full p-16">
                     <p className="title text-center font-playfair">
-                        {GAME_TITLE}
+                        Poosdalatro
                     </p>
                 </div>
 
@@ -142,28 +152,28 @@ const Home = () => {
                             <div className="w-full h-full">
                                 <button
                                     className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-tl-4xl"
-                                    onClick={() => openSection(1)}>
+                                    onClick={topLeft}>
                                     SINGLEPLAYER
                                 </button>
                             </div>
                             <div className="w-full h-full">
                                 <button
                                     className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-tr-4xl"
-                                    onClick={() => openSection(2)}>
+                                    onClick={topRight}>
                                     MULTIPLAYER
                                 </button>
                             </div>
                             <div className="w-full h-full">
                                 <button
                                     className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-bl-4xl"
-                                    onClick={() => openSection(3)}>
+                                    onClick={bottomLeft}>
                                     PROFILE
                                 </button>
                             </div>
                             <div className="w-full h-full">
                                 <button
                                     className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-br-4xl"
-                                    onClick={() => openSection(4)}>
+                                    onClick={bottomRight}>
                                     LEADERBOARD
                                 </button>
                             </div>
@@ -175,10 +185,18 @@ const Home = () => {
                         // The zoomed-in quarter is the backdrop; the section itself is drawn
                         // full size in the layer below so it isn't scaled up 4×.
                         <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full">
-                            <div className={SECTIONS[1].tint} />
-                            <div className={SECTIONS[2].tint} />
-                            <div className={SECTIONS[3].tint} />
-                            <div className={SECTIONS[4].tint} />
+                            <div className="bg-red-500/20">
+
+                            </div>
+                            <div className='bg-blue-500/20'>
+
+                            </div>
+                            <div className='bg-green-500/20'>
+
+                            </div>
+                            <div className='bg-yellow-500/20'>
+
+                            </div>
                         </div>
                     )}
 
@@ -188,8 +206,7 @@ const Home = () => {
 
             {openWindow !== 0 && (
                 <div
-                    key={openWindow}
-                    className="absolute inset-0 z-[5] overflow-y-auto pt-24 pb-6 pl-12 pr-3 sm:pl-16 sm:pr-8 animate-[fadeIn_0.4s_ease-out_0.8s_both]">
+                    className={`absolute inset-0 z-5 overflow-y-auto transition-opacity duration-500 ${openWindow !== 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'} `}>
                     <div className="mx-auto max-w-5xl">
                         {openWindow === 1 && <Singleplayer />}
                         {openWindow === 2 && <Multiplayer />}
