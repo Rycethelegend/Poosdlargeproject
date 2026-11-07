@@ -27,7 +27,7 @@ const Home = () => {
 
     // True - Render game windows in a screen overlay (better for mobile)
     // False - Render games directly on the table (looks cooler on desktop)
-    const [overlayMode, setOverlayMode] = useState<boolean>(true);
+    const [overlayMode, setOverlayMode] = useState<boolean>(false);
 
     // GAMEPLAY WINDOWS
     const [openWindow, setOpenWindow] = useState<number>(0);
