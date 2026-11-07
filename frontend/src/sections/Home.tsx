@@ -8,8 +8,16 @@ import Leaderboard from "./Leaderboard.tsx";
 import { clearToken } from "../tokenStorage.ts";
 import { getTheme, setTheme, type Theme } from "../theme.ts";
 
-const percentOffsetX = 12;
-const percentOffsetY = 12;
+
+// IT WAS MISSING 12.5 THE ENTIRE TIMEEEEE
+const percentOffsetX: number = 12.5;
+const percentOffsetY: number = 12.5;
+
+
+// True - Render game windows in a screen overlay (better for mobile)
+// False - Render games directly on the table (looks cooler on desktop)
+const overlayMode: boolean = false;
+
 
 const Home = () => {
 
@@ -144,10 +152,10 @@ const Home = () => {
 
                 <div className="relative w-[50%] h-[50%] bg-felt rounded-4xl border-16 border-felt-edge">
 
-                    <div className="absolute pointer-events-none w-full rounded-2xl h-full bg-black/3 mask-size-[40px] mask-[url(/patterns/parkay-floor.svg)]">
+                    <div className="absolute pointer-events-none w-full rounded-2xl h-full bg-black/5 mask-size-[40px] mask-[url(/patterns/parkay-floor.svg)]">
 
                     </div>
-                    {titleVisible ? (
+                    {titleVisible && (
                         <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full">
                             <div className="w-full h-full">
                                 <button
@@ -179,36 +187,43 @@ const Home = () => {
                             </div>
 
                         </div>
+                    )}
 
-                    ) : (
+                    {!overlayMode && (
 
                         // The zoomed-in quarter is the backdrop; the section itself is drawn
                         // full size in the layer below so it isn't scaled up 4×.
-                        <div className="relative w-full h-full animate-[fadeIn_0.4s_ease-out_0.8s_both]">
+                        <div className="relative w-full h-full">
 
-                            <div className="absolute pl-4 pt-4 top-0 left-0 origin-top-left w-[200%] h-[200%] scale-25 overflow-y-auto flex">
-                                <div className="m-auto w-full max-w-5xl">
-                                    <Singleplayer />
+                            {openWindow === 1 && (
+                                <div className="absolute top-0 left-0 origin-top-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
+                                    <div className="m-auto w-full max-w-5xl p-4">
+                                        <Singleplayer />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                            {openWindow === 2 && (
+                                <div className="absolute top-0 right-0 origin-top-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
+                                    <div className="m-auto w-full max-w-5xl">
+                                        <Multiplayer />
+                                    </div>
+                                </div>
+                            )}
+                            {openWindow === 3 && (
+                                <div className="absolute bottom-0 left-0 origin-bottom-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
+                                    <div className="m-auto w-full max-w-5xl">
+                                        <Profile />
+                                    </div>
+                                </div>
 
-                            <div className="absolute top-0 right-0 origin-top-right w-[200%] h-[200%] scale-25 overflow-y-auto flex">
-                                <div className="m-auto w-full max-w-5xl">
-                                    <Multiplayer />
+                            )}
+                            {openWindow === 4 && (
+                                <div className="absolute bottom-0 right-0 origin-bottom-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
+                                    <div className="m-auto w-full max-w-5xl">
+                                        <Leaderboard />
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div className="absolute bottom-0 left-0 origin-bottom-left w-[200%] h-[200%] scale-25 overflow-y-auto flex">
-                                <div className="m-auto w-full max-w-5xl">
-                                    <Profile />
-                                </div>
-                            </div>
-
-                            <div className="absolute bottom-0 right-0 origin-bottom-right w-[200%] h-[200%] scale-25 overflow-y-auto flex">
-                                <div className="m-auto w-full max-w-5xl">
-                                    <Leaderboard />
-                                </div>
-                            </div>
+                            )}
 
                         </div>
                     )}
@@ -217,12 +232,7 @@ const Home = () => {
 
             </div>
 
-            <div>
-
-            </div>
-
-            {false && (
-
+            {overlayMode && (
 
                 <div
                     className="absolute inset-0 z-5 overflow-y-auto animate-[fadeIn_0.4s_ease-out_0.8s_both]">
@@ -233,9 +243,7 @@ const Home = () => {
                         {openWindow === 4 && <Leaderboard />}
                     </div>
                 </div>
-
             )}
-
         </div>
 
     );

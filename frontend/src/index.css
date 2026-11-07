@@ -128,9 +128,8 @@
     }
 
     /* A panel of the main menu sections (Profile, Leaderboard, game) */
-    /* border-8 sm:border-16 border-felt-edge bg-felt rounded-4xl  */
     .feltPanel {
-        @apply relative;
+        @apply relative bg-felt rounded-4xl ring-2 sm:ring-4 ring-felt-edge;
     }
 
     .gameButton {
