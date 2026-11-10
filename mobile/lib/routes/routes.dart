@@ -4,6 +4,7 @@ import 'package:poosdalatro/screens/leaderboard_screen.dart';
 import 'package:poosdalatro/screens/login_screen.dart';
 import 'package:poosdalatro/screens/home_screen.dart';
 import 'package:poosdalatro/screens/register_screen.dart';
+import 'package:poosdalatro/screens/profile_screen.dart';
 
 /// Every screen's route name, and which screen each one opens.
 /// Navigate with constants like Routes.hom) rather than typing the strings
@@ -22,5 +23,6 @@ class Routes {
     home: (context) => const HomeScreen(),
     game: (context) => const GameScreen(),
     leaderboard: (context) => const LeaderboardScreen(),
+    profile: (context) => const ProfileScreen(),
   };
 }
