@@ -5,7 +5,7 @@
 //       description: '+5 Mult if the hand is a Flush',  // what it does
 //       image: '/sprites/jokers/my-joker.png',          // image file which is optional
 //       price: 5,                                       // shop price in $
-//       weight: 10,                                     // higher = shows up in the shop more often (0 = never)
+//       rarity: 5,                                      // 1 in 5 rarity (1 = most common, 0 = never in the shop)
 //   },
 
 export const PLACEHOLDER_IMAGE = '/sprites/jokers/placeholder.png';
@@ -16,7 +16,7 @@ export interface JokerInfo {
     description: string;
     image: string;
     price: number;
-    weight: number;
+    rarity: number;
 }
 
 export const JOKERS: JokerInfo[] = [
@@ -26,7 +26,7 @@ export const JOKERS: JokerInfo[] = [
         description: '+4 Mult',
         image: '/sprites/jokers/duck.png',
         price: 3,
-        weight: 10,
+        rarity: 3,   // 1 in 3 rarity
     },
     {
         id: 'chuckElephant',
@@ -34,7 +34,7 @@ export const JOKERS: JokerInfo[] = [
         description: 'Always adds +10 chips and +2 Mult to the hand. Elephants never forget...',
         image: '/sprites/jokers/elephant.png',
         price: 10,
-        weight: 3,
+        rarity: 10,  // 1 in 10 rarity
     },
     {
         id: 'moneyBags',
@@ -42,7 +42,7 @@ export const JOKERS: JokerInfo[] = [
         description: 'Adds +$1 to the end of round total.',
         image: '/sprites/jokers/moneybags.png',
         price: 5,
-        weight: 6,
+        rarity: 5,   // 1 in 5 rarity
     },
     {
         id: 'redTeam',
@@ -50,7 +50,7 @@ export const JOKERS: JokerInfo[] = [
         description: 'Each scoring ♥ Hearts or ♦ Diamonds card gives +2 Mult',
         image: '/sprites/jokers/redteam.png',
         price: 5,
-        weight: 6,
+        rarity: 5,   // 1 in 5 rarity
     },
     {
         id: 'blueTeam',
@@ -58,6 +58,6 @@ export const JOKERS: JokerInfo[] = [
         description: 'Each scoring ♠ Spades or ♣ Clubs card gives +18 Chips',
         image: '/sprites/jokers/blueteam.png',
         price: 5,
-        weight: 6,
+        rarity: 5,   // 1 in 5 rarity
     },
 ];

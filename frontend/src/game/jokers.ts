@@ -13,19 +13,25 @@ export const JOKERS_BY_ID: Record<string, JokerDef> = Object.fromEntries(
     JOKERS.map(info => [info.id, { ...info, ...JOKER_EFFECTS[info.id] }])
 );
 
-// Only Jokers with an effect and a weight above 0 show up in the shop
-export const SHOP_JOKER_IDS: string[] = JOKERS.filter(j => JOKER_EFFECTS[j.id] && j.weight > 0).map(j => j.id);
+// Only Jokers with an effect and a rarity above 0 show up in the shop
+export const SHOP_JOKER_IDS: string[] = JOKERS.filter(j => JOKER_EFFECTS[j.id] && j.rarity > 0).map(j => j.id);
+
+// rarity x = a 1 in x chance, so its weight is 1 / x
+function weight(id: string): number {
+    const rarity = JOKERS_BY_ID[id]?.rarity ?? 0;
+    return rarity > 0 ? 1 / rarity : 0;
+}
 
 // Weighted pick without repeats; empty slots are null
 export function pickWeightedJokers(ids: string[], count: number, random = Math.random): (string | null)[] {
-    const pool = ids.filter(id => (JOKERS_BY_ID[id]?.weight ?? 0) > 0);
+    const pool = ids.filter(id => weight(id) > 0);
     const picked: (string | null)[] = [];
     while (picked.length < count && pool.length > 0) {
-        const total = pool.reduce((sum, id) => sum + JOKERS_BY_ID[id].weight, 0);
+        const total = pool.reduce((sum, id) => sum + weight(id), 0);
         let roll = random() * total;
         let index = 0;
-        while (index < pool.length - 1 && roll >= JOKERS_BY_ID[pool[index]].weight) {
-            roll -= JOKERS_BY_ID[pool[index]].weight;
+        while (index < pool.length - 1 && roll >= weight(pool[index])) {
+            roll -= weight(pool[index]);
             index++;
         }
         picked.push(pool.splice(index, 1)[0]);
