@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useOnReconnect } from "../useOnline";
-import { fetchLeaderboard, type LeaderboardEntry } from "../scoresApi";
+import { fetchLeaderboard, formatTime, type LeaderboardEntry } from "../scoresApi";
 import { getUser } from "../tokenStorage";
 import { useDebounced } from "../useDebounced";
 
@@ -60,7 +60,7 @@ const Leaderboard = () => {
                     <span>Player</span>
                     <span className="text-right">Score</span>
                     <span className="text-right w-12">Table</span>
-                    <span className="hidden sm:block w-24">Date</span>
+                    <span className="hidden sm:block w-40">Date</span>
                 </div>
 
                 <ol className={`max-h-[50vh] overflow-y-auto transition-opacity ${loading ? 'opacity-60' : ''}`}>
@@ -72,7 +72,7 @@ const Leaderboard = () => {
                             <span className="truncate">{row.username}</span>
                             <span className="text-right font-semibold tabular-nums">{row.score.toLocaleString()}</span>
                             <span className="text-right w-12 tabular-nums">{row.table}</span>
-                            <span className="hidden sm:block w-24">{row.day}</span>
+                            <span className="hidden sm:block w-40 whitespace-nowrap">{row.day} <span className="opacity-60">{formatTime(row.date)}</span></span>
                         </li>
                     ))}
                 </ol>

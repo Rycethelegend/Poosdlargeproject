@@ -95,13 +95,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   static String _withCommas(int n) => n.toString().replaceAllMapped(
       RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => ',');
 
-  static String _formatTime(String iso) {
-    final t = DateTime.parse(iso).toLocal();
-    final hour = t.hour % 12 == 0 ? 12 : t.hour % 12;
-    final minute = t.minute.toString().padLeft(2, '0');
-    return '$hour:$minute ${t.hour < 12 ? 'AM' : 'PM'}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final c = GameColors.of(context);
@@ -191,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? Colors.black.withValues(alpha: 0.05)
                                     : null,
                                 child: _row(
-                                  Text('${scores[i]['day']}  ${_formatTime(scores[i]['date'])}'),
+                                  Text('${scores[i]['day']}  ${ScoresApi.formatTime(scores[i]['date'])}'),
                                   Text(_withCommas((scores[i]['score'] as num).toInt()),
                                       style: _bold),
                                   Text('${scores[i]['table']}'),

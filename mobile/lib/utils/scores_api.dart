@@ -22,6 +22,15 @@ class ScoresApi {
     return data['results'] ?? [];
   }
 
+  /// "10:42 PM" in the phone's time zone, or empty if the time is missing
+  static String formatTime(dynamic iso) {
+    final t = DateTime.tryParse('${iso ?? ''}')?.toLocal();
+    if (t == null) return '';
+    final hour = t.hour % 12 == 0 ? 12 : t.hour % 12;
+    final minute = t.minute.toString().padLeft(2, '0');
+    return '$hour:$minute ${t.hour < 12 ? 'AM' : 'PM'}';
+  }
+
   /// True when the server says the login has expired
   static bool isLoginExpired(Object error) =>
       error is ApiException &&

@@ -150,6 +150,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                   _withCommas((rows[i]['score'] as num? ?? 0).toInt()),
                                   '${rows[i]['table'] ?? ''}',
                                   '${rows[i]['day'] ?? ''}',
+                                  time: ScoresApi.formatTime(rows[i]['date']),
                                   bold: '${rows[i]['username'] ?? ''}'.toLowerCase() == me,
                                 ),
                               ),
@@ -179,7 +180,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _row(String rank, String player, String score, String table,
       String date,
-      {bool bold = false}) {
+      {bool bold = false, String time = ''}) {
     final style = bold ? _bold : null;
     final showDate = MediaQuery.sizeOf(context).width >= 560;
     return Padding(
@@ -200,7 +201,22 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           ),
           if (showDate) ...[
             const SizedBox(width: 16),
-            SizedBox(width: 96, child: Text(date, style: style)),
+            // the time sits beside the date, dimmed, like on the profile
+            SizedBox(
+              width: 160,
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(text: date),
+                  if (time.isNotEmpty)
+                    TextSpan(
+                        text: '  $time',
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: GameColors.of(context).ink.withValues(alpha: 0.6))),
+                ]),
+                style: style,
+              ),
+            ),
           ],
         ],
       ),
