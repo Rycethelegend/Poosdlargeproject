@@ -1,12 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/screens/game_screen.dart';
+import 'package:poosdalatro/screens/home_screen.dart';
 import 'package:poosdalatro/screens/leaderboard_screen.dart';
 import 'package:poosdalatro/screens/login_screen.dart';
-import 'package:poosdalatro/screens/home_screen.dart';
+import 'package:poosdalatro/screens/profile_screen.dart';
 import 'package:poosdalatro/screens/register_screen.dart';
+import 'package:poosdalatro/utils/session.dart';
 
 /// Every screen's route name, and which screen each one opens.
-/// Navigate with constants like Routes.hom) rather than typing the strings
+/// Navigate with these constants
 class Routes {
   static const String login = '/login';
   static const String register = '/register';
@@ -16,11 +19,22 @@ class Routes {
   static const String profile = '/profile';
 
   static Map<String, WidgetBuilder> get getRoutes => {
-    '/': (context) => const LoginScreen(),
-    login: (context) => const LoginScreen(),
-    register: (context) => const RegisterScreen(),
-    home: (context) => const HomeScreen(),
-    game: (context) => const GameScreen(),
-    leaderboard: (context) => const LeaderboardScreen(),
+    '/': (context) => _guestOnly(const LoginScreen()),
+    login: (context) => _guestOnly(const LoginScreen()),
+    register: (context) => _guestOnly(const RegisterScreen()),
+    home: (context) => _requireLogin(const HomeScreen()),
+    game: (context) => _requireLogin(const GameScreen()),
+    leaderboard: (context) => _requireLogin(const LeaderboardScreen()),
+    profile: (context) => _requireLogin(const ProfileScreen()),
   };
+
+  // Logged-out or expired players get the login screen instead
+  static Widget _requireLogin(Widget screen) =>
+      Session.isValid || (kDebugMode && Session.skippedLogin)
+          ? screen
+          : const LoginScreen();
+
+  // Logged-in players skip login and register and land on home
+  static Widget _guestOnly(Widget screen) =>
+      Session.isValid ? const HomeScreen() : screen;
 }

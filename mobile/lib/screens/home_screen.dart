@@ -75,8 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // TODO: no profile screen yet
-                          _sectionButton('PROFILE', null),
+                          _sectionButton('PROFILE',
+                                  () => Navigator.pushNamed(context, Routes.profile)),
                           _sectionButton(
                               'LEADERBOARD',
                                   () => Navigator.pushNamed(
