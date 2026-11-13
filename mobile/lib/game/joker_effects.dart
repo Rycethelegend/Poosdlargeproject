@@ -46,18 +46,18 @@ class JokerEffect {
 
 final Map<String, JokerEffect> jokerEffects = {
   'rubberDuck': JokerEffect(
-    onHand: (ctx) => const Effect(mult: 4),
+    onHand: (ctx) => const Effect(mult: 3),
   ),
   'chuckElephant': JokerEffect(
-    onHand: (ctx) => const Effect(chips: 10, mult: 2),
+    onHand: (ctx) => const Effect(xmult: 1.5),
   ),
   'moneyBags': JokerEffect(
-    onRoundEnd: () => 1,
+    onRoundEnd: () => 2,
   ),
   'redTeam': JokerEffect(
     onCard: (card, ctx) => isRed(card) ? const Effect(mult: 2) : null,
   ),
   'blueTeam': JokerEffect(
-    onCard: (card, ctx) => isRed(card) ? null : const Effect(chips: 18),
+    onCard: (card, ctx) => isRed(card) ? null : const Effect(chips: 25),
   ),
 };

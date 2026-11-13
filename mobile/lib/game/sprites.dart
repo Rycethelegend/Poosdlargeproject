@@ -142,5 +142,9 @@ class PixelImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Image.asset(asset,
-      width: width, filterQuality: FilterQuality.none, gaplessPlayback: true);
+      width: width,
+      // contain so small pictures scale up too, not just down
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.none,
+      gaplessPlayback: true);
 }

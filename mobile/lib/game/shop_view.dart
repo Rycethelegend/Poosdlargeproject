@@ -25,17 +25,27 @@ class ShopView extends StatelessWidget {
     final nextRound = nextIsNewTable ? 0 : run.round + 1;
 
     Widget sold(double width) => Container(
-          width: width,
-          height: 96,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: c.feltEdge, width: 3),
-          ),
-          child: const Text('Sold'),
-        );
+      width: width,
+      height: 96,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: c.feltEdge, width: 3),
+      ),
+      child: const Text('Sold'),
+    );
 
     const heading = TextStyle(fontSize: 17, fontWeight: FontWeight.w600);
+
+    // light cream backing so each shop section stands out on the felt
+    Widget section(Widget child) => Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: c.cream.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: child,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,8 +54,10 @@ class ShopView extends StatelessWidget {
         Row(
           children: [
             const Expanded(
-              child: Text('Shop',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
+              child: Text(
+                'Shop',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+              ),
             ),
             ElevatedButton(
               style: smallButton(),
@@ -62,46 +74,54 @@ class ShopView extends StatelessWidget {
           spacing: 24,
           runSpacing: 14,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 6,
-              children: [
-                const Text('Jokers for sale', style: heading),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    for (int slot = 0; slot < shop.jokerOffers.length; slot++)
-                      if (shop.jokerOffers[slot] == null)
-                        sold(150)
-                      else
-                        _jokerOffer(slot, jokersFull),
-                  ],
-                ),
-              ],
+            section(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 6,
+                children: [
+                  const Text('Jokers for sale', style: heading),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 10,
+                    children: [
+                      for (int slot = 0; slot < shop.jokerOffers.length; slot++)
+                        if (shop.jokerOffers[slot] == null)
+                          sold(150)
+                        else
+                          _jokerOffer(slot, jokersFull),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 6,
-              children: [
-                const Text.rich(TextSpan(children: [
-                  TextSpan(text: 'Study Guides ', style: heading),
-                  TextSpan(text: '(level up a poker hand)'),
-                ])),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    for (int slot = 0; slot < shop.studyOffers.length; slot++)
-                      if (shop.studyOffers[slot] == null)
-                        sold(160)
-                      else
-                        _studyOffer(context, slot),
-                  ],
-                ),
-              ],
+            section(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 6,
+                children: [
+                  const Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(text: 'Study Guides ', style: heading),
+                        TextSpan(text: '(level up a poker hand)'),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 10,
+                    children: [
+                      for (int slot = 0; slot < shop.studyOffers.length; slot++)
+                        if (shop.studyOffers[slot] == null)
+                          sold(160)
+                        else
+                          _studyOffer(context, slot),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -137,15 +157,24 @@ class ShopView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Next: Table $nextTable, ${rounds[nextRound].name}',
-                      style: const TextStyle(fontWeight: FontWeight.w600)),
-                  Text('Target ${withCommas(roundTarget(nextTable, nextRound))} chips'),
+                  Text(
+                    'Next: Table $nextTable, ${rounds[nextRound].name}',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    'Target ${withCommas(roundTarget(nextTable, nextRound))} chips',
+                  ),
                   if (nextRound == highRoller)
-                    BossLabel(bossId: run.boss, prefix: 'Boss', color: c.danger),
+                    BossLabel(
+                      bossId: run.boss,
+                      prefix: 'Boss',
+                      color: c.danger,
+                    ),
                   if (nextIsNewTable)
                     const Text(
-                        "The new table's High Roller boss is revealed when you reach it.",
-                        style: TextStyle(fontSize: 13)),
+                      "The new table's High Roller boss is revealed when you reach it.",
+                      style: TextStyle(fontSize: 13),
+                    ),
                 ],
               ),
               ElevatedButton(
@@ -173,7 +202,8 @@ class ShopView extends StatelessWidget {
       footer: jokersFull
           ? Tooltip(
               message: 'You can hold $maxJokers jokers. Sell one first.',
-              child: button)
+              child: button,
+            )
           : button,
     );
   }
@@ -190,20 +220,32 @@ class ShopView extends StatelessWidget {
       decoration: BoxDecoration(
         color: c.cream,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(blurRadius: 4, color: Colors.black26, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(blurRadius: 4, color: Colors.black26, offset: Offset(0, 2)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 2,
         children: [
-          Text(hands[type]!.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-          Text('Level $level → ${level + 1}', style: const TextStyle(fontSize: 13)),
-          Text('${now.chips} × ${now.mult} → ${next.chips} × ${next.mult}',
-              style: const TextStyle(fontSize: 13)),
+          Text(
+            hands[type]!.name,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          Text(
+            'Level $level → ${level + 1}',
+            style: const TextStyle(fontSize: 13),
+          ),
+          Text(
+            '${now.chips} × ${now.mult} → ${next.chips} × ${next.mult}',
+            style: const TextStyle(fontSize: 13),
+          ),
           const SizedBox(height: 4),
           ElevatedButton(
             style: smallButton(),
-            onPressed: run.money < studyPrice ? null : () => onAction((r) => r.buyStudy(slot)),
+            onPressed: run.money < studyPrice
+                ? null
+                : () => onAction((r) => r.buyStudy(slot)),
             child: const Text('Buy \$$studyPrice'),
           ),
         ],

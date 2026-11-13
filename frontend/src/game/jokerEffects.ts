@@ -31,18 +31,18 @@ export interface JokerEffect {
 
 export const JOKER_EFFECTS: Record<string, JokerEffect> = {
     rubberDuck: {
-        onHand: () => ({ mult: 4 }),
+        onHand: () => ({ mult: 3 }),
     },
     chuckElephant: {
-        onHand: () => ({ chips: 10, mult: 2 }),
+        onHand: () => ({ xmult: 1.5 }),
     },
     moneyBags: {
-        onRoundEnd: () => 1,
+        onRoundEnd: () => 2,
     },
     redTeam: {
         onCard: (card) => isRed(card) ? { mult: 2 } : null,
     },
     blueTeam: {
-        onCard: (card) => isRed(card) ? null : { chips: 18 },
+        onCard: (card) => isRed(card) ? null : { chips: 25 },
     },
 };

@@ -8,10 +8,10 @@ import 'package:poosdalatro/game/run.dart';
 import 'package:poosdalatro/game/sprites.dart';
 import 'package:poosdalatro/utils/app_theme.dart';
 
-String withCommas(num n) => n
-    .toInt()
-    .toString()
-    .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => ',');
+String withCommas(num n) => n.toInt().toString().replaceAllMapped(
+  RegExp(r'\B(?=(\d{3})+(?!\d))'),
+  (m) => ',',
+);
 
 String formatMult(double mult) =>
     mult == mult.roundToDouble() ? '${mult.toInt()}' : mult.toStringAsFixed(1);
@@ -50,7 +50,10 @@ class PopIn extends StatelessWidget {
       curve: Curves.easeOutBack,
       builder: (context, value, child) => Transform.scale(
         scale: value,
-        child: Opacity(opacity: ((value - 0.85) / 0.15).clamp(0, 1), child: child),
+        child: Opacity(
+          opacity: ((value - 0.85) / 0.15).clamp(0, 1),
+          child: child,
+        ),
       ),
       child: child,
     );
@@ -84,19 +87,26 @@ class Stat extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label.toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 10,
-                        letterSpacing: 0.8,
-                        color: c.ink.withValues(alpha: 0.7))),
+                Text(
+                  label.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10,
+                    letterSpacing: 0.8,
+                    color: c.ink.withValues(alpha: 0.7),
+                  ),
+                ),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,
-                  child: Text(value,
-                      style: const TextStyle(
-                          fontSize: 17, fontWeight: FontWeight.w600)),
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -113,28 +123,40 @@ class ChipsTimesMult extends StatelessWidget {
   final double mult;
   final bool big;
 
-  const ChipsTimesMult(
-      {super.key, required this.chips, required this.mult, this.big = false});
+  const ChipsTimesMult({
+    super.key,
+    required this.chips,
+    required this.mult,
+    this.big = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final c = GameColors.of(context);
     Widget box(String text, Color color) => Container(
-          padding: EdgeInsets.symmetric(horizontal: big ? 14 : 10, vertical: 2),
-          decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(12)),
-          child: Text(text,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: big ? 22 : 16,
-                  fontWeight: FontWeight.w600)),
-        );
+      padding: EdgeInsets.symmetric(horizontal: big ? 14 : 10, vertical: 2),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: big ? 22 : 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
     return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: 8,
       children: [
         box(withCommas(chips), c.chips),
-        const Text('×', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+        const Text(
+          '×',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
         box(formatMult(mult), c.mult),
       ],
     );
@@ -145,39 +167,56 @@ class JokerCard extends StatelessWidget {
   final JokerInfo joker;
   final Widget? footer;
   final double width;
+  final bool large; // bigger picture and text, for the popup
 
-  const JokerCard(
-      {super.key, required this.joker, this.footer, this.width = 150});
+  const JokerCard({
+    super.key,
+    required this.joker,
+    this.footer,
+    this.width = 150,
+    this.large = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final c = GameColors.of(context);
     return Container(
       width: width,
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.all(large ? 18 : 8),
       decoration: BoxDecoration(
         color: c.cream,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(blurRadius: 4, color: Colors.black26, offset: Offset(0, 2))],
+        borderRadius: BorderRadius.circular(large ? 24 : 16),
+        boxShadow: const [
+          BoxShadow(blurRadius: 4, color: Colors.black26, offset: Offset(0, 2)),
+        ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 6,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 8,
+            crossAxisAlignment: large ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+            spacing: large ? 16 : 8,
             children: [
-              PixelImage(joker.image, width: 36),
+              PixelImage(joker.image, width: large ? 120 : 36),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(joker.name,
-                        style: const TextStyle(fontWeight: FontWeight.w600, height: 1.1)),
-                    const SizedBox(height: 2),
-                    Text(joker.description,
-                        style: const TextStyle(fontSize: 12, height: 1.2)),
+                    Text(
+                      joker.name,
+                      style: TextStyle(
+                        fontSize: large ? 24 : 14,
+                        fontWeight: FontWeight.w600,
+                        height: 1.1,
+                      ),
+                    ),
+                    SizedBox(height: large ? 8 : 2),
+                    Text(
+                      joker.description,
+                      style: TextStyle(fontSize: large ? 18 : 12, height: 1.25),
+                    ),
                   ],
                 ),
               ),
@@ -196,8 +235,12 @@ class BossLabel extends StatelessWidget {
   final String prefix;
   final Color? color;
 
-  const BossLabel(
-      {super.key, required this.bossId, required this.prefix, this.color});
+  const BossLabel({
+    super.key,
+    required this.bossId,
+    required this.prefix,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -210,13 +253,16 @@ class BossLabel extends StatelessWidget {
         PixelImage(boss.image, width: 22),
         Flexible(
           child: Text.rich(
-            TextSpan(children: [
-              TextSpan(text: '$prefix '),
-              TextSpan(
+            TextSpan(
+              children: [
+                TextSpan(text: '$prefix '),
+                TextSpan(
                   text: boss.name,
-                  style: const TextStyle(fontWeight: FontWeight.w600)),
-              TextSpan(text: ': ${boss.description}'),
-            ]),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                TextSpan(text: ': ${boss.description}'),
+              ],
+            ),
             style: TextStyle(color: color),
           ),
         ),
@@ -232,13 +278,20 @@ class JokerRow extends StatelessWidget {
   final bool compact; // count on the left instead of above
   final Widget? extra; // shown under the count in compact mode
 
-  const JokerRow(
-      {super.key, required this.owned, this.footer, this.compact = false, this.extra});
+  const JokerRow({
+    super.key,
+    required this.owned,
+    this.footer,
+    this.compact = false,
+    this.extra,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final label = Text('Jokers ${owned.length}/$maxJokers',
-        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600));
+    final label = Text(
+      'Jokers ${owned.length}/$maxJokers',
+      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+    );
     // the count, then the cards beside it
     if (compact) {
       return Row(
@@ -247,15 +300,21 @@ class JokerRow extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             spacing: 6,
-            children: [CreamPill(child: label), ?extra],
+            children: [
+              CreamPill(child: label),
+              ?extra,
+            ],
           ),
           Expanded(
             child: owned.isEmpty
                 ? const Align(
                     alignment: Alignment.centerLeft,
                     child: CreamPill(
-                      child: Text('No jokers yet. Buy them in the shop after a round.',
-                          style: TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis),
+                      child: Text(
+                        'No jokers yet. Buy them in the shop after a round.',
+                        style: TextStyle(fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
                 // full cards share the width when they fit at a readable size;
@@ -271,10 +330,30 @@ class JokerRow extends StatelessWidget {
                         children: [
                           for (final j in owned)
                             each >= 140
-                                ? JokerCard(joker: jokersById[j.id]!, width: min(230.0, each))
+                                ? GestureDetector(
+                                    onTap: () => showJokerPopup(
+                                      context,
+                                      jokersById[j.id]!,
+                                      heroTag: 'joker-${j.uid}',
+                                    ),
+                                    child: Hero(
+                                      tag: 'joker-${j.uid}',
+                                      flightShuttleBuilder: jokerFlight,
+                                      child: Material(
+                                        type: MaterialType.transparency,
+                                        child: JokerCard(
+                                          joker: jokersById[j.id]!,
+                                          width: min(230.0, each),
+                                        ),
+                                      ),
+                                    ),
+                                  )
                                 : SizedBox(
                                     width: each,
-                                    child: _JokerTile(joker: jokersById[j.id]!),
+                                    child: _JokerTile(
+                                      joker: jokersById[j.id]!,
+                                      heroTag: 'joker-${j.uid}',
+                                    ),
                                   ),
                         ],
                       );
@@ -290,8 +369,10 @@ class JokerRow extends StatelessWidget {
       children: [
         label,
         if (owned.isEmpty)
-          const Text('No jokers yet. Buy them in the shop after a round.',
-              style: TextStyle(fontSize: 13))
+          const Text(
+            'No jokers yet. Buy them in the shop after a round.',
+            style: TextStyle(fontSize: 13),
+          )
         else
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -342,18 +423,31 @@ class BossBanner extends StatelessWidget {
     if (activeBoss != null) {
       banner = Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(color: c.danger, borderRadius: BorderRadius.circular(14)),
-        child: BossLabel(bossId: activeBoss, prefix: 'Boss', color: const Color(0xFFF2E8CF)),
+        decoration: BoxDecoration(
+          color: c.danger,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: BossLabel(
+          bossId: activeBoss,
+          prefix: 'Boss',
+          color: const Color(0xFFF2E8CF),
+        ),
       );
     } else {
       banner = CreamPill(
         child: BossLabel(
-            bossId: run.boss,
-            prefix: small ? 'High Roller boss:' : "This table's High Roller boss:"),
+          bossId: run.boss,
+          prefix: small
+              ? 'High Roller boss:'
+              : "This table's High Roller boss:",
+        ),
       );
     }
     return small
-        ? DefaultTextStyle.merge(style: const TextStyle(fontSize: 13), child: banner)
+        ? DefaultTextStyle.merge(
+            style: const TextStyle(fontSize: 13),
+            child: banner,
+          )
         : banner;
   }
 }
@@ -361,45 +455,138 @@ class BossBanner extends StatelessWidget {
 /// Small joker for tight screens: picture and name, tap for the full card
 class _JokerTile extends StatelessWidget {
   final JokerInfo joker;
-  const _JokerTile({required this.joker});
+  final Object heroTag;
+  const _JokerTile({required this.joker, required this.heroTag});
 
   @override
   Widget build(BuildContext context) {
     final c = GameColors.of(context);
-    return Material(
-      color: c.cream,
-      borderRadius: BorderRadius.circular(12),
-      elevation: 2,
-      child: InkWell(
+    return Hero(
+      tag: heroTag,
+      flightShuttleBuilder: jokerFlight,
+      child: Material(
+        color: c.cream,
         borderRadius: BorderRadius.circular(12),
-        onTap: () => showDialog(
-          context: context,
-          builder: (context) => Dialog(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Center(child: JokerCard(joker: joker, width: 280)),
+        elevation: 2,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => showJokerPopup(context, joker, heroTag: heroTag),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 6, 4),
+            child: Row(
+              spacing: 4,
+              children: [
+                PixelImage(joker.image, width: 22),
+                Expanded(
+                  child: Text(
+                    joker.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      height: 1.1,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: c.ink.withValues(alpha: 0.6),
+                ),
+              ],
             ),
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(4, 4, 6, 4),
-          child: Row(
-            spacing: 4,
+      ),
+    );
+  }
+}
+
+/// A big version of a joker card, in case the small one is hard to read.
+/// With a heroTag the card grows out of the one that was tapped.
+void showJokerPopup(BuildContext context, JokerInfo joker, {Object? heroTag}) {
+  Navigator.of(context).push(
+    PageRouteBuilder(
+      opaque: false,
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 300),
+      reverseTransitionDuration: const Duration(milliseconds: 250),
+      pageBuilder: (context, _, _) =>
+          _JokerPopup(joker: joker, heroTag: heroTag),
+      transitionsBuilder: (context, animation, _, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOut,
+        );
+        // the hero flies on its own; this fades in the close button (and
+        // scales the card when there's no hero to fly from)
+        return FadeTransition(
+          opacity: curved,
+          child: heroTag == null
+              ? ScaleTransition(
+                  scale: Tween(begin: 0.85, end: 1.0).animate(curved),
+                  child: child,
+                )
+              : child,
+        );
+      },
+    ),
+  );
+}
+
+class _JokerPopup extends StatelessWidget {
+  final JokerInfo joker;
+  final Object? heroTag;
+  const _JokerPopup({required this.joker, this.heroTag});
+
+  @override
+  Widget build(BuildContext context) {
+    final card = Material(
+      type: MaterialType.transparency,
+      child: JokerCard(
+        joker: joker,
+        width: min(480.0, MediaQuery.sizeOf(context).width - 48),
+        large: true,
+      ),
+    );
+    // tapping outside the card closes it too
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => Navigator.pop(context),
+      child: Center(
+        child: GestureDetector(
+          onTap: () {},
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 14,
             children: [
-              PixelImage(joker.image, width: 22),
-              Expanded(
-                child: Text(joker.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.1)),
+              heroTag == null
+                  ? card
+                  : Hero(tag: heroTag!, flightShuttleBuilder: jokerFlight, child: card),
+              ElevatedButton(
+                style: smallButton(),
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
               ),
-              Icon(Icons.info_outline, size: 14, color: c.ink.withValues(alpha: 0.6)),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+/// While a joker flies to or from the popup, show the big card scaled to the
+/// flying size, so its text grows smoothly instead of squeezing
+Widget jokerFlight(
+  BuildContext flightContext,
+  Animation<double> animation,
+  HeroFlightDirection direction,
+  BuildContext fromContext,
+  BuildContext toContext,
+) {
+  final big = (direction == HeroFlightDirection.push ? toContext : fromContext).widget as Hero;
+  return FittedBox(fit: BoxFit.contain, child: big.child);
 }
