@@ -31,7 +31,5 @@ class Credits {
     AssetCredit('Joker images', 'Our Team', '', ''),
     AssetCredit('Table background patterns', 'Steve Schoger (Hero Patterns)',
         'https://heropatterns.com', 'CC BY 4.0'),
-    AssetCredit('Excalifont font', 'Excalidraw',
-        'https://github.com/excalidraw/excalifont', 'SIL Open Font License 1.1'),
   ];
 }

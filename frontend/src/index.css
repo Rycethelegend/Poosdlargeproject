@@ -6,13 +6,6 @@
 /* dark: classes follow the Settings toggle (a "dark" class on <html>), not the OS setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@font-face {
-    font-family: 'Excalifont';
-    src: url('./fonts/Excalifont-Regular.woff2') format('woff2');
-    font-style: normal;
-    font-display: swap;
-}
-
 @theme {
     --color-dark-blue: #011F26;
     --color-medium-blue: #025E73;
@@ -37,7 +30,6 @@
 
     --font-rubik: RubikDirt, "sans-serif";
     --font-playfair: PlayfairDisplay, "sans-serif";
-    --font-excal: Excalifont, "sans-serif";
 }
 
 @layer base {

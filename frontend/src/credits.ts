@@ -41,10 +41,4 @@ export const ASSETS: AssetCredit[] = [
         source: 'https://heropatterns.com',
         license: 'CC BY 4.0',
     },
-    {
-        what: 'Excalifont font',
-        creator: 'Excalidraw',
-        source: 'https://github.com/excalidraw/excalifont',
-        license: 'SIL Open Font License 1.1',
-    },
 ];
