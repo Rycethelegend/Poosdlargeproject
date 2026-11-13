@@ -27,7 +27,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String _error = '';
   String _info = '';
-  String? _devCode;
   bool _loading = false;
 
   int _cooldown = 0;
@@ -41,12 +40,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Asks the server to email a 6-digit code
   Future<void> _sendCode() async {
     String url = 'https://poosdbasecontactmanager.casa/api/sendcode';
-    final data = await Api.post(url, {
+    await Api.post(url, {
       'email': _email.text.trim(),
       'purpose': 'register',
       'username': _username.text.trim(),
     });
-    _devCode = data['devCode']; // only sent while the server is in testing mode
     _startCooldown();
   }
 
@@ -161,14 +159,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         heading: 'Verify Your Email',
         children: [
           FormMessage(error: _error, info: _info),
+          // looks like the web: 000000 placeholder, digits spaced out, focused right away
           TextField(
             controller: _code,
+            autofocus: true,
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
+            autofillHints: const [AutofillHints.oneTimeCode],
             maxLength: 6,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: const InputDecoration(
-                labelText: 'Verification code', counterText: ''),
+            style: const TextStyle(fontSize: 22, letterSpacing: 11),
+            decoration: InputDecoration(
+              hintText: '000000',
+              hintStyle: TextStyle(
+                  fontSize: 22, letterSpacing: 11, color: Theme.of(context).hintColor),
+              counterText: '',
+            ),
           ),
           ElevatedButton(
             onPressed: _loading ? null : _verify,
@@ -192,18 +198,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ],
           ),
-          if (_devCode != null) ...[
-            const Text(
-                "Testing mode: email isn't set up yet, so here's your code",
-                textAlign: TextAlign.center),
-            Text(_devCode!,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium),
-            TextButton(
-              onPressed: () => _code.text = _devCode!,
-              child: const Text('Fill it in'),
-            ),
-          ],
         ],
       );
     }

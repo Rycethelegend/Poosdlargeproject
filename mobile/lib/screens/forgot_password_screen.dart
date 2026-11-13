@@ -25,7 +25,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   String _error = '';
   String _info = '';
-  String? _devCode;
   String? _resetToken;
   bool _loading = false;
 
@@ -39,11 +38,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void _showError(String message) => setState(() => _error = message);
 
   Future<void> _sendCode() async {
-    final data = await Api.post('$_api/sendcode', {
+    await Api.post('$_api/sendcode', {
       'email': _email.text.trim(),
       'purpose': 'reset',
     });
-    _devCode = data['devCode']; // only sent in testing mode
     _startCooldown();
   }
 
@@ -179,14 +177,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           heading: 'Check Your Email',
           children: [
             _message(),
+            // looks like the web: 000000 placeholder, digits spaced out, focused right away
             TextField(
               controller: _code,
+              autofocus: true,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
+              autofillHints: const [AutofillHints.oneTimeCode],
               maxLength: 6,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                  labelText: 'Verification code', counterText: ''),
+              style: const TextStyle(fontSize: 22, letterSpacing: 11),
+              decoration: InputDecoration(
+                hintText: '000000',
+                hintStyle: TextStyle(
+                    fontSize: 22, letterSpacing: 11, color: Theme.of(context).hintColor),
+                counterText: '',
+              ),
               onSubmitted: (_) => _verifyCode(),
             ),
             ElevatedButton(
@@ -211,18 +217,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ],
             ),
-            if (_devCode != null) ...[
-              const Text(
-                  "Testing mode: email isn't set up yet, so here's your code",
-                  textAlign: TextAlign.center),
-              Text(_devCode!,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium),
-              TextButton(
-                onPressed: () => _code.text = _devCode!,
-                child: const Text('Fill it in'),
-              ),
-            ],
           ],
         );
 
