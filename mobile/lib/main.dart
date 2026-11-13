@@ -8,12 +8,15 @@ import 'package:poosdalatro/utils/session.dart';
 /// App entry point: locks the app to landscape, then starts it.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
+  // all three at once instead of one after another
+  await Future.wait([
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]),
+    Session.load(),
+    AppTheme.load(),
   ]);
-  await Session.load();
-  await AppTheme.load();
   runApp(const MyApp());
 }
 

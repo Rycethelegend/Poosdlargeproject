@@ -10,9 +10,6 @@ class Session {
   static String username = '';
   static DateTime? _expires;
 
-  /// Debug builds only
-  static bool skippedLogin = false;
-
   /// Loads the saved token when the app starts
   static Future<void> load() async {
     _prefs = await SharedPreferences.getInstance();
@@ -31,7 +28,6 @@ class Session {
     token = null;
     username = '';
     _expires = null;
-    skippedLogin = false;
     _prefs?.remove(_tokenKey);
   }
 

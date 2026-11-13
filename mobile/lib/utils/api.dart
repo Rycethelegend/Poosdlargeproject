@@ -12,11 +12,15 @@ class ApiException implements Exception {
 }
 
 class Api {
+  // One client for the whole app, so requests reuse the same connection
+  // instead of setting up a new secure connection every time
+  static final http.Client client = http.Client();
+
   static Future<Map<String, dynamic>> post(
       String url, Map<String, dynamic> body) async {
     final http.Response response;
     try {
-      response = await http
+      response = await client
           .post(
         Uri.parse(url),
         headers: {

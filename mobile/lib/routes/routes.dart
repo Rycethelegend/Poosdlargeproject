@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/screens/forgot_password_screen.dart';
-import 'package:poosdalatro/screens/game_screen.dart';
+import 'package:poosdalatro/screens/singleplayer_screen.dart';
 import 'package:poosdalatro/screens/home_screen.dart';
 import 'package:poosdalatro/screens/leaderboard_screen.dart';
 import 'package:poosdalatro/screens/login_screen.dart';
@@ -26,14 +25,14 @@ class Routes {
     register: (context) => _guestOnly(const RegisterScreen()),
     forgotPassword: (context) => _guestOnly(const ForgotPasswordScreen()),
     home: (context) => _requireLogin(const HomeScreen()),
-    game: (context) => _requireLogin(const GameScreen()),
+    game: (context) => _requireLogin(const SingleplayerScreen()),
     leaderboard: (context) => _requireLogin(const LeaderboardScreen()),
     profile: (context) => _requireLogin(const ProfileScreen()),
   };
 
   // Logged-out or expired players get the login screen instead
   static Widget _requireLogin(Widget screen) =>
-      Session.isValid || (kDebugMode && Session.skippedLogin)
+      Session.isValid
           ? screen
           : const LoginScreen();
 

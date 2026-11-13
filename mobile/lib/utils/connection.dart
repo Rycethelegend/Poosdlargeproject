@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
+import 'package:poosdalatro/utils/api.dart';
 
 /// Tracks whether the app can reach the internet. A failed request marks it
 /// offline, then it checks every few seconds until the connection is back
@@ -25,7 +25,7 @@ class Connection {
 
   static Future<void> _check() async {
     try {
-      await http
+      await Api.client
           .head(Uri.parse('https://poosdbasecontactmanager.casa/'))
           .timeout(const Duration(seconds: 5));
       markOnline();

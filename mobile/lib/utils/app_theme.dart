@@ -12,6 +12,7 @@ class GameColors extends ThemeExtension<GameColors> {
   final Color danger;
   final Color chips;
   final Color mult;
+  final Color money;
 
   const GameColors({
     required this.cream,
@@ -23,6 +24,7 @@ class GameColors extends ThemeExtension<GameColors> {
     required this.danger,
     required this.chips,
     required this.mult,
+    required this.money,
   });
 
   static const light = GameColors(
@@ -35,6 +37,7 @@ class GameColors extends ThemeExtension<GameColors> {
     danger: Color(0xFFBC4749),
     chips: Color(0xFF2F6FB5),
     mult: Color(0xFFC8383C),
+    money: Color(0xFFD99A1E),
   );
 
   static const dark = GameColors(
@@ -47,6 +50,7 @@ class GameColors extends ThemeExtension<GameColors> {
     danger: Color(0xFFA33A3C),
     chips: Color(0xFF4D8FD6),
     mult: Color(0xFFE0575B),
+    money: Color(0xFFE8B04A),
   );
 
   static GameColors of(BuildContext context) =>
@@ -138,10 +142,16 @@ class AppTheme {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
+        // Lighter than the main wood buttons, but still clearly a button
         style: TextButton.styleFrom(
           foregroundColor: c.ink,
-          textStyle: const TextStyle(
-              fontSize: 16, decoration: TextDecoration.underline),
+          backgroundColor: c.cream,
+          disabledForegroundColor: c.ink.withValues(alpha: 0.45),
+          disabledBackgroundColor: c.cream.withValues(alpha: 0.6),
+          side: BorderSide(color: c.wood, width: 2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(

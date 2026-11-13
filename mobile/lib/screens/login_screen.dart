@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/routes/routes.dart';
 import 'package:poosdalatro/screens/auth_layout.dart';
@@ -82,8 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: _loading ? null : _submit,
           child: Text(_loading ? '...' : 'Log In'),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
           children: [
             const Text('New here?'),
             TextButton(
@@ -93,15 +94,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ],
         ),
-        if (kDebugMode)
-          TextButton(
-            onPressed: () {
-              Session.skippedLogin = true;
-              Session.username = 'tester';
-              Navigator.pushReplacementNamed(context, Routes.home);
-            },
-            child: const Text('Skip login (debug only)'),
-          ),
       ],
     );
   }

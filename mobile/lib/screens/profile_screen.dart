@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/routes/routes.dart';
+import 'package:poosdalatro/utils/after_transition.dart';
 import 'package:poosdalatro/utils/api.dart';
 import 'package:poosdalatro/utils/connection.dart';
 import 'package:poosdalatro/utils/scores_api.dart';
@@ -28,11 +29,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Timer? _debounce;
   int _requestId = 0;
 
+  // Last results for each search and sort, shown right away while they refresh
+  static final Map<String, Map<String, dynamic>> _cache = {};
+  String get _cacheKey => '${Session.username}|${_search.text.trim()}|$_sort';
+
   @override
   void initState() {
     super.initState();
     Connection.online.addListener(_onConnectionChange);
-    _load();
+    _data = _cache[_cacheKey];
+    _loading = _data == null;
+    afterTransition(context, _load);
   }
 
   // reload when the connection comes back
@@ -42,9 +49,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _load() async {
     final id = ++_requestId;
-    if (!_loading) setState(() => _loading = true);
+    final key = _cacheKey;
+    final cached = _cache[key];
+    setState(() {
+      if (cached != null) _data = cached;
+      _loading = cached == null;
+    });
     try {
       final data = await ScoresApi.fetchMyScores(_search.text.trim(), _sort);
+      _cache[key] = data;
       if (!mounted || id != _requestId) return;
       setState(() {
         _data = data;

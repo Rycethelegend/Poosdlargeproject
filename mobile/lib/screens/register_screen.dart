@@ -236,8 +236,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onPressed: _loading ? null : _submitDetails,
           child: Text(_loading ? '...' : 'Send Verification Code'),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
           children: [
             const Text('Have an account?'),
             TextButton(

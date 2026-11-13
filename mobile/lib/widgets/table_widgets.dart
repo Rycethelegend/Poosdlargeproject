@@ -25,9 +25,17 @@ class FeltPanel extends StatelessWidget {
       padding: EdgeInsets.all(border),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(32 - border / 2),
-        child: CustomPaint(
-          painter: _WovenPattern(c.felt),
-          child: Padding(padding: padding, child: child),
+        child: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            // the pattern is a lot of lines, so keep it in its own cached layer
+            Positioned.fill(
+              child: RepaintBoundary(
+                child: CustomPaint(painter: _WovenPattern(c.felt), isComplex: true),
+              ),
+            ),
+            Padding(padding: padding, child: child),
+          ],
         ),
       ),
     );
