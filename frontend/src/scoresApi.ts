@@ -36,8 +36,8 @@ export async function postWithLogin<T>(route: string, body: object): Promise<T> 
     }
 }
 
-export async function saveScore(runId: string, score: number, table: number): Promise<{ bestScore: number; rank: number }> {
-    return postWithLogin('api/savescore', { runId, score, table, tzOffset: new Date().getTimezoneOffset() });
+export async function saveScore(runId: string, score: number, table: number, endedAt?: string): Promise<{ bestScore: number; rank: number }> {
+    return postWithLogin('api/savescore', { runId, score, table, endedAt, tzOffset: new Date().getTimezoneOffset() });
 }
 
 export type ScoreSort = 'date' | 'score';

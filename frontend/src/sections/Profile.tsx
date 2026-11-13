@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useOnReconnect } from "../useOnline";
 import { fetchMyScores, formatTime, type MyScores, type ScoreSort } from "../scoresApi";
 import { getUser } from "../tokenStorage";
 import { useDebounced } from "../useDebounced";
@@ -19,6 +20,10 @@ const Profile = () => {
     const requestKey = `${sort}|${debouncedSearch}`;
     const [loadedKey, setLoadedKey] = useState<string | null>(null);
     const loading = loadedKey !== requestKey;
+    // reload when the connection comes back
+    const [reconnects, setReconnects] = useState(0);
+    const onReconnect = useCallback(() => setReconnects((n) => n + 1), []);
+    useOnReconnect(onReconnect);
 
     useEffect(() => {
         let cancelled = false;
@@ -27,7 +32,7 @@ const Profile = () => {
             .catch((err) => { if (!cancelled) setError((err as Error).message); })
             .finally(() => { if (!cancelled) setLoadedKey(`${sort}|${debouncedSearch}`); });
         return () => { cancelled = true; };
-    }, [debouncedSearch, sort]);
+    }, [debouncedSearch, sort, reconnects]);
 
     const username = data?.username ?? getUser()?.username ?? '';
 

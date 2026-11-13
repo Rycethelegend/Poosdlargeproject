@@ -9,11 +9,13 @@ import RegisterPage from './auth/RegisterPage.tsx';
 import ForgotPasswordPage from './auth/ForgotPasswordPage.tsx';
 import ResetPasswordPage from './auth/ResetPasswordPage.tsx';
 import { validToken } from './tokenStorage.ts';
+import OfflineBanner from './components/OfflineBanner.tsx';
 
 
 function RootLayout() {
     return (
         <main className="overflow-x-hidden">
+            <OfflineBanner />
             <Outlet />
         </main>
     );

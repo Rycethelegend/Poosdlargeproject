@@ -279,10 +279,18 @@ exports.setApp = function (app, mongoose) {
     }
 
     
-    // New score helper function
-    async function recordScore({ userId, username, runId, score, table, tzOffset, mode }) {
+    // Use the run's end time if it's from the last 7 days, otherwise now
+    function scoreDate(endedAt) {
+        const now = Date.now();
+        const ended = typeof endedAt === 'string' ? Date.parse(endedAt) : NaN;
+        const believable = Number.isFinite(ended) && ended <= now + 5 * 60 * 1000 && ended >= now - 7 * 24 * 60 * 60 * 1000;
+        return new Date(believable ? Math.min(ended, now) : now);
+    }
 
-        const date = new Date();
+    // New score helper function
+    async function recordScore({ userId, username, runId, score, table, tzOffset, mode, endedAt }) {
+
+        const date = scoreDate(endedAt);
         const entry = { runId: runId, score: score, table: table, date: date, day: localDay(date, tzOffset) };
         if (mode) entry.mode = mode;
 
@@ -614,12 +622,13 @@ exports.setApp = function (app, mongoose) {
 
 
     // POST /api/savescore: Called when a run ends. Adds the score to the user's own list and to the Leaderboard collection. Saving the same runId twice does nothing.
+    // incoming: jwtToken, runId, score, table, tzOffset, endedAt (optional)
     app.post('/api/savescore', route(async (req, res) => {
 
         const login = requireLogin(req, res);
         if (!login) return;
 
-        const { score, table, tzOffset } = req.body;
+        const { score, table, tzOffset, endedAt } = req.body;
         const runId = cleanString(req.body.runId);
 
         if (!Number.isSafeInteger(score) || score < 0) {
@@ -644,7 +653,7 @@ exports.setApp = function (app, mongoose) {
 
         const { bestScore, rank } = await recordScore({
 
-            userId: login.userId, username: user.username, runId, score, table, tzOffset,
+            userId: login.userId, username: user.username, runId, score, table, tzOffset, endedAt,
         });
 
         res.status(200).json({

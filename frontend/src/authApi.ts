@@ -15,7 +15,9 @@ export async function postJson<T>(route: string, body: unknown): Promise<T> {
         });
     }
     catch {
-        throw new Error("Can't reach the server. Check your connection and try again.");
+        throw new Error(navigator.onLine
+            ? "Can't reach the server. Please try again in a moment."
+            : "You're offline. Check your internet connection and try again.");
     }
 
     const data = await response.json().catch(() => ({}));

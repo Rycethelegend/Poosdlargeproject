@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import GameView, { type SaveStatus } from "../game/GameView";
+import { flushPendingScores, queueScore } from "../game/pendingScores";
 import { newRun, parseSavedRun, runReducer, type RunAction, type RunState } from "../game/run";
 import { ROUNDS } from "../game/rounds";
 import { CardFace, ChipStack } from "../game/sprites";
-import { saveScore } from "../scoresApi";
 import { getUser } from "../tokenStorage";
+import { useOnline, useOnReconnect } from "../useOnline";
 
 // The run in progress is kept on this device so "Go back" or a page reload
 // doesn't lose it. Finished scores are saved to the server.
@@ -27,11 +28,11 @@ const Singleplayer = () => {
     const [saveError, setSaveError] = useState('');
     // Opening Singleplayer shows the description first, so "Go back" still works
     const [showIntro, setShowIntro] = useState(true);
-    const savingRunId = useRef<string | null>(null);
+    const online = useOnline();
 
-    // A finished run is "saving" until the server answers or the request fails
     const saveStatus: SaveStatus = state?.phase !== 'gameOver' ? 'idle'
         : state.saved ? 'saved'
+        : !online ? 'waiting'
         : saveError ? 'error'
         : 'saving';
 
@@ -49,30 +50,34 @@ const Singleplayer = () => {
         }
     }, [state]);
 
-    // Save the score as soon as a run ends (a failed save waits for "Try again").
-    // The ref stops a second request for the same run while one is in flight.
-    useEffect(() => {
-        if (state?.phase !== 'gameOver' || state.saved || saveError) return;
-        if (savingRunId.current === state.runId) return;
+    // Sends any queued scores (including ones from earlier runs)
+    const sendQueued = useCallback(() => {
+        if (!navigator.onLine) return;
+        flushPendingScores((runId, result) => {
+            setState((current) => current && current.runId === runId
+                ? runReducer(current, { type: 'scoreSaved', bestScore: result.bestScore, rank: result.rank })
+                : current);
+        })
+            .then(() => setSaveError(''))
+            .catch((err) => setSaveError((err as Error).message));
+    }, []);
 
-        savingRunId.current = state.runId;
-        saveScore(state.runId, state.totalScore, state.table)
-            .then((result) => dispatch({ type: 'scoreSaved', bestScore: result.bestScore, rank: result.rank }))
-            .catch((err) => {
-                savingRunId.current = null;
-                setSaveError((err as Error).message);
-            });
-    }, [state, saveError, dispatch]);
+    // Queue the score when a run ends, then try to send it
+    const endedRunId = state?.phase === 'gameOver' && !state.saved ? state.runId : null;
+    useEffect(() => {
+        if (!endedRunId || !state) return;
+        queueScore({ runId: state.runId, score: state.totalScore, table: state.table, endedAt: state.endedAt ?? new Date().toISOString() });
+        sendQueued();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [endedRunId, sendQueued]);
+
+    useEffect(() => { sendQueued(); }, [sendQueued]);
+    useOnReconnect(sendQueued);
 
     function startRun() {
         setSaveError('');
         setState(newRun());
         setShowIntro(false);
-    }
-
-    function retrySave() {
-        // Clearing the error lets the effect above send it again
-        setSaveError('');
     }
 
     // A run that was left partway through (not one that already ended)
@@ -87,7 +92,7 @@ const Singleplayer = () => {
                     <ChipStack color="blue" height={3} className="w-10" />
                     <ChipStack color="red" height={2} className="w-10" />
                 </div>
-                <p className="text-4xl font-semibold">Poosdbalatro</p>
+                <p className="text-4xl font-semibold">Poosdalatro</p>
                 <ul className="text-lg text-left max-w-lg space-y-1 bg-cream/85 rounded-2xl p-4">
                     <li>Play poker hands from your 8 cards. Each hand scores <b>chips × mult</b>.</li>
                     <li>Reach the round's target within 4 hands. You can discard up to 3 times to redraw.</li>
@@ -127,7 +132,7 @@ const Singleplayer = () => {
             onGiveUp={() => dispatch({ type: 'giveUp' })}
             saveStatus={saveStatus}
             saveError={saveError}
-            onRetrySave={retrySave}
+            onRetrySave={sendQueued}
         />
     );
 }

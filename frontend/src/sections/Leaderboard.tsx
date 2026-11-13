@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useOnReconnect } from "../useOnline";
 import { fetchLeaderboard, type LeaderboardEntry } from "../scoresApi";
 import { getUser } from "../tokenStorage";
 import { useDebounced } from "../useDebounced";
@@ -14,6 +15,10 @@ const Leaderboard = () => {
     const [loadedSearch, setLoadedSearch] = useState<string | null>(null);
     const loading = loadedSearch !== debouncedSearch;
     const me = getUser()?.username.toLowerCase();
+    // reload when the connection comes back
+    const [reconnects, setReconnects] = useState(0);
+    const onReconnect = useCallback(() => setReconnects((n) => n + 1), []);
+    useOnReconnect(onReconnect);
 
 
     useEffect(() => {
@@ -25,7 +30,7 @@ const Leaderboard = () => {
             .finally(() => { if (!cancelled) setLoadedSearch(debouncedSearch); });
         return () => { cancelled = true; };
 
-    }, [debouncedSearch]);
+    }, [debouncedSearch, reconnects]);
 
 
     return (
