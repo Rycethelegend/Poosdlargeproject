@@ -26,7 +26,7 @@ export const JOKERS: JokerInfo[] = [
         description: '+4 Mult',
         image: '/sprites/jokers/duck.png',
         price: 3,
-        rarity: 3,   // 1 in 3 rarity
+        rarity: 3,   // 1 in x rarity
     },
     {
         id: 'chuckElephant',
@@ -34,7 +34,7 @@ export const JOKERS: JokerInfo[] = [
         description: 'Always adds +10 chips and +2 Mult to the hand. Elephants never forget...',
         image: '/sprites/jokers/elephant.png',
         price: 10,
-        rarity: 10,  // 1 in 10 rarity
+        rarity: 10,  // 1 in x rarity
     },
     {
         id: 'moneyBags',
@@ -42,7 +42,7 @@ export const JOKERS: JokerInfo[] = [
         description: 'Adds +$1 to the end of round total.',
         image: '/sprites/jokers/moneybags.png',
         price: 5,
-        rarity: 5,   // 1 in 5 rarity
+        rarity: 5,   // 1 in x rarity
     },
     {
         id: 'redTeam',
@@ -50,7 +50,7 @@ export const JOKERS: JokerInfo[] = [
         description: 'Each scoring ♥ Hearts or ♦ Diamonds card gives +2 Mult',
         image: '/sprites/jokers/redteam.png',
         price: 5,
-        rarity: 5,   // 1 in 5 rarity
+        rarity: 5,   // 1 in x rarity
     },
     {
         id: 'blueTeam',
@@ -58,6 +58,6 @@ export const JOKERS: JokerInfo[] = [
         description: 'Each scoring ♠ Spades or ♣ Clubs card gives +18 Chips',
         image: '/sprites/jokers/blueteam.png',
         price: 5,
-        rarity: 5,   // 1 in 5 rarity
+        rarity: 5,   // 1 in x rarity
     },
 ];
