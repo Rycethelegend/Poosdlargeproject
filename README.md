@@ -37,7 +37,7 @@ Rudolph Antoine - API Developer:
 (here)
 
 Alec Hayes - Frontend Developer:
-(here)
+Worked on the Frontend with mainly developing the Singleplayer for both the website and mobile as well as getting the email for the email verification system to work. Also created the credits.
 
 
 
