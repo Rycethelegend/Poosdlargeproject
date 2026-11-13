@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:poosdalatro/utils/connection.dart';
 import 'package:poosdalatro/utils/session.dart';
 
 class ApiException implements Exception {
@@ -13,17 +14,24 @@ class ApiException implements Exception {
 class Api {
   static Future<Map<String, dynamic>> post(
       String url, Map<String, dynamic> body) async {
-    final response = await http
-        .post(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-        if (Session.token != null)
-          'Authorization': 'Bearer ${Session.token}',
-      },
-      body: jsonEncode(body),
-    )
-        .timeout(const Duration(seconds: 10));
+    final http.Response response;
+    try {
+      response = await http
+          .post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          if (Session.token != null)
+            'Authorization': 'Bearer ${Session.token}',
+        },
+        body: jsonEncode(body),
+      )
+          .timeout(const Duration(seconds: 10));
+    } on http.ClientException {
+      Connection.markOffline();
+      throw ApiException(Connection.offlineMessage);
+    }
+    Connection.markOnline();
 
     final data = response.body.isEmpty
         ? <String, dynamic>{}

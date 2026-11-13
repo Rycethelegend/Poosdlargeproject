@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/routes/routes.dart';
 import 'package:poosdalatro/utils/api.dart';
+import 'package:poosdalatro/utils/connection.dart';
 import 'package:poosdalatro/utils/scores_api.dart';
 import 'package:poosdalatro/utils/session.dart';
 
@@ -28,7 +29,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   void initState() {
     super.initState();
+    Connection.online.addListener(_onConnectionChange);
     _load();
+  }
+
+  // reload when the connection comes back
+  void _onConnectionChange() {
+    if (Connection.online.value) _load();
   }
 
   Future<void> _load() async {
@@ -64,6 +71,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   void dispose() {
+    Connection.online.removeListener(_onConnectionChange);
     _debounce?.cancel();
     _search.dispose();
     super.dispose();
