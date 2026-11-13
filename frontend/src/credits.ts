@@ -1,3 +1,5 @@
+// Same list as mobile/lib/utils/credits.dart, keep them matching
+
 export interface TeamMember {
     name: string;
     role: string;

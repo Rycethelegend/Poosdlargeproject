@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/routes/routes.dart';
+import 'package:poosdalatro/screens/credits_dialog.dart';
+import 'package:poosdalatro/utils/app_theme.dart';
 import 'package:poosdalatro/utils/session.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,9 +14,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Lets the Settings button open the drawer
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  // TODO: only flips the switch and its label; doesn't change the app's theme yet
-  bool _darkMode = false;
 
   // Clears the login and removes every screen, so Back can't return into the app
   void _logout() {
@@ -120,9 +119,17 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(_darkMode ? 'Dark mode' : 'Light mode'),
-                value: _darkMode,
-                onChanged: (value) => setState(() => _darkMode = value),
+                title: Text(AppTheme.isDark ? 'Dark mode' : 'Light mode'),
+                value: AppTheme.isDark,
+                onChanged: (value) async {
+                  await AppTheme.setDark(value);
+                  setState(() {});
+                },
+              ),
+              TextButton(
+                onPressed: () => showDialog(
+                    context: context, builder: (_) => const CreditsDialog()),
+                child: const Text('Credits'),
               ),
               const Spacer(),
               TextButton(onPressed: _logout, child: const Text('Log out')),
