@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:poosdalatro/screens/forgot_password_screen.dart';
 import 'package:poosdalatro/screens/game_screen.dart';
 import 'package:poosdalatro/screens/home_screen.dart';
 import 'package:poosdalatro/screens/leaderboard_screen.dart';
@@ -13,6 +14,7 @@ import 'package:poosdalatro/utils/session.dart';
 class Routes {
   static const String login = '/login';
   static const String register = '/register';
+  static const String forgotPassword = '/forgot-password';
   static const String home = '/home';
   static const String game = '/play';
   static const String leaderboard = '/leaderboard';
@@ -22,6 +24,7 @@ class Routes {
     '/': (context) => _guestOnly(const LoginScreen()),
     login: (context) => _guestOnly(const LoginScreen()),
     register: (context) => _guestOnly(const RegisterScreen()),
+    forgotPassword: (context) => _guestOnly(const ForgotPasswordScreen()),
     home: (context) => _requireLogin(const HomeScreen()),
     game: (context) => _requireLogin(const GameScreen()),
     leaderboard: (context) => _requireLogin(const LeaderboardScreen()),
