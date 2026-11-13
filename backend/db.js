@@ -1,12 +1,13 @@
 import { MongoClient } from 'mongodb';
 
-const client = new MongoClient(process.env.MONGODB_URI);
+// Same database and setting names as the main server
+const client = new MongoClient(process.env.DATABASE_LINK || process.env.MONGODB_URI);
 let database;
 
 // Connect once at startup and reuse the connection for every request
 export async function connectToMongoDB() {
   await client.connect();
-  database = client.db(process.env.DB_NAME || 'PoosdDatabase');
+  database = client.db('PoosdDatabase');
   console.log('Connected to MongoDB');
 }
 

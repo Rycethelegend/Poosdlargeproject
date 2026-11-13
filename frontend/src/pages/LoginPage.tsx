@@ -15,7 +15,7 @@ export default function LoginPage() {
     setError('');
 
     if (!username || !password) {
-      setError('Please enter your username and password');
+      setError('Please enter your username or email and your password');
       return;
     }
 
@@ -35,7 +35,7 @@ export default function LoginPage() {
       <form className="menu-content" onSubmit={handleSubmit}>
         <input
           className="sketch-box"
-          placeholder="Username..."
+          placeholder="Username or email..."
           autoComplete="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}

@@ -49,7 +49,7 @@ export default function RegisterPage() {
         <input
           className="sketch-box"
           type="password"
-          placeholder="Choose Password..."
+          placeholder="Choose Password (8+ characters)..."
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
