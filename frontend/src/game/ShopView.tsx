@@ -4,8 +4,9 @@ import { HANDS, handValues } from './hands';
 import { HIGH_ROLLER, ROUNDS, roundTarget } from './rounds';
 import { STUDY_PRICE, type RunAction, type RunState } from './run';
 
-// Between rounds: buy jokers and Study Guides (hand level-ups), sell jokers, reroll
-const ShopView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunAction) => void }) => {
+// Between rounds: buy jokers and Study Guides (hand level-ups), sell jokers, reroll.
+// nextLocked (multiplayer) replaces the Next round button with a reason to wait.
+const ShopView = ({ state, dispatch, nextLocked }: { state: RunState; dispatch: (a: RunAction) => void; nextLocked?: string }) => {
     const shop = state.shop!;
     const jokersFull = state.jokers.length >= MAX_JOKERS;
 
@@ -101,9 +102,13 @@ const ShopView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActio
                     {nextBoss && <p className="text-danger"><BossLabel bossId={state.boss} prefix="Boss" /></p>}
                     {nextIsNewTable && <p className="text-sm opacity-80">The new table's High Roller boss is revealed when you reach it.</p>}
                 </div>
-                <button className="gameButton text-xl" onClick={() => dispatch({ type: 'nextRound' })}>
-                    Next round
-                </button>
+                {nextLocked ? (
+                    <p className="font-semibold max-w-xs text-right">{nextLocked}</p>
+                ) : (
+                    <button className="gameButton text-xl" onClick={() => dispatch({ type: 'nextRound' })}>
+                        Next round
+                    </button>
+                )}
             </div>
         </div>
     );

@@ -3,6 +3,7 @@ import { fetchLeaderboard, type LeaderboardEntry } from "../scoresApi";
 import { getUser } from "../tokenStorage";
 import { useDebounced } from "../useDebounced";
 
+
 const Leaderboard = () => {
 
     const [search, setSearch] = useState('');
@@ -14,14 +15,18 @@ const Leaderboard = () => {
     const loading = loadedSearch !== debouncedSearch;
     const me = getUser()?.username.toLowerCase();
 
+
     useEffect(() => {
+
         let cancelled = false;
         fetchLeaderboard(debouncedSearch)
             .then((result) => { if (!cancelled) { setRows(result); setError(''); } })
             .catch((err) => { if (!cancelled) setError((err as Error).message); })
             .finally(() => { if (!cancelled) setLoadedSearch(debouncedSearch); });
         return () => { cancelled = true; };
+
     }, [debouncedSearch]);
+
 
     return (
         <div className="feltPanel p-4 sm:p-6 flex flex-col gap-4">
@@ -53,7 +58,7 @@ const Leaderboard = () => {
                     <span className="hidden sm:block w-24">Date</span>
                 </div>
 
-                <ol className={`max-h-[55vh] overflow-y-auto transition-opacity ${loading ? 'opacity-60' : ''}`}>
+                <ol className={`max-h-[50vh] overflow-y-auto transition-opacity ${loading ? 'opacity-60' : ''}`}>
                     {rows?.map((row, i) => (
                         <li
                             key={`${row.username}-${row.date}`}

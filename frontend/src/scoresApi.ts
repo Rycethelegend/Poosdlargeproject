@@ -21,7 +21,7 @@ export interface MyScores {
 
 // Sends the saved login token along and keeps the refreshed one the server returns.
 // An expired login sends the user back to the login page.
-async function postWithLogin<T>(route: string, body: object): Promise<T> {
+export async function postWithLogin<T>(route: string, body: object): Promise<T> {
     try {
         const data = await postJson<T & { jwtToken?: string }>(route, { ...body, jwtToken: retrieveToken() });
         if (data.jwtToken) storeToken(data.jwtToken);
