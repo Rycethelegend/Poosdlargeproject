@@ -97,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (kDebugMode)
           TextButton(
             onPressed: () {
+              Session.skippedLogin = true;
               Session.username = 'tester';
               Navigator.pushReplacementNamed(context, Routes.home);
             },

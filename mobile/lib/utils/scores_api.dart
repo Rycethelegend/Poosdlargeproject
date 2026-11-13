@@ -9,8 +9,7 @@ class ScoresApi {
       'https://poosdbasecontactmanager.casa/api/$route',
       {...body, 'jwtToken': Session.token},
     );
-    if (data['jwtToken'] is String) Session.token = data['jwtToken'];
-    return data;
+    if (data['jwtToken'] is String) Session.saveToken(data['jwtToken']);    return data;
   }
 
   static Future<Map<String, dynamic>> fetchMyScores(

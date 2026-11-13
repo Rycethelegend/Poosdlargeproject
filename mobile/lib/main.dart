@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:poosdalatro/routes/routes.dart';
+import 'package:poosdalatro/utils/session.dart';
 
 /// App entry point: locks the app to landscape, then starts it.
 Future<void> main() async {
@@ -9,6 +10,7 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+  await Session.load();
   runApp(const MyApp());
 }
 
