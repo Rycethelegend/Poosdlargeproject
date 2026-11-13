@@ -6,10 +6,10 @@ name: CI/CD Pipeline
 on:
     push:
         branches:
-            - multiplayer
+            - main
     pull_request:
         branches:
-            - multiplayer
+            - main
     workflow_dispatch:
 
 jobs:
