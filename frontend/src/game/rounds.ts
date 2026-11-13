@@ -14,16 +14,15 @@ export const ROUNDS = [
 export type RoundIndex = 0 | 1 | 2;
 export const HIGH_ROLLER: RoundIndex = 2;
 
-const TABLE_TARGETS = [250, 600, 1500, 3500, 8000, 16000, 30000, 55000];
+// Base targets for tables 1-8 (keep in sync with multiplayer/rules.js)
+const TABLE_TARGETS = [250, 600, 1300, 2600, 4800, 8500, 14000, 22000];
+const LATE_GROWTH = 1.6;
 
 export function tableBaseTarget(table: number): number {
     if (table <= TABLE_TARGETS.length) return TABLE_TARGETS[table - 1];
-    // Past table 8 each table is 1.8× harder, rounded to the nearest 500
-    let target = TABLE_TARGETS[TABLE_TARGETS.length - 1];
-    for (let t = TABLE_TARGETS.length; t < table; t++) {
-        target = Math.round((target * 1.8) / 500) * 500;
-    }
-    return target;
+    // after table 8: grows 1.6x per table, rounded to the nearest 500
+    const last = TABLE_TARGETS[TABLE_TARGETS.length - 1];
+    return Math.round(last * LATE_GROWTH ** (table - TABLE_TARGETS.length) / 500) * 500;
 }
 
 export function roundTarget(table: number, round: RoundIndex): number {

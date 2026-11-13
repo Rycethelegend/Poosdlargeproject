@@ -38,18 +38,16 @@ const FINISHED_ROOM_LIFETIME_SEC = 60 * 60; // finished rooms stay viewable for 
 const CONNECTED_SEC = 10; // "connected" dot in the player list
 
 // Same numbers as frontend/src/game/rounds.ts. Keep the two in sync.
-const TABLE_TARGETS = [250, 600, 1500, 3500, 8000, 16000, 30000, 55000];
+const TABLE_TARGETS = [250, 600, 1300, 2600, 4800, 8500, 14000, 22000];
+const LATE_GROWTH = 1.6;
 const ROUND_SCALES = [1, 1.5, 2];
 
 
 function tableBaseTarget(table) {
 
     if (table <= TABLE_TARGETS.length) return TABLE_TARGETS[table - 1];
-    let target = TABLE_TARGETS[TABLE_TARGETS.length - 1];
-    for (let t = TABLE_TARGETS.length; t < table; t++) {
-        target = Math.round((target * 1.8) / 500) * 500;
-    }
-    return target;
+    const last = TABLE_TARGETS[TABLE_TARGETS.length - 1];
+    return Math.round(last * LATE_GROWTH ** (table - TABLE_TARGETS.length) / 500) * 500;
 }
 
 

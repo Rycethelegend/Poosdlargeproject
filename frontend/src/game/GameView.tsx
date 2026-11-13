@@ -4,9 +4,10 @@ import { HIGH_ROLLER, ROUNDS } from './rounds';
 import RoundView from './RoundView';
 import ShopView from './ShopView';
 import { BossLabel, Stat } from './GamePieces';
+import HandsPanel from './HandsPanel';
 import type { RunAction, RunState } from './run';
 
-export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'waiting';
 
 type Props = {
     state: RunState;
@@ -26,6 +27,7 @@ type Props = {
 
 const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, onRetrySave, banner, nextLocked, giveUpPrompt, giveUpLabel = 'End run' }: Props) => {
     const [confirmGiveUp, setConfirmGiveUp] = useState(false);
+    const [showHands, setShowHands] = useState(false);
     const round = ROUNDS[state.round];
     const progress = Math.min(100, (state.roundScore / state.target) * 100);
 
@@ -44,6 +46,16 @@ const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, 
             </div>
 
             {banner}
+
+            {(state.phase === 'playing' || state.phase === 'shop') && (
+                <div className="flex justify-start -mb-2">
+                    <button className="gameButton py-1" aria-haspopup="dialog" onClick={() => setShowHands(true)}>
+                        Poker hands
+                    </button>
+                </div>
+            )}
+
+            {showHands && <HandsPanel levels={state.handLevels} onClose={() => setShowHands(false)} />}
 
             {state.phase === 'playing' && (
                 <>
@@ -102,15 +114,21 @@ const GameView = ({ state, dispatch, onNewRun, onGiveUp, saveStatus, saveError, 
                                 Saved! Leaderboard rank #{state.saved.rank.toLocaleString()} · Your best: {state.saved.bestScore.toLocaleString()}
                             </p>
                         )}
+                        {saveStatus === 'waiting' && (
+                            <p className="formInfo">
+                                You're offline. Your score is kept on this device and goes on the leaderboard once you're back online.
+                            </p>
+                        )}
                         {saveStatus === 'error' && !state.saved && (
                             <div className="formError flex flex-col gap-2">
                                 <span>{saveError}</span>
+                                <span className="text-sm">Your score is kept on this device and will be sent again.</span>
                                 <button className="underline" onClick={onRetrySave}>Try again</button>
                             </div>
                         )}
                     </div>
 
-                    <button className="gameButton text-xl" onClick={onNewRun} disabled={!state.saved && saveStatus !== 'error'}>
+                    <button className="gameButton text-xl" onClick={onNewRun} disabled={saveStatus === 'saving'}>
                         New run
                     </button>
                 </div>

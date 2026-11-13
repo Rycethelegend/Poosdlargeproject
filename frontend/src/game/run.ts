@@ -1,5 +1,5 @@
 import { cardChips, cardLabel, createDeck, shuffle, type Card, type SortMode } from './cards';
-import { JOKERS_BY_ID, MAX_JOKERS, sellPrice, SHOP_JOKER_IDS, type Effect, type PlayContext } from './jokers';
+import { JOKERS_BY_ID, MAX_JOKERS, pickWeightedJokers, sellPrice, SHOP_JOKER_IDS, type Effect, type PlayContext } from './jokers';
 import { evaluateHand, HAND_TYPES, HANDS, handValues, startingLevels, type HandLevels, type HandType } from './hands';
 import {
     activeBossRules, HIGH_ROLLER, isBlocked, randomBoss, ROUNDS, roundRules, roundTarget, savingsBonus,
@@ -85,6 +85,7 @@ export interface RunState {
 
     saved: { bestScore: number; rank: number } | null;
     gaveUp?: boolean;
+    endedAt?: string;
 }
 
 export type RunAction =
@@ -269,7 +270,7 @@ function pickRandom<T>(pool: T[], count: number): (T | null)[] {
 
 function jokerOffers(state: RunState): (string | null)[] {
     const owned = new Set(state.jokers.map(c => c.id));
-    return pickRandom(SHOP_JOKER_IDS.filter(id => !owned.has(id)), SHOP_JOKER_SLOTS);
+    return pickWeightedJokers(SHOP_JOKER_IDS.filter(id => !owned.has(id)), SHOP_JOKER_SLOTS);
 }
 
 function openShop(state: RunState): ShopState {
@@ -321,7 +322,7 @@ export function runReducer(state: RunState, action: RunAction): RunState {
                 return { ...next, phase: 'roundWon', reward: computeReward(next) };
             }
             if (next.handsLeft === 0 || next.hand.length === 0) {
-                return { ...next, phase: 'gameOver' };
+                return { ...next, phase: 'gameOver', endedAt: new Date().toISOString() };
             }
             return next;
         }
@@ -406,7 +407,7 @@ export function runReducer(state: RunState, action: RunAction): RunState {
 
         case 'giveUp':
             if (state.phase !== 'playing' && state.phase !== 'shop') return state;
-            return { ...state, phase: 'gameOver', gaveUp: true, selected: [] };
+            return { ...state, phase: 'gameOver', gaveUp: true, selected: [], endedAt: new Date().toISOString() };
 
         case 'scoreSaved':
             return { ...state, saved: { bestScore: action.bestScore, rank: action.rank } };
