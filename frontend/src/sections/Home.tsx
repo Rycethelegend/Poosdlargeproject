@@ -118,18 +118,19 @@ const Home = () => {
                             </span>
                         </button>
 
-                        <button
-                            role="switch"
-                            aria-checked={useOverlay}
-                            disabled={smallScreen}
-                            title={smallScreen ? "Always on for small screens" : undefined}
-                            className="w-full flex items-center justify-between px-3 bg-wood-light rounded-2xl py-2 text-2xl hover:bg-black/10"
-                            onClick={toggleOverlayMode}>
-                            <span>Overlay mode</span>
-                            <span className={`relative w-12 h-7 rounded-full transition-colors ${useOverlay ? 'bg-felt-edge' : 'bg-cream'}`}>
-                                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-ink transition-transform ${useOverlay ? 'translate-x-5' : ''}`} />
-                            </span>
-                        </button>
+                        {/* phones always use the overlay, so no switch there */}
+                        {!smallScreen && (
+                            <button
+                                role="switch"
+                                aria-checked={overlayMode}
+                                className="w-full flex items-center justify-between px-3 bg-wood-light rounded-2xl py-2 text-2xl hover:bg-black/10"
+                                onClick={toggleOverlayMode}>
+                                <span>Overlay mode</span>
+                                <span className={`relative w-12 h-7 rounded-full transition-colors ${overlayMode ? 'bg-felt-edge' : 'bg-cream'}`}>
+                                    <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-ink transition-transform ${overlayMode ? 'translate-x-5' : ''}`} />
+                                </span>
+                            </button>
+                        )}
 
                         <button
                             className="w-full text-left px-3 bg-wood-light rounded-2xl py-2 text-2xl hover:bg-black/10"
