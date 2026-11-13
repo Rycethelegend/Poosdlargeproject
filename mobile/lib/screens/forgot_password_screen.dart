@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:poosdalatro/routes/routes.dart';
 import 'package:poosdalatro/screens/auth_layout.dart';
 import 'package:poosdalatro/utils/api.dart';
+import 'package:poosdalatro/widgets/table_widgets.dart';
 
 enum _Step { email, code, newPassword }
 
@@ -141,11 +142,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  Widget _message() {
-    if (_error.isNotEmpty) return Text(_error, textAlign: TextAlign.center);
-    if (_info.isNotEmpty) return Text(_info, textAlign: TextAlign.center);
-    return const SizedBox.shrink();
-  }
+  Widget _message() => FormMessage(error: _error, info: _info);
 
   Widget _backToLogin() => TextButton(
         onPressed: () => Navigator.pushReplacementNamed(context, Routes.login),

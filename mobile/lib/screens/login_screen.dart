@@ -4,6 +4,7 @@ import 'package:poosdalatro/routes/routes.dart';
 import 'package:poosdalatro/screens/auth_layout.dart';
 import 'package:poosdalatro/utils/api.dart';
 import 'package:poosdalatro/utils/session.dart';
+import 'package:poosdalatro/widgets/table_widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -58,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return AuthLayout(
       heading: 'Log In',
       children: [
-        if (_error.isNotEmpty) Text(_error, textAlign: TextAlign.center),
+        FormMessage(error: _error),
         TextField(
           controller: _loginName,
           decoration: const InputDecoration(labelText: 'Username or email'),

@@ -5,6 +5,8 @@ import 'package:poosdalatro/utils/api.dart';
 import 'package:poosdalatro/utils/connection.dart';
 import 'package:poosdalatro/utils/scores_api.dart';
 import 'package:poosdalatro/utils/session.dart';
+import 'package:poosdalatro/utils/app_theme.dart';
+import 'package:poosdalatro/widgets/table_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -89,6 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final c = GameColors.of(context);
     final List scores = _data?['scores'] ?? [];
     final String username = _data?['username'] ?? Session.username;
     final String searchText = _search.text.trim();
@@ -98,80 +101,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
+            constraints: const BoxConstraints(maxWidth: 760),
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
               children: [
-                // Username on the left, the two stats on the right
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(username,
-                          style: Theme.of(context).textTheme.headlineMedium),
-                    ),
-                    _stat('BEST SCORE',
-                        _withCommas((_data?['bestScore'] ?? 0 as num).toInt())),
-                    _stat('GAMES', '${_data?['gamesPlayed'] ?? 0}'),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    const Text('Sort by', style: _bold),
-                    const SizedBox(width: 8),
-                    SegmentedButton<String>(
-                      segments: const [
-                        ButtonSegment(
-                            value: 'date', label: Text('Newest first')),
-                        ButtonSegment(
-                            value: 'score', label: Text('Highest score')),
-                      ],
-                      selected: {_sort},
-                      onSelectionChanged: (selection) {
-                        setState(() => _sort = selection.first);
-                        _load();
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _search,
-                  decoration: const InputDecoration(
-                      labelText: 'Search by date, e.g. 2026-11 or 2026-11-05'),
-                  onChanged: _onSearchChanged,
-                ),
-                const SizedBox(height: 12),
-                if (_error.isNotEmpty) Text(_error),
-                _row(const Text('Date', style: _bold),
-                    const Text('Score', style: _bold),
-                    const Text('Table', style: _bold)),
-                const Divider(height: 1),
-
-                Opacity(
-                  opacity: _loading ? 0.6 : 1,
+                FeltPanel(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
                     children: [
-                      for (final entry in scores)
-                        _row(
-                          Text('${entry['day']}  ${_formatTime(entry['date'])}'),
-                          Text(_withCommas((entry['score'] as num).toInt()),
-                              style: _bold),
-                          Text('${entry['table']}'),
+                      // Username on the left, the two stats on the right
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.end,
+                        spacing: 12,
+                        runSpacing: 8,
+                        children: [
+                          Text(username,
+                              style: const TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.bold)),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 10,
+                            children: [
+                              StatBox(
+                                  label: 'BEST SCORE',
+                                  value: _withCommas(
+                                      (_data?['bestScore'] ?? 0 as num).toInt())),
+                              StatBox(
+                                  label: 'GAMES',
+                                  value: '${_data?['gamesPlayed'] ?? 0}'),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Text('Sort by', style: _bold),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: SegmentedButton<String>(
+                              showSelectedIcon: false,
+                              segments: const [
+                                ButtonSegment(
+                                    value: 'date', label: Text('Newest first')),
+                                ButtonSegment(
+                                    value: 'score', label: Text('Highest score')),
+                              ],
+                              selected: {_sort},
+                              onSelectionChanged: (selection) {
+                                setState(() => _sort = selection.first);
+                                _load();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextField(
+                        controller: _search,
+                        decoration: const InputDecoration(
+                            labelText: 'Search by date, e.g. 2026-11 or 2026-11-05'),
+                        onChanged: _onSearchChanged,
+                      ),
+                      FormMessage(error: _error),
+                      Opacity(
+                        opacity: _loading ? 0.6 : 1,
+                        child: CreamList(
+                          children: [
+                            _row(const Text('Date', style: _bold),
+                                const Text('Score', style: _bold),
+                                const Text('Table', style: _bold)),
+                            Divider(height: 2, thickness: 2, color: c.feltEdge.withValues(alpha: 0.4)),
+                            for (int i = 0; i < scores.length; i++)
+                              Container(
+                                color: i.isEven
+                                    ? Colors.black.withValues(alpha: 0.05)
+                                    : null,
+                                child: _row(
+                                  Text('${scores[i]['day']}  ${_formatTime(scores[i]['date'])}'),
+                                  Text(_withCommas((scores[i]['score'] as num).toInt()),
+                                      style: _bold),
+                                  Text('${scores[i]['table']}'),
+                                ),
+                              ),
+                            if (_data != null && scores.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  searchText.isNotEmpty
+                                      ? 'No scores matching "$searchText".'
+                                      : 'No scores yet. Finish a Singleplayer run to see it here.',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),
-                if (_data != null && scores.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      searchText.isNotEmpty
-                          ? 'No scores matching "$searchText".'
-                          : 'No scores yet. Finish a Singleplayer run to see it here.',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
               ],
             ),
           ),
@@ -180,31 +208,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _stat(String label, String value) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          children: [
-            Text(label, style: Theme.of(context).textTheme.labelSmall),
-            Text(value, style: Theme.of(context).textTheme.titleLarge),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _row(Widget date, Widget score, Widget table) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
           Expanded(child: date),
           SizedBox(
-              width: 100,
+              width: 90,
               child: Align(alignment: Alignment.centerRight, child: score)),
           SizedBox(
-              width: 60,
+              width: 56,
               child: Align(alignment: Alignment.centerRight, child: table)),
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:poosdalatro/routes/routes.dart';
 import 'package:poosdalatro/screens/auth_layout.dart';
 import 'package:poosdalatro/utils/api.dart';
 import 'package:poosdalatro/utils/session.dart';
+import 'package:poosdalatro/widgets/table_widgets.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -159,10 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return AuthLayout(
         heading: 'Verify Your Email',
         children: [
-          if (_error.isNotEmpty)
-            Text(_error, textAlign: TextAlign.center)
-          else if (_info.isNotEmpty)
-            Text(_info, textAlign: TextAlign.center),
+          FormMessage(error: _error, info: _info),
           TextField(
             controller: _code,
             textAlign: TextAlign.center,
@@ -213,7 +211,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return AuthLayout(
       heading: 'Register',
       children: [
-        if (_error.isNotEmpty) Text(_error, textAlign: TextAlign.center),
+        FormMessage(error: _error),
         TextField(
           controller: _username,
           decoration: const InputDecoration(labelText: 'Username'),

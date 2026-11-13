@@ -5,6 +5,8 @@ import 'package:poosdalatro/utils/api.dart';
 import 'package:poosdalatro/utils/connection.dart';
 import 'package:poosdalatro/utils/scores_api.dart';
 import 'package:poosdalatro/utils/session.dart';
+import 'package:poosdalatro/utils/app_theme.dart';
+import 'package:poosdalatro/widgets/table_widgets.dart';
 
 /// The top 100 scores of all time, with a search by username or date
 class LeaderboardScreen extends StatefulWidget {
@@ -82,6 +84,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final c = GameColors.of(context);
     final List rows = _rows ?? [];
     final String searchText = _search.text.trim();
     final String me = Session.username.toLowerCase();
@@ -91,56 +94,68 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
+            constraints: const BoxConstraints(maxWidth: 760),
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
               children: [
-                Text(
-                  searchText.isNotEmpty
-                      ? 'Top scores matching "$searchText"'
-                      : 'Top 100 scores of all time',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _search,
-                  decoration: const InputDecoration(
-                      labelText: 'Search a username or a date, e.g. 2026-11-05'),
-                  onChanged: _onSearchChanged,
-                ),
-                const SizedBox(height: 12),
-                if (_error.isNotEmpty) Text(_error),
-                _row('#', 'Player', 'Score', 'Table', 'Date', bold: true),
-                const Divider(height: 1),
-                // Dimmed while a new search loads, as on the web
-                Opacity(
-                  opacity: _loading ? 0.6 : 1,
+                FeltPanel(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
                     children: [
-                      for (int i = 0; i < rows.length; i++)
-                        _row(
-                          '${i + 1}',
-                          '${rows[i]['username'] ?? ''}',
-                          _withCommas((rows[i]['score'] as num? ?? 0).toInt()),
-                          '${rows[i]['table'] ?? ''}',
-                          '${rows[i]['day'] ?? ''}',
-                          // Your own scores stand out, as on the web
-                          bold: '${rows[i]['username'] ?? ''}'.toLowerCase() ==
-                              me,
+                      Text(
+                        searchText.isNotEmpty
+                            ? 'Top scores matching "$searchText"'
+                            : 'Top 100 scores of all time',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      TextField(
+                        controller: _search,
+                        decoration: const InputDecoration(
+                            labelText: 'Search a username or a date, e.g. 2026-11-05'),
+                        onChanged: _onSearchChanged,
+                      ),
+                      FormMessage(error: _error),
+                      // Dimmed while a new search loads, as on the web
+                      Opacity(
+                        opacity: _loading ? 0.6 : 1,
+                        child: CreamList(
+                          children: [
+                            _row('#', 'Player', 'Score', 'Table', 'Date', bold: true),
+                            Divider(height: 2, thickness: 2, color: c.feltEdge.withValues(alpha: 0.4)),
+                            for (int i = 0; i < rows.length; i++)
+                              Container(
+                                // Your own scores stand out, as on the web
+                                color: '${rows[i]['username'] ?? ''}'.toLowerCase() == me
+                                    ? c.woodLight.withValues(alpha: 0.5)
+                                    : i.isEven
+                                        ? Colors.black.withValues(alpha: 0.05)
+                                        : null,
+                                child: _row(
+                                  '${i + 1}',
+                                  '${rows[i]['username'] ?? ''}',
+                                  _withCommas((rows[i]['score'] as num? ?? 0).toInt()),
+                                  '${rows[i]['table'] ?? ''}',
+                                  '${rows[i]['day'] ?? ''}',
+                                  bold: '${rows[i]['username'] ?? ''}'.toLowerCase() == me,
+                                ),
+                              ),
+                            if (_rows != null && rows.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  searchText.isNotEmpty
+                                      ? 'No scores matching "$searchText".'
+                                      : 'No scores yet. Be the first!',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),
-                if (_rows != null && rows.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      searchText.isNotEmpty
-                          ? 'No scores matching "$searchText".'
-                          : 'No scores yet. Be the first!',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
               ],
             ),
           ),
@@ -153,24 +168,27 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       String date,
       {bool bold = false}) {
     final style = bold ? _bold : null;
+    final showDate = MediaQuery.sizeOf(context).width >= 560;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          SizedBox(width: 48, child: Text(rank, style: style)),
+          SizedBox(width: 40, child: Text(rank, style: style)),
           Expanded(
             child: Text(player, style: style, overflow: TextOverflow.ellipsis),
           ),
           SizedBox(
-            width: 100,
+            width: 90,
             child: Text(score, textAlign: TextAlign.right, style: _bold),
           ),
           SizedBox(
-            width: 60,
+            width: 56,
             child: Text(table, textAlign: TextAlign.right, style: style),
           ),
-          const SizedBox(width: 16),
-          SizedBox(width: 100, child: Text(date, style: style)),
+          if (showDate) ...[
+            const SizedBox(width: 16),
+            SizedBox(width: 96, child: Text(date, style: style)),
+          ],
         ],
       ),
     );
