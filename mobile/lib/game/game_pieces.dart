@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:poosdalatro/game/data/jokers.dart';
 import 'package:poosdalatro/game/jokers.dart';
@@ -142,14 +144,16 @@ class ChipsTimesMult extends StatelessWidget {
 class JokerCard extends StatelessWidget {
   final JokerInfo joker;
   final Widget? footer;
+  final double width;
 
-  const JokerCard({super.key, required this.joker, this.footer});
+  const JokerCard(
+      {super.key, required this.joker, this.footer, this.width = 150});
 
   @override
   Widget build(BuildContext context) {
     final c = GameColors.of(context);
     return Container(
-      width: 150,
+      width: width,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: c.cream,
@@ -225,56 +229,56 @@ class BossLabel extends StatelessWidget {
 class JokerRow extends StatelessWidget {
   final List<OwnedJoker> owned;
   final Widget Function(OwnedJoker joker)? footer;
-  final bool compact; // small tiles, tap one to see what it does
+  final bool compact; // count on the left instead of above
+  final Widget? extra; // shown under the count in compact mode
 
   const JokerRow(
-      {super.key, required this.owned, this.footer, this.compact = false});
-
-  Widget _tile(BuildContext context, JokerInfo joker) {
-    final c = GameColors.of(context);
-    return Tooltip(
-      message: joker.description,
-      triggerMode: TooltipTriggerMode.tap,
-      showDuration: const Duration(seconds: 3),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(4, 4, 10, 4),
-        decoration: BoxDecoration(
-          color: c.cream,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [BoxShadow(blurRadius: 3, color: Colors.black26, offset: Offset(0, 1))],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 6,
-          children: [
-            PixelImage(joker.image, width: 24),
-            Text(joker.name,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
-  }
+      {super.key, required this.owned, this.footer, this.compact = false, this.extra});
 
   @override
   Widget build(BuildContext context) {
     final label = Text('Jokers ${owned.length}/$maxJokers',
         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600));
-    // one line: the count, then the tiles
+    // the count, then the cards beside it
     if (compact) {
       return Row(
         spacing: 8,
         children: [
-          label,
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 6,
+            children: [CreamPill(child: label), ?extra],
+          ),
           Expanded(
             child: owned.isEmpty
-                ? const Text('No jokers yet. Buy them in the shop after a round.',
-                    style: TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis)
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(spacing: 8, children: [
-                      for (final j in owned) _tile(context, jokersById[j.id]!),
-                    ]),
+                ? const Align(
+                    alignment: Alignment.centerLeft,
+                    child: CreamPill(
+                      child: Text('No jokers yet. Buy them in the shop after a round.',
+                          style: TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis),
+                    ),
+                  )
+                // full cards share the width when they fit at a readable size;
+                // otherwise small tiles that open the full card when tapped
+                : LayoutBuilder(
+                    builder: (context, box) {
+                      const gap = 8.0;
+                      final n = owned.length;
+                      final each = (box.maxWidth - gap * (n - 1)) / n;
+                      return Row(
+                        spacing: gap,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final j in owned)
+                            each >= 140
+                                ? JokerCard(joker: jokersById[j.id]!, width: min(230.0, each))
+                                : SizedBox(
+                                    width: each,
+                                    child: _JokerTile(joker: jokersById[j.id]!),
+                                  ),
+                        ],
+                      );
+                    },
                   ),
           ),
         ],
@@ -301,6 +305,101 @@ class JokerRow extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Light cream backing so small text stands out on the felt
+class CreamPill extends StatelessWidget {
+  final Widget child;
+  const CreamPill({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = GameColors.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: c.cream.withValues(alpha: 0.75),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// The boss in play (red) or the one coming at this table's High Roller
+class BossBanner extends StatelessWidget {
+  final RunState run;
+  final bool small; // smaller text for the narrow stats column
+  const BossBanner({super.key, required this.run, this.small = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = GameColors.of(context);
+    final activeBoss = run.rules.activeBoss;
+    final Widget banner;
+    if (activeBoss != null) {
+      banner = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(color: c.danger, borderRadius: BorderRadius.circular(14)),
+        child: BossLabel(bossId: activeBoss, prefix: 'Boss', color: const Color(0xFFF2E8CF)),
+      );
+    } else {
+      banner = CreamPill(
+        child: BossLabel(
+            bossId: run.boss,
+            prefix: small ? 'High Roller boss:' : "This table's High Roller boss:"),
+      );
+    }
+    return small
+        ? DefaultTextStyle.merge(style: const TextStyle(fontSize: 13), child: banner)
+        : banner;
+  }
+}
+
+/// Small joker for tight screens: picture and name, tap for the full card
+class _JokerTile extends StatelessWidget {
+  final JokerInfo joker;
+  const _JokerTile({required this.joker});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = GameColors.of(context);
+    return Material(
+      color: c.cream,
+      borderRadius: BorderRadius.circular(12),
+      elevation: 2,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => showDialog(
+          context: context,
+          builder: (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Center(child: JokerCard(joker: joker, width: 280)),
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 4, 6, 4),
+          child: Row(
+            spacing: 4,
+            children: [
+              PixelImage(joker.image, width: 22),
+              Expanded(
+                child: Text(joker.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.1)),
+              ),
+              Icon(Icons.info_outline, size: 14, color: c.ink.withValues(alpha: 0.6)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

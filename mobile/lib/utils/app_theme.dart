@@ -148,7 +148,7 @@ class AppTheme {
           backgroundColor: c.cream,
           disabledForegroundColor: c.ink.withValues(alpha: 0.45),
           disabledBackgroundColor: c.cream.withValues(alpha: 0.6),
-          side: BorderSide(color: c.wood, width: 2),
+          side: BorderSide(color: c.wood.withValues(alpha: 0.35)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

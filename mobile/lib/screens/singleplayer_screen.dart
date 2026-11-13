@@ -153,7 +153,10 @@ class _SingleplayerScreenState extends State<SingleplayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final inGame = !_loading && !_showIntro && _run != null;
     return Scaffold(
+      // same back bar as Profile and Leaderboard; in a run the back arrow is in the stats
+      appBar: inGame ? null : AppBar(title: const Text('Singleplayer')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8),
@@ -173,26 +176,17 @@ class _SingleplayerScreenState extends State<SingleplayerScreen> {
     final run = _run;
     final unfinished = run != null && run.phase != Phase.gameOver ? run : null;
 
-    final rules = Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: c.cream.withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 6,
-        children: [
-          _bullet([
+    final rules = <List<InlineSpan>>[
+          [
             const TextSpan(text: 'Play poker hands from your 8 cards. Each hand scores '),
             _b('chips × mult'),
             const TextSpan(text: '.'),
-          ]),
-          _bullet([
+          ],
+          [
             const TextSpan(
                 text: "Reach the round's target within 4 hands. You can discard up to 3 times to redraw."),
-          ]),
-          _bullet([
+          ],
+          [
             const TextSpan(text: 'A '),
             _b('Table'),
             const TextSpan(text: ' is how far into the run you are. Each Table has three rounds: '),
@@ -204,25 +198,37 @@ class _SingleplayerScreenState extends State<SingleplayerScreen> {
             const TextSpan(text: ', each with a bigger target. The High Roller also has a '),
             _b('Boss'),
             const TextSpan(text: ' that changes the rules.'),
-          ]),
-          _bullet([
+          ],
+          [
             const TextSpan(
                 text: 'Beat the High Roller to move on to the next Table, where every target is higher.'),
-          ]),
-          _bullet([
+          ],
+          [
             const TextSpan(text: 'Spend your winnings in the shop on '),
             _b('Jokers'),
             const TextSpan(text: ' and '),
             _b('Study Guides'),
             const TextSpan(text: '.'),
-          ]),
-          _bullet([
+          ],
+          [
             const TextSpan(
                 text: 'The run ends when you miss a target. Every chip you scored goes on the leaderboard.'),
-          ]),
-        ],
-      ),
-    );
+          ],
+    ];
+
+    Widget rulesBox(double fontSize) => Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: c.cream.withValues(alpha: 0.85),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 6,
+            children: [for (final r in rules) _bullet(r, fontSize)],
+          ),
+        );
 
     final start = Column(
       mainAxisSize: MainAxisSize.min,
@@ -249,53 +255,87 @@ class _SingleplayerScreenState extends State<SingleplayerScreen> {
             onPressed: () => setState(() => _showIntro = false),
             child: const Text('Continue run'),
           ),
-          Text(
-            'Table ${unfinished.table}, ${rounds[unfinished.round].name} · '
-            '${withCommas(unfinished.totalScore)} chips so far',
-            textAlign: TextAlign.center,
+          // cream box like the score on the table, so it stands out
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: c.cream.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              'Table ${unfinished.table}, ${rounds[unfinished.round].name} · '
+              '${withCommas(unfinished.totalScore)} chips so far',
+              textAlign: TextAlign.center,
+            ),
           ),
         ] else
           ElevatedButton(onPressed: _startRun, child: const Text('Start')),
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Back to menu'),
-        ),
       ],
     );
 
     return FeltPanel(
       padding: const EdgeInsets.all(14),
       child: LayoutBuilder(
-        builder: (context, box) => SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: box.maxHeight),
-            child: Center(
-              child: box.maxWidth >= 640
-                  ? Row(
-                      spacing: 20,
-                      children: [
-                        Expanded(child: rules),
-                        SizedBox(width: 260, child: start),
-                      ],
-                    )
-                  : Column(spacing: 14, children: [start, rules]),
-            ),
-          ),
-        ),
+        builder: (context, box) {
+          if (box.maxWidth < 640) {
+            return SingleChildScrollView(
+              child: Column(spacing: 14, children: [start, rulesBox(15)]),
+            );
+          }
+          return Row(
+            spacing: 20,
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, area) =>
+                      Center(child: _fittedRules(context, rules, area, rulesBox)),
+                ),
+              ),
+              SizedBox(
+                width: (box.maxWidth * 0.28).clamp(200.0, 320.0),
+                child: FittedBox(fit: BoxFit.scaleDown, child: start),
+              ),
+            ],
+          );
+        },
       ),
     );
+  }
+
+  // The biggest text size (up to 32) where every rule fits in the space, so
+  // it's easy to read without scrolling
+  Widget _fittedRules(BuildContext context, List<List<InlineSpan>> rules,
+      BoxConstraints area, Widget Function(double fontSize) rulesBox) {
+    final base = DefaultTextStyle.of(context).style;
+    final scaler = MediaQuery.textScalerOf(context);
+    for (double size = 32; size >= 12; size--) {
+      double height = 28 + 6.0 * (rules.length - 1);
+      for (final spans in rules) {
+        final painter = TextPainter(
+          text: TextSpan(style: base.copyWith(fontSize: size), children: spans),
+          textDirection: TextDirection.ltr,
+          textScaler: scaler,
+        )..layout(maxWidth: area.maxWidth - 28 - size * 1.2);
+        height += painter.height;
+        painter.dispose();
+      }
+      if (height <= area.maxHeight) return rulesBox(size);
+    }
+    return SingleChildScrollView(child: rulesBox(12));
   }
 
   TextSpan _b(String text) =>
       TextSpan(text: text, style: const TextStyle(fontWeight: FontWeight.bold));
 
-  Widget _bullet(List<InlineSpan> spans) => Row(
+  Widget _bullet(List<InlineSpan> spans, double fontSize) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('•  ', style: TextStyle(fontSize: 15)),
+          SizedBox(
+              width: fontSize * 1.2,
+              child: Text('•', style: TextStyle(fontSize: fontSize))),
           Expanded(
               child: Text.rich(TextSpan(children: spans),
-                  style: const TextStyle(fontSize: 15))),
+                  style: TextStyle(fontSize: fontSize))),
         ],
       );
 
@@ -364,6 +404,8 @@ class _SingleplayerScreenState extends State<SingleplayerScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 6,
       children: [
+        // the boss sits above the table it belongs to
+        if (run.phase == Phase.playing) BossBanner(run: run, small: true),
         Stat(label: 'Table ${run.table}', value: rounds[run.round].name),
         for (int i = 0; i < stats.length; i += columns)
           Row(
@@ -387,7 +429,8 @@ class _SingleplayerScreenState extends State<SingleplayerScreen> {
               ),
             ),
           ),
-        if (active)
+        // during a round this button is up by the jokers instead
+        if (run.phase == Phase.shop)
           ElevatedButton(
             style: smallButton(),
             onPressed: () => showHandsDialog(context, run.handLevels),
