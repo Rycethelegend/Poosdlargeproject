@@ -7,6 +7,7 @@ import Profile from "./Profile.tsx";
 import Leaderboard from "./Leaderboard.tsx";
 import { clearToken } from "../tokenStorage.ts";
 import { getTheme, setTheme, type Theme } from "../theme.ts";
+import CreditsPanel from "../components/CreditsPanel.tsx";
 
 
 // IT WAS MISSING 12.5 THE ENTIRE TIMEEEEE
@@ -24,6 +25,7 @@ const Home = () => {
     const [settingsWindow, setSettingsWindow] = useState<boolean>(true);
     const [titleVisible, setTitleVisible] = useState<boolean>(true);
     const [theme, setThemeState] = useState<Theme>(getTheme());
+    const [showCredits, setShowCredits] = useState(false);
 
     // True - Render game windows in a screen overlay (better for mobile)
     // False - Render games directly on the table (looks cooler on desktop)
@@ -94,7 +96,7 @@ const Home = () => {
 
             <div className="absolute left-0 top-8 bottom-8 w-80 flex items-center">
 
-                <div className={`relative flex w-full h-[30%] min-h-64 rounded-r-2xl transition-transform duration-300 z-10 overflow-hidden ${settingsWindow ? '-translate-x-74' : ''}`}>
+                <div className={`relative flex w-full h-[30%] min-h-80 rounded-r-2xl transition-transform duration-300 z-10 overflow-hidden ${settingsWindow ? '-translate-x-74' : ''}`}>
 
                     <div className="bg-wood w-full flex flex-col p-4 gap-4">
                         <p className="hidden text-2xl font-semibold px-2">Settings</p>
@@ -119,6 +121,13 @@ const Home = () => {
                             <span className={`relative w-12 h-7 rounded-full transition-colors ${overlayMode ? 'bg-felt-edge' : 'bg-cream'}`}>
                                 <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-ink transition-transform ${overlayMode ? 'translate-x-5' : ''}`} />
                             </span>
+                        </button>
+
+                        <button
+                            className="w-full text-left px-3 bg-wood-light rounded-2xl py-2 text-2xl hover:bg-black/10"
+                            aria-haspopup="dialog"
+                            onClick={() => setShowCredits(true)}>
+                            Credits
                         </button>
 
                         <button
@@ -272,6 +281,8 @@ const Home = () => {
                     )}
                 </div>
             )}
+
+            {showCredits && <CreditsPanel onClose={() => setShowCredits(false)} />}
         </div>
 
     );

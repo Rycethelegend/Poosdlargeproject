@@ -44,7 +44,7 @@ const LoginPage = () => {
         <div className="relative w-full flex flex-col items-center p-16 gap-16">
 
             <p className="title text-center font-playfair">
-                Poosdbalatro
+                Poosdalatro
             </p>
 
             <div className="relative w-full max-w-md bg-felt rounded-4xl border-16 border-felt-edge">

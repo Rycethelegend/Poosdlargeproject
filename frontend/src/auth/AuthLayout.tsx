@@ -7,7 +7,7 @@ const AuthLayout = ({ heading, children }: { heading: string; children: ReactNod
         <div className="relative min-h-screen w-full bg-cream flex flex-col items-center px-4 pt-12 pb-16">
 
             <p className="title text-center font-playfair mb-10">
-                Poosdbalatro
+                Poosdalatro
             </p>
 
             <div className="relative w-full max-w-md bg-felt rounded-4xl border-16 border-felt-edge">

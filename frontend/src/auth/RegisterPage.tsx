@@ -79,7 +79,7 @@ const RegisterPage = () => {
             <div className="relative flex flex-col items-center p-16">
 
                 <p className="title text-center font-playfair mb-10">
-                    Poosdbalatro
+                    Poosdalatro
                 </p>
 
                 <div className="relative w-full max-w-md bg-felt rounded-4xl border-16 border-felt-edge">
@@ -105,7 +105,7 @@ const RegisterPage = () => {
         <div className="relative flex flex-col items-center p-16">
 
             <p className="title text-center font-playfair mb-10">
-                Poosdbalatro
+                Poosdalatro
             </p>
 
             <div className="relative max-w-md w-full bg-felt rounded-4xl border-16 border-felt-edge">
