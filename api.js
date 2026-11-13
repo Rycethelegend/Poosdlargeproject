@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
+const { RegExpMatcher, englishDataset, englishRecommendedTransformers } = require('obscenity');
 //const { ObjectId } = require('mongodb');
 
 require('dotenv').config();
@@ -162,6 +163,21 @@ const MAX_CODE_ATTEMPTS = 5;        // wrong guesses before a code is thrown awa
 const CASE_INSENSITIVE = { locale: 'en', strength: 2 };
 
 const USERNAME_PATTERN = /^[A-Za-z0-9_]{3,20}$/;
+
+// Catches inappropriate words, including disguises like sh1t, while still
+// allowing innocent names that contain them (e.g. Scunthorpe)
+const profanityWords = englishDataset.build();
+// normal words the list would otherwise block
+profanityWords.whitelistedTerms.push('cockpit', 'cockatoo', 'cockatiel', 'cocktail', 'hancock');
+const profanity = new RegExpMatcher({ ...profanityWords, ...englishRecommendedTransformers });
+const BAD_USERNAME = 'Please choose a different username';
+
+function isInappropriate(username) {
+    // checked with underscores as spaces (each word on its own) and with them
+    // removed (so f_u_c_k is caught too)
+    return profanity.hasMatch(username.replace(/_/g, ' ')) ||
+        profanity.hasMatch(username.replace(/_/g, ''));
+}
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -364,6 +380,9 @@ exports.setApp = function (app, mongoose) {
             if (!USERNAME_PATTERN.test(username)) {
                 return fail(res, 400, 'Username must be 3-20 letters, numbers or underscores');
             }
+            if (isInappropriate(username)) {
+                return fail(res, 400, BAD_USERNAME);
+            }
             if (await users.findOne({ email: email })) {
                 return fail(res, 409, 'An account with that email already exists');
             }
@@ -442,6 +461,11 @@ exports.setApp = function (app, mongoose) {
         if (!USERNAME_PATTERN.test(username)) {
 
             return fail(res, 400, 'Username must be 3-20 letters, numbers or underscores');
+        }
+
+        if (isInappropriate(username)) {
+
+            return fail(res, 400, BAD_USERNAME);
         }
 
         if (!EMAIL_PATTERN.test(email)) {
