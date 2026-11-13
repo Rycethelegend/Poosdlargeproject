@@ -30,3 +30,6 @@ dist-ssr
 *.sln
 *.sw?
 *.swp
+
+#documentations
+docs/
