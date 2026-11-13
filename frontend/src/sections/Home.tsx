@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useNavigate } from "react-router";
 
-import Singleplayer from './Singleplayer.tsx';
-import Multiplayer from "./Multiplayer.tsx";
-import Profile from "./Profile.tsx";
-import Leaderboard from "./Leaderboard.tsx";
 import { clearToken } from "../tokenStorage.ts";
 import { getTheme, setTheme, type Theme } from "../theme.ts";
-import CreditsPanel from "../components/CreditsPanel.tsx";
+import { SMALL_SCREEN, useMediaQuery } from "../useMediaQuery.ts";
+
+// sections only download their code when opened
+const Singleplayer = lazy(() => import('./Singleplayer.tsx'));
+const Multiplayer = lazy(() => import('./Multiplayer.tsx'));
+const Profile = lazy(() => import('./Profile.tsx'));
+const Leaderboard = lazy(() => import('./Leaderboard.tsx'));
+const CreditsPanel = lazy(() => import('../components/CreditsPanel.tsx'));
 
 
 // IT WAS MISSING 12.5 THE ENTIRE TIMEEEEE
@@ -30,6 +33,9 @@ const Home = () => {
     // True - Render game windows in a screen overlay (better for mobile)
     // False - Render games directly on the table (looks cooler on desktop)
     const [overlayMode, setOverlayMode] = useState<boolean>(false);
+    // phones always use the overlay, the table windows are too small there
+    const smallScreen = useMediaQuery(SMALL_SCREEN);
+    const useOverlay = overlayMode || smallScreen;
 
     // GAMEPLAY WINDOWS
     const [openWindow, setOpenWindow] = useState<number>(0);
@@ -114,12 +120,14 @@ const Home = () => {
 
                         <button
                             role="switch"
-                            aria-checked={overlayMode}
+                            aria-checked={useOverlay}
+                            disabled={smallScreen}
+                            title={smallScreen ? "Always on for small screens" : undefined}
                             className="w-full flex items-center justify-between px-3 bg-wood-light rounded-2xl py-2 text-2xl hover:bg-black/10"
                             onClick={toggleOverlayMode}>
                             <span>Overlay mode</span>
-                            <span className={`relative w-12 h-7 rounded-full transition-colors ${overlayMode ? 'bg-felt-edge' : 'bg-cream'}`}>
-                                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-ink transition-transform ${overlayMode ? 'translate-x-5' : ''}`} />
+                            <span className={`relative w-12 h-7 rounded-full transition-colors ${useOverlay ? 'bg-felt-edge' : 'bg-cream'}`}>
+                                <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-ink transition-transform ${useOverlay ? 'translate-x-5' : ''}`} />
                             </span>
                         </button>
 
@@ -151,8 +159,8 @@ const Home = () => {
             </div>
 
             {titleVisible ? (
-                <div className="relative w-full h-full p-16">
-                    <p className="title text-center font-playfair">
+                <div className="relative w-full h-full p-16 short:p-3">
+                    <p className="title text-center font-playfair short:text-4xl">
                         Poosdalatro
                     </p>
                 </div>
@@ -171,9 +179,9 @@ const Home = () => {
 
             <div
                 style={{ transform: `translateX(${offsetX}%) translateY(${offsetY}%)`, scale: `${scale}` }}
-                className="inset-0 w-full h-full flex items-center justify-center absolute transition-transform duration-1000">
+                className="inset-0 w-full h-full flex items-center justify-center absolute transition-transform duration-1000 short:pt-12">
 
-                <div className="relative w-[50%] h-[50%] bg-felt rounded-4xl border-16 border-felt-edge">
+                <div className="relative w-[88%] h-[48%] md:w-[50%] md:h-[50%] short:w-[60%] short:h-[62%] bg-felt rounded-4xl border-16 border-felt-edge">
 
                     <div className="absolute pointer-events-none w-full rounded-2xl h-full bg-black/5 mask-size-[40px] mask-[url(/patterns/parkay-floor.svg)]">
 
@@ -182,28 +190,28 @@ const Home = () => {
                         <div className="grid grid-cols-2 grid-rows-2 z-10 w-full h-full">
                             <div className="w-full h-full">
                                 <button
-                                    className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-tl-4xl"
+                                    className="w-full h-full font-semibold leading-tight break-words px-1 text-[clamp(0.8rem,4.6vw,1.25rem)] md:text-[clamp(0.8rem,2.4vw,1.875rem)] hover:bg-white/20 rounded-tl-4xl"
                                     onClick={topLeft}>
                                     SINGLEPLAYER
                                 </button>
                             </div>
                             <div className="w-full h-full">
                                 <button
-                                    className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-tr-4xl"
+                                    className="w-full h-full font-semibold leading-tight break-words px-1 text-[clamp(0.8rem,4.6vw,1.25rem)] md:text-[clamp(0.8rem,2.4vw,1.875rem)] hover:bg-white/20 rounded-tr-4xl"
                                     onClick={topRight}>
                                     MULTIPLAYER
                                 </button>
                             </div>
                             <div className="w-full h-full">
                                 <button
-                                    className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-bl-4xl"
+                                    className="w-full h-full font-semibold leading-tight break-words px-1 text-[clamp(0.8rem,4.6vw,1.25rem)] md:text-[clamp(0.8rem,2.4vw,1.875rem)] hover:bg-white/20 rounded-bl-4xl"
                                     onClick={bottomLeft}>
                                     PROFILE
                                 </button>
                             </div>
                             <div className="w-full h-full">
                                 <button
-                                    className="w-full h-full font-semibold truncate text-xl sm:text-3xl hover:bg-white/20 rounded-br-4xl"
+                                    className="w-full h-full font-semibold leading-tight break-words px-1 text-[clamp(0.8rem,4.6vw,1.25rem)] md:text-[clamp(0.8rem,2.4vw,1.875rem)] hover:bg-white/20 rounded-br-4xl"
                                     onClick={bottomRight}>
                                     LEADERBOARD
                                 </button>
@@ -212,7 +220,7 @@ const Home = () => {
                         </div>
                     )}
 
-                    {!overlayMode && (
+                    {!useOverlay && (
 
                         // The zoomed-in quarter is the backdrop; the section itself is drawn
                         // full size in the layer below so it isn't scaled up 4×.
@@ -221,21 +229,21 @@ const Home = () => {
                             {openWindow === 1 && (
                                 <div className="absolute top-0 left-0 origin-top-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
                                     <div className="mx-auto w-full max-w-5xl p-8">
-                                        <Singleplayer />
+                                        <Suspense fallback={null}><Singleplayer /></Suspense>
                                     </div>
                                 </div>
                             )}
                             {openWindow === 2 && (
                                 <div className="absolute top-0 right-0 origin-top-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
                                     <div className="mx-auto w-full max-w-5xl p-8">
-                                        <Multiplayer />
+                                        <Suspense fallback={null}><Multiplayer /></Suspense>
                                     </div>
                                 </div>
                             )}
                             {openWindow === 3 && (
                                 <div className="absolute bottom-0 left-0 origin-bottom-left w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
                                     <div className="mx-auto w-full max-w-5xl pt-24 p-8">
-                                        <Profile />
+                                        <Suspense fallback={null}><Profile /></Suspense>
                                     </div>
                                 </div>
 
@@ -243,7 +251,7 @@ const Home = () => {
                             {openWindow === 4 && (
                                 <div className="absolute bottom-0 right-0 origin-bottom-right w-[200%] h-[200%] scale-25 overflow-y-auto flex animate-[fadeIn_0.1s_ease-out_0.1s_both]">
                                     <div className="mx-auto w-full max-w-5xl pt-24 p-8">
-                                        <Leaderboard />
+                                        <Suspense fallback={null}><Leaderboard /></Suspense>
                                     </div>
                                 </div>
                             )}
@@ -255,34 +263,34 @@ const Home = () => {
 
             </div>
 
-            {(overlayMode && openWindow !== 0) && (
+            {(useOverlay && openWindow !== 0) && (
 
                 <div className="absolute inset-0 z-5 overflow-y-auto animate-[fadeIn_0.4s_ease-out_0.8s_both] flex justify-center">
 
                     {openWindow === 1 && (
-                        <div className="pt-24 pl-24 pr-8 w-full max-w-5xl">
-                            <Singleplayer />
+                        <div className="pt-20 pb-6 pl-9 pr-3 md:pt-24 md:pl-24 md:pr-8 short:pt-16 short:pl-10 short:pr-4 w-full max-w-5xl">
+                            <Suspense fallback={null}><Singleplayer /></Suspense>
                         </div>
                     )}
                     {openWindow === 2 && (
-                        <div className="pt-24 pl-8 pr-24 w-full max-w-5xl">
-                            <Multiplayer />
+                        <div className="pt-20 pb-6 pl-9 pr-3 md:pt-24 md:pl-8 md:pr-24 short:pt-16 short:pl-10 short:pr-4 w-full max-w-5xl">
+                            <Suspense fallback={null}><Multiplayer /></Suspense>
                         </div>
                     )}
                     {openWindow === 3 && (
-                        <div className="pt-20 pb-24 pl-24 pr-8 w-full max-w-5xl">
-                            <Profile />
+                        <div className="pt-20 pb-6 pl-9 pr-3 md:pb-24 md:pl-24 md:pr-8 short:pt-16 short:pl-10 short:pr-4 w-full max-w-5xl">
+                            <Suspense fallback={null}><Profile /></Suspense>
                         </div>
                     )}
                     {openWindow === 4 && (
-                        <div className="pt-20 pb-24 pl-8 pr-24 w-full max-w-5xl">
-                            <Leaderboard />
+                        <div className="pt-20 pb-6 pl-9 pr-3 md:pb-24 md:pl-8 md:pr-24 short:pt-16 short:pl-10 short:pr-4 w-full max-w-5xl">
+                            <Suspense fallback={null}><Leaderboard /></Suspense>
                         </div>
                     )}
                 </div>
             )}
 
-            {showCredits && <CreditsPanel onClose={() => setShowCredits(false)} />}
+            {showCredits && <Suspense fallback={null}><CreditsPanel onClose={() => setShowCredits(false)} /></Suspense>}
         </div>
 
     );

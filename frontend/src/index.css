@@ -6,6 +6,13 @@
 /* dark: classes follow the Settings toggle (a "dark" class on <html>), not the OS setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* short: phones in landscape */
+@custom-variant short {
+    @media (max-height: 500px) {
+        @slot;
+    }
+}
+
 @theme {
     --color-dark-blue: #011F26;
     --color-medium-blue: #025E73;

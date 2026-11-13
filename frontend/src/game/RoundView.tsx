@@ -7,7 +7,8 @@ import { evaluateHand, HANDS } from './hands';
 import { rulesFor, scorePlay, selectedCards, type RunAction, type RunState } from './run';
 import { CardFace, DeckBox } from './sprites';
 
-const CARD_SIZE = 'w-[clamp(2.6rem,10vw,5.5rem)] rounded-md shadow-md';
+// also limited by screen height so phones in landscape fit the hand on one row
+const CARD_SIZE = 'w-[clamp(2rem,min(8vw,15vh),5.5rem)] rounded-md shadow-md';
 
 // What a selected card adds: its chips, or why it adds none
 function cardBadge(card: Card, partOfHand: Set<string>, scoringIds: string[]) {
@@ -98,7 +99,7 @@ const RoundView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActi
             </div>
 
             {/* The hand */}
-            <div className="flex flex-wrap justify-center gap-1 sm:gap-2 min-h-[clamp(3.5rem,13.3vw,7.4rem)]">
+            <div className="flex flex-wrap justify-center gap-1 sm:gap-2 min-h-[clamp(3.2rem,min(13.3vw,20vh),7.4rem)]">
                 {hand.map((card) => (
                     <button
                         key={card.id}
