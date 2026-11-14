@@ -8,6 +8,7 @@ class Session {
   static SharedPreferences? _prefs;
   static String? token;
   static String username = '';
+  static String userId = '';
   static DateTime? _expires;
 
   /// Loads the saved token when the app starts
@@ -27,6 +28,7 @@ class Session {
   static void clear() {
     token = null;
     username = '';
+    userId = '';
     _expires = null;
     _prefs?.remove(_tokenKey);
   }
@@ -35,7 +37,7 @@ class Session {
   static bool get isValid =>
       token != null && _expires != null && _expires!.isAfter(DateTime.now());
 
-  // Keeps the token and reads the username and expiry out of it
+  // Keeps the token and reads the username, user id and expiry out of it
   static void _readToken(String accessToken) {
     token = accessToken;
     try {
@@ -43,10 +45,12 @@ class Session {
       final data = jsonDecode(
           utf8.decode(base64Url.decode(base64Url.normalize(payload))));
       username = data['username'] ?? '';
+      userId = '${data['userId'] ?? ''}';
       _expires = DateTime.fromMillisecondsSinceEpoch(
           (data['exp'] as num).toInt() * 1000);
     } catch (_) {
       username = '';
+      userId = '';
       _expires = null;
     }
   }

@@ -6,12 +6,19 @@ import 'package:poosdalatro/game/rounds.dart';
 import 'package:poosdalatro/game/run.dart';
 import 'package:poosdalatro/utils/app_theme.dart';
 
-/// Between rounds: buy jokers and Study Guides (hand level-ups), sell jokers, reroll
+/// Between rounds: buy jokers and Study Guides (hand level-ups), sell jokers, reroll.
+/// nextLocked (multiplayer) replaces the Next round button with a reason to wait.
 class ShopView extends StatelessWidget {
   final RunState run;
   final void Function(void Function(RunState run) action) onAction;
+  final String? nextLocked;
 
-  const ShopView({super.key, required this.run, required this.onAction});
+  const ShopView({
+    super.key,
+    required this.run,
+    required this.onAction,
+    this.nextLocked,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -177,10 +184,20 @@ class ShopView extends StatelessWidget {
                     ),
                 ],
               ),
-              ElevatedButton(
-                onPressed: () => onAction((r) => r.nextRound()),
-                child: const Text('Next round'),
-              ),
+              if (nextLocked != null)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 280),
+                  child: Text(
+                    nextLocked!,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                )
+              else
+                ElevatedButton(
+                  onPressed: () => onAction((r) => r.nextRound()),
+                  child: const Text('Next round'),
+                ),
             ],
           ),
         ),
