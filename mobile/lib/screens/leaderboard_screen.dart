@@ -118,7 +118,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     children: [
                       Text(
                         searchText.isNotEmpty
-                            ? 'Top scores match ing "$searchText"'
+                            ? 'Top scores matching "$searchText"'
                             : 'Top 100 scores of all time',
                         style: const TextStyle(fontSize: 18),
                       ),
