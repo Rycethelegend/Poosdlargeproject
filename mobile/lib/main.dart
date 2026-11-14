@@ -63,7 +63,7 @@ class OfflineBanner extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Text(
-                "You're offline. Profile, Leaderboard and logging in need a connection.",
+                "You're offline. Profile, Leaderboard, Multiplayer and logging in need a connection.",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: colors.onError),
               ),

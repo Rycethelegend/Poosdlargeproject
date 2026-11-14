@@ -172,8 +172,7 @@ class _HomeScreenState extends State<HomeScreen>
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _sectionButton('SINGLEPLAYER', Routes.game),
-                          // TODO: no multiplayer screen yet
-                          _sectionButton('MULTIPLAYER', null),
+                          _sectionButton('MULTIPLAYER', Routes.multiplayer),
                         ],
                       ),
                     ),
