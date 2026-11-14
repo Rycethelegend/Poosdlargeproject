@@ -4,6 +4,7 @@ import 'package:poosdalatro/screens/singleplayer_screen.dart';
 import 'package:poosdalatro/screens/home_screen.dart';
 import 'package:poosdalatro/screens/leaderboard_screen.dart';
 import 'package:poosdalatro/screens/login_screen.dart';
+import 'package:poosdalatro/screens/multiplayer_screen.dart';
 import 'package:poosdalatro/screens/profile_screen.dart';
 import 'package:poosdalatro/screens/register_screen.dart';
 import 'package:poosdalatro/utils/session.dart';
@@ -16,6 +17,7 @@ class Routes {
   static const String forgotPassword = '/forgot-password';
   static const String home = '/home';
   static const String game = '/play';
+  static const String multiplayer = '/multiplayer';
   static const String leaderboard = '/leaderboard';
   static const String profile = '/profile';
 
@@ -26,6 +28,7 @@ class Routes {
     forgotPassword: (context) => _guestOnly(const ForgotPasswordScreen()),
     home: (context) => _requireLogin(const HomeScreen()),
     game: (context) => _requireLogin(const SingleplayerScreen()),
+    multiplayer: (context) => _requireLogin(const MultiplayerScreen()),
     leaderboard: (context) => _requireLogin(const LeaderboardScreen()),
     profile: (context) => _requireLogin(const ProfileScreen()),
   };
