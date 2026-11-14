@@ -103,7 +103,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final String me = Session.username.toLowerCase();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Leaderboard')),
+      appBar: const GoBackBar(),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -116,9 +116,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     spacing: 12,
                     children: [
+                      const Text('Leaderboard',
+                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600)),
                       Text(
                         searchText.isNotEmpty
-                            ? 'Top scores matching "$searchText"'
+                            ? 'Top scores match ing "$searchText"'
                             : 'Top 100 scores of all time',
                         style: const TextStyle(fontSize: 18),
                       ),

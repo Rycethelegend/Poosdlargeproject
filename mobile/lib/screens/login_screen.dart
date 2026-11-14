@@ -55,17 +55,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final notice = ModalRoute.of(context)?.settings.arguments as String? ?? '';
     return AuthLayout(
       heading: 'Log In',
       children: [
-        FormMessage(error: _error),
+        FormMessage(error: _error, info: notice),
         TextField(
           controller: _loginName,
+          autofillHints: const [AutofillHints.username],
           decoration: const InputDecoration(labelText: 'Username or email'),
         ),
         TextField(
           controller: _password,
           obscureText: true,
+          autofillHints: const [AutofillHints.password],
           decoration: const InputDecoration(labelText: 'Password'),
           onSubmitted: (_) => _submit(),
         ),
