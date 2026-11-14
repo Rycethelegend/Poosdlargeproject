@@ -156,7 +156,7 @@ class _SingleplayerScreenState extends State<SingleplayerScreen> {
     final inGame = !_loading && !_showIntro && _run != null;
     return Scaffold(
       // same back bar as Profile and Leaderboard; in a run the back arrow is in the stats
-      appBar: inGame ? null : const GoBackBar(),
+      appBar: inGame ? null : AppBar(title: const Text('Singleplayer')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8),

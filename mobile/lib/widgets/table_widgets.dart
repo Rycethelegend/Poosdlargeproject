@@ -150,6 +150,7 @@ class CreamList extends StatelessWidget {
   }
 }
 
+/// Deprecated
 /// "Go back" in the top-left corner
 class GoBackBar extends StatelessWidget implements PreferredSizeWidget {
   const GoBackBar({super.key});

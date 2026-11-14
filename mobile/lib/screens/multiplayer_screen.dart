@@ -77,7 +77,7 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
       // keyboard by itself; the table underneath shouldn't get squashed
       resizeToAvoidBottomInset: false,
       // same back bar as Profile and Leaderboard; in a match the way back is in the stats
-      appBar: inMatch ? null : const GoBackBar(),
+      appBar: inMatch ? null : AppBar(title: const Text('Multiplayer')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8),

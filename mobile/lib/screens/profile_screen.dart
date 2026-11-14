@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final String searchText = _search.text.trim();
 
     return Scaffold(
-      appBar: const GoBackBar(),
+      appBar: AppBar(title: const Text('Profile')),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
