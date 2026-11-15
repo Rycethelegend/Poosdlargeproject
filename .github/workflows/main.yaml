@@ -6,10 +6,10 @@ name: CI/CD Pipeline
 on:
     push:
         branches:
-            - main
+            - Frontend-Testing
     pull_request:
         branches:
-            - main
+            - Frontend-Testing
     workflow_dispatch:
 
 jobs:
