@@ -60,5 +60,11 @@ This project was developed with assistance from generative AI tools:
 - **Scope**: Mobile development, design, and planning
 - **Nature of Use**: Summarize sections of codebase and mild code writing on frontend migration from web to mobile
 
+### Alec Hayes
+- **Tool**: Claude Opus 5.5
+- **Dates**: October 2026-November 2026
+- **Scope**: Frontend game functionality drafting
+- **Nature of Use**: Helped with figuring out how the game functionality can be put into code, was modified by hand for final product.
+
 All AI-generated code and diagrams were reviewed, tested on the DigitalOcean LAMP environment, and validated against assignment rubric requirements.
 
