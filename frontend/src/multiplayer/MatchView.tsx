@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import GameView from '../game/GameView';
-import { HIGH_ROLLER } from '../game/rounds';
+import { HIGH_ROLLER, sharedBoss } from '../game/rounds';
 import { newRun, parseSavedRun, runReducer, type RunAction, type RunState } from '../game/run';
 
 import { fetchRoom, leaveRoom, reportRun, type ReportEvent, type Room, type RoomPlayer } from '../multiplayerApi';
@@ -51,14 +51,16 @@ function syncRun(run: RunState | null, room: Room, me: RoomPlayer, now: number):
 
     if (me.status !== 'alive' || me.tableStatus !== 'playing') return run;
 
-    if (!run) return room.table === 1 ? newRun() : null;
+    // every player in the room gets the same boss for a table
+    if (!run) return room.table === 1 ? { ...newRun(), boss: sharedBoss(room.id, 1) } : null;
 
     const clearedLastTable = run.table === room.table - 1 && run.round === HIGH_ROLLER && (run.phase === 'roundWon' || run.phase === 'shop');
 
     if (clearedLastTable) {
 
         const inShop = run.phase === 'roundWon' ? runReducer(run, { type: 'collectReward' }) : run;
-        return runReducer(inShop, { type: 'nextRound' });
+        const next = runReducer(inShop, { type: 'nextRound' });
+        return { ...next, boss: sharedBoss(room.id, next.table) };
     }
     return run;
 }

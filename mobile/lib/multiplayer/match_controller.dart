@@ -141,7 +141,8 @@ class MatchController extends ChangeNotifier {
     final current = run;
     if (current == null) {
       if (r.table != 1) return false;
-      run = RunState.newRun();
+      // every player in the room gets the same boss for a table
+      run = RunState.newRun()..boss = sharedBoss(rooms.roomId, 1);
       return true;
     }
 
@@ -152,6 +153,7 @@ class MatchController extends ChangeNotifier {
 
     if (current.phase == Phase.roundWon) current.collectReward();
     current.nextRound();
+    current.boss = sharedBoss(rooms.roomId, current.table);
     return true;
   }
 
