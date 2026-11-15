@@ -155,13 +155,14 @@ function JokerPopup({ joker, from, onClose }: { joker: JokerDef; from: DOMRect; 
 
     return (
         <div
-            className="fixed inset-0 z-50 bg-black/50 flex flex-col items-center justify-center gap-4 p-4 animate-[popIn_0.2s_ease-out]"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 p-4 animate-[popIn_0.2s_ease-out]"
             onClick={close}>
             <div
                 ref={cardRef}
                 role="dialog"
                 aria-modal="true"
                 aria-label={joker.name}
+                className="rounded-3xl ring-4 ring-felt-edge"
                 onClick={(e) => e.stopPropagation()}>
                 <JokerCard joker={joker} large />
             </div>
