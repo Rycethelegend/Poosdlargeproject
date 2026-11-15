@@ -1,10 +1,10 @@
 {
     "name": "backend",
     "version": "1.0.0",
-    "description": "",
+    "description": "A reimagining of the popular digital solitaire game Balatro retooled to work in a fast-paced single-player and multiplayer setting on both browser and android with a live leaderboard.\r Hosted using a Droplet on DigitalOcean, on an Ubuntu Linux Server with Apache.",
     "main": "dist/server.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest",
         "dev": "tsx watch server.js",
         "build": "tsc",
         "start": "nodemon server.js"
@@ -25,5 +25,19 @@
         "mongoose": "^9.11.4",
         "nodemailer": "^10.3.1",
         "obscenity": "^0.4.6"
+    },
+    "directories": {
+        "doc": "docs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Rycethelegend/Poosdlargeproject.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Rycethelegend/Poosdlargeproject/issues"
+    },
+    "homepage": "https://github.com/Rycethelegend/Poosdlargeproject#readme",
+    "devDependencies": {
+        "jest": "^30.5.2"
     }
 }
