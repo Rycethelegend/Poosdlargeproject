@@ -28,7 +28,7 @@ Nathan Melloul - Frontend Developer:
 (here)
 
 Jake Arnold - Database Engineer:
-(optimized synergistic workflows)
+Created and maintained MongoDB database. Centred on User seperated tables.
 
 Wenhuang Lin - Frontend Developer:
 Spearheaded mobile development, designing mobile pages and integrating design choices to be consistent across platforms.
@@ -65,6 +65,13 @@ This project was developed with assistance from generative AI tools:
 - **Dates**: October 2026-November 2026
 - **Scope**: Frontend game functionality drafting
 - **Nature of Use**: Helped with figuring out how the game functionality can be put into code, was modified by hand for final product.
+
+### Jake Arnold
+- **Tool**: Gemini 3.6 Flash
+- **Dates**: November 2026
+- **Scope**: Entity-Relationship Diagram drafting
+- **Nature of Use**: Diagram construction assistance from database schema.
+
 
 All AI-generated code and diagrams were reviewed, tested on the DigitalOcean LAMP environment, and validated against assignment rubric requirements.
 
