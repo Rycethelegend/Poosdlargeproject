@@ -155,7 +155,7 @@ function JokerPopup({ joker, from, onClose }: { joker: JokerDef; from: DOMRect; 
 
     return (
         <div
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 p-4 animate-[popIn_0.2s_ease-out]"
+            className="fixed inset-0 z-50 overflow-hidden flex flex-col items-center justify-center gap-4 p-4"
             onClick={close}>
             <div
                 ref={cardRef}
