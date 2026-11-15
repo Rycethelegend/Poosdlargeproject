@@ -828,3 +828,4 @@ exports.setApp = function (app, mongoose) {
 exports.normalizeEmail = normalizeEmail;
 exports.passwordProblem = passwordProblem;
 exports.localDay = localDay;
+exports.hashCode = hashCode;

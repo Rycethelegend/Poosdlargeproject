@@ -557,4 +557,5 @@ module.exports = {
     nextTransition,
     pendingSaves,
     view,
+    tableBaseTarget,
 };
