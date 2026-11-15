@@ -43,6 +43,20 @@ export function randomBoss(): string {
     return PLAYABLE_BOSS_IDS[Math.floor(Math.random() * PLAYABLE_BOSS_IDS.length)];
 }
 
+// Multiplayer: the same boss for everyone in a room at a given table, picked
+// from the room id. mobile/lib/game/rounds.dart does the same math, so keep
+// the boss list in the same order in both.
+export function sharedBoss(roomId: string, table: number): string {
+    let hash = 0;
+    for (const ch of `${table}-${roomId}`) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+    // mix the bits so the boss order doesn't follow a pattern
+    for (let i = 0; i < 3; i++) {
+        hash = (hash ^ (hash >>> 16)) >>> 0;
+        hash = ((hash & 0xFFFF) * 40503 + (hash >>> 16)) >>> 0;
+    }
+    return PLAYABLE_BOSS_IDS[hash % PLAYABLE_BOSS_IDS.length];
+}
+
 // The rules of the Boss in play this round, or null outside the High Roller
 export function activeBossRules(round: RoundIndex, bossId: string): BossRules | null {
     return round === HIGH_ROLLER ? BOSS_EFFECTS[bossId] ?? null : null;

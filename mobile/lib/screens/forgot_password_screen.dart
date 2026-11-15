@@ -112,10 +112,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         'newPassword': _password.text,
       });
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Your password has been reset. Log in with your new password.')));
-      Navigator.pushReplacementNamed(context, Routes.login);
+      Navigator.pushReplacementNamed(context, Routes.login,
+          arguments: 'Your password has been reset. Log in with your new password.');
     });
   }
 
@@ -161,6 +159,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             TextField(
               controller: _email,
               keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
               decoration: const InputDecoration(labelText: 'Email'),
               onSubmitted: (_) => _submitEmail(),
             ),
@@ -228,12 +227,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             TextField(
               controller: _password,
               obscureText: true,
+              autofillHints: const [AutofillHints.newPassword],
               decoration: const InputDecoration(
                   labelText: 'New password (8+ characters)'),
             ),
             TextField(
               controller: _confirmPassword,
               obscureText: true,
+              autofillHints: const [AutofillHints.newPassword],
               decoration:
                   const InputDecoration(labelText: 'Confirm new password'),
               onSubmitted: (_) => _setPassword(),

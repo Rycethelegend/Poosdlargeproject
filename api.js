@@ -825,6 +825,7 @@ exports.setApp = function (app, mongoose) {
     require('./multiplayer/api.js').setApp(app, { route, fail, requireLogin, users, recordScore });
 }
 
+exports.normalizeEmail = normalizeEmail;
+exports.passwordProblem = passwordProblem;
+exports.localDay = localDay;
 exports.hashCode = hashCode;
-
-

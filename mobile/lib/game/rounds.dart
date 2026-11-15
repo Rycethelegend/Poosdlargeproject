@@ -46,6 +46,22 @@ final _random = Random();
 
 String randomBoss() => _playableBossIds[_random.nextInt(_playableBossIds.length)];
 
+/// Multiplayer: the same boss for everyone in a room at a given table, picked
+/// from the room id. frontend/src/game/rounds.ts does the same math, so keep
+/// the boss list in the same order in both.
+String sharedBoss(String roomId, int table) {
+  var hash = 0;
+  for (final c in '$table-$roomId'.codeUnits) {
+    hash = (hash * 31 + c) & 0xFFFFFFFF;
+  }
+  // mix the bits so the boss order doesn't follow a pattern
+  for (int i = 0; i < 3; i++) {
+    hash = hash ^ (hash >> 16);
+    hash = ((hash & 0xFFFF) * 40503 + (hash >> 16)) & 0xFFFFFFFF;
+  }
+  return _playableBossIds[hash % _playableBossIds.length];
+}
+
 /// The rules of the Boss in play this round, or null outside the High Roller
 BossRules? activeBossRules(int round, String bossId) =>
     round == highRoller ? bossEffects[bossId] : null;

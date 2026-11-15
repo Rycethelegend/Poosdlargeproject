@@ -150,7 +150,8 @@ const Home = () => {
                         className="relative h-full w-6 bg-wood-light z-20"
                         aria-label={settingsWindow ? 'Open settings' : 'Close settings'}
                         onClick={toggleSettingsWindow}>
-                        <p className="text-xl -rotate-90">
+                        {/* centered on the tab, then turned on its side */}
+                        <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 whitespace-nowrap text-xl">
                             Settings
                         </p>
                     </button>
