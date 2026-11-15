@@ -22,7 +22,7 @@ Levi Buffington - Project Manager:
 Facilitated planning and meetings and tasking, completed system engineering requirements for the project, assisted development for frontend team, designed presentation
 
 Frank Yang - API developer:
-(here)
+Worked on Search and Update Leaderboard endpoints. Also did some unit testing for functions in api.js
 
 Nathan Melloul - Frontend Developer:
 (here)
