@@ -34,7 +34,7 @@ Wenhuang Lin - Frontend Developer:
 Spearheaded mobile development, designing mobile pages and integrating design choices to be consistent across platforms.
 
 Rudolph Antoine - API Developer:
-(here)
+Worked on the Login and Register API endpoints. Also performed some of the Unit Testing for functions in api.js and multiplayer api.
 
 Alec Hayes - Frontend Developer:
 Worked on the Frontend with mainly developing the Singleplayer for both the website and mobile as well as getting the email for the email verification system to work. Also created the credits.
