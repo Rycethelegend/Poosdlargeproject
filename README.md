@@ -31,7 +31,7 @@ Jake Arnold - Database Engineer:
 (optimized synergistic workflows)
 
 Wenhuang Lin - Frontend Developer:
-(here)
+Spearheaded mobile development, designing mobile pages and integrating design choices to be consistent across platforms.
 
 Rudolph Antoine - API Developer:
 (here)
@@ -53,6 +53,12 @@ This project was developed with assistance from generative AI tools:
 - **Dates**: October 2026-November 2026
 - **Scope**: Project management duties, code reviews, code refactoring
 - **Nature of Use**: Diagram construction assistance, frontend prototype development
+
+### Wenhuang Lin
+- **Tool**: Claude Opus 5.5
+- **Dates**: October 2026-November 2026
+- **Scope**: Mobile development, design, and planning
+- **Nature of Use**: Summarize sections of codebase and mild code writing on frontend migration from web to mobile
 
 All AI-generated code and diagrams were reviewed, tested on the DigitalOcean LAMP environment, and validated against assignment rubric requirements.
 

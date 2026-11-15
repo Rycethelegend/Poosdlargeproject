@@ -208,22 +208,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
         FormMessage(error: _error),
         TextField(
           controller: _username,
+          autofillHints: const [AutofillHints.newUsername],
           decoration: const InputDecoration(labelText: 'Username'),
         ),
         TextField(
           controller: _email,
           keyboardType: TextInputType.emailAddress,
+          autofillHints: const [AutofillHints.email],
           decoration: const InputDecoration(labelText: 'Email'),
         ),
         TextField(
           controller: _password,
           obscureText: true,
+          autofillHints: const [AutofillHints.newPassword],
           decoration:
           const InputDecoration(labelText: 'Password (8+ characters)'),
         ),
         TextField(
           controller: _confirmPassword,
           obscureText: true,
+          autofillHints: const [AutofillHints.newPassword],
           decoration: const InputDecoration(labelText: 'Confirm password'),
         ),
         ElevatedButton(

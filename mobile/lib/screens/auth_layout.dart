@@ -27,17 +27,19 @@ class AuthLayout extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 440),
                   child: FeltPanel(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: 12,
-                      children: [
-                        Text(heading,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.w600)),
-                        ...children,
-                      ],
+                    child: AutofillGroup(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 12,
+                        children: [
+                          Text(heading,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  fontSize: 28, fontWeight: FontWeight.w600)),
+                          ...children,
+                        ],
+                      ),
                     ),
                   ),
                 ),

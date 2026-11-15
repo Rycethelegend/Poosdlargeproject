@@ -149,3 +149,40 @@ class CreamList extends StatelessWidget {
     );
   }
 }
+
+/// Deprecated
+/// "Go back" in the top-left corner
+class GoBackBar extends StatelessWidget implements PreferredSizeWidget {
+  const GoBackBar({super.key});
+
+  @override
+  Size get preferredSize => const Size.fromHeight(56);
+
+  @override
+  Widget build(BuildContext context) {
+    final c = GameColors.of(context);
+    return SafeArea(
+      bottom: false,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 12, top: 8),
+          child: ElevatedButton(
+            // bg-cream/90, rounded-2xl, px-4 py-2, shadow-md on the web
+            style: ElevatedButton.styleFrom(
+              backgroundColor: c.cream.withValues(alpha: 0.9),
+              foregroundColor: c.ink,
+              elevation: 4,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+            ),
+            // maybePop still lets a screen ask before leaving, like the back arrow did
+            onPressed: () => Navigator.maybePop(context),
+            child: const Text('Go back'),
+          ),
+        ),
+      ),
+    );
+  }
+}
