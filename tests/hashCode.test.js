@@ -7,7 +7,7 @@ describe("tests creating a hash from string of different lengths", () => {
         expect(hashCode("3")).toBe(crypto.createHash('sha256').update("3").digest('hex'));
     });
     
-    test ("creates no hash for an blank string", () => {
+    test ("creates hash for an blank string", () => {
         expect(hashCode(" ")).toBe(crypto.createHash('sha256').update(" ").digest('hex'));
     });
 });

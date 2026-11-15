@@ -5,11 +5,11 @@ const ROUND_SCALES = [1, 1.5, 2];
 
 
 describe("checks if the roundTarget function", () => {
-    test("returns something for table 3 and round 5", () => {
+    test("returns something for table 3 and round 2", () => {
         expect(roundTarget(3, 2)).toBe(Math.round(tableBaseTarget(3) * ROUND_SCALES[2]));
     });
 
-    test("returns  for table 0 and round 0", () => {
+    test("returns for table 0 and round 0", () => {
         expect(roundTarget(0, 0)).toBe(Math.round(tableBaseTarget(0) * ROUND_SCALES[0]));
     })
 });
