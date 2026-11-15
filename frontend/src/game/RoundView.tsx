@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { cardChips, cardName, sortCards, SUIT_SYMBOL, type Card } from './cards';
 import { MAX_JOKERS } from './jokers';
-import { formatMult, stepText } from './format';
+import { formatMult, isDebuff, stepText } from './format';
 import { BossLabel, JokerRow, ChipsTimesMult } from './GamePieces';
 import { evaluateHand, HANDS } from './hands';
 import { rulesFor, scorePlay, selectedCards, type RunAction, type RunState } from './run';
@@ -71,6 +71,9 @@ const RoundView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActi
                         </p>
                         <ChipsTimesMult chips={preview.chips} mult={preview.mult} big />
                         <p className="text-lg">= <span className="font-semibold">{preview.score.toLocaleString()}</span> chips</p>
+                        {state.jokers.some(j => j.id === 'dice') && (
+                            <p className="text-sm opacity-80">Dice rolls when you play</p>
+                        )}
                     </>
                 ) : last ? (
                     <div key={state.handsPlayedRun} className="animate-[popIn_0.35s_ease-out] w-full">
@@ -82,7 +85,7 @@ const RoundView = ({ state, dispatch }: { state: RunState; dispatch: (a: RunActi
                             <summary className="cursor-pointer text-center text-sm underline underline-offset-4">How it scored</summary>
                             <ul className="mt-1 text-sm space-y-0.5">
                                 {last.steps.map((step, i) => (
-                                    <li key={i} className="flex justify-between gap-4">
+                                    <li key={i} className={`flex justify-between gap-4 ${isDebuff(step) ? 'text-danger font-semibold' : ''}`}>
                                         <span>{step.source}</span><span className="tabular-nums">{stepText(step)}</span>
                                     </li>
                                 ))}

@@ -196,6 +196,12 @@ class RoundView extends StatelessWidget {
                     "That's the most cards you can play at once.",
                     style: TextStyle(fontSize: 12),
                   ),
+                // the preview can't know the roll, so it leaves Dice out
+                if (run.jokers.any((j) => j.id == 'dice'))
+                  const Text(
+                    'Dice rolls when you play',
+                    style: TextStyle(fontSize: 12),
+                  ),
               ],
             ),
           ),
@@ -433,10 +439,13 @@ class RoundView extends StatelessWidget {
 
   // Popup with every step of how the last hand scored
   void _showSteps(BuildContext context, PlayResult last) {
-    Widget row(String left, String right, {bool bold = false}) {
+    final danger = GameColors.of(context).danger;
+    // debuff steps show in red
+    Widget row(String left, String right, {bool bold = false, bool debuff = false}) {
       final style = TextStyle(
         fontSize: 14,
-        fontWeight: bold ? FontWeight.w600 : null,
+        fontWeight: bold || debuff ? FontWeight.w600 : null,
+        color: debuff ? danger : null,
       );
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 2),
@@ -461,7 +470,8 @@ class RoundView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                for (final step in last.steps) row(step.source, stepText(step)),
+                for (final step in last.steps)
+                  row(step.source, stepText(step), debuff: isDebuff(step)),
                 const Divider(height: 8),
                 row(
                   'Total',

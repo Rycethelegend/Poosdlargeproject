@@ -16,14 +16,21 @@ String withCommas(num n) => n.toInt().toString().replaceAllMapped(
 String formatMult(double mult) =>
     mult == mult.roundToDouble() ? '${mult.toInt()}' : mult.toStringAsFixed(1);
 
+// +5 for buffs, −5 for debuffs
+String _signed(num n) => '${n < 0 ? '−' : '+'}${formatMult(n.abs().toDouble())}';
+
 String stepText(ScoreStep step) {
   final parts = <String>[
-    if (step.chips != 0) '+${step.chips} chips',
-    if (step.mult != 0) '+${formatMult(step.mult)} mult',
+    if (step.chips != 0) '${_signed(step.chips)} chips',
+    if (step.mult != 0) '${_signed(step.mult)} mult',
     if (step.xmult != 0) '×${formatMult(step.xmult)} mult',
   ];
   return parts.isEmpty ? 'no effect' : parts.join(', ');
 }
+
+/// True when a scoring step takes something away
+bool isDebuff(ScoreStep step) =>
+    step.chips < 0 || step.mult < 0 || (step.xmult != 0 && step.xmult < 1);
 
 /// Smaller wood button for the game
 ButtonStyle smallButton({Color? background, Color? foreground}) =>
@@ -222,6 +229,7 @@ class JokerCard extends StatelessWidget {
               ),
             ],
           ),
+          _JokerLabels(joker: joker, large: large),
           ?footer,
         ],
       ),
@@ -589,4 +597,36 @@ Widget jokerFlight(
 ) {
   final big = (direction == HeroFlightDirection.push ? toContext : fromContext).widget as Hero;
   return FittedBox(fit: BoxFit.contain, child: big.child);
+}
+
+/// Green buffs, red debuffs, and a Cat tag for the cat jokers
+class _JokerLabels extends StatelessWidget {
+  final JokerInfo joker;
+  final bool large;
+  const _JokerLabels({required this.joker, this.large = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = GameColors.of(context);
+    if (joker.buffs.isEmpty && joker.debuffs.isEmpty && !joker.cat) {
+      return const SizedBox.shrink();
+    }
+    Widget label(String text, Color background, Color foreground) => Container(
+          padding: EdgeInsets.symmetric(horizontal: large ? 8 : 5, vertical: large ? 3 : 1),
+          decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(6)),
+          child: Text(text,
+              style: TextStyle(
+                  fontSize: large ? 15 : 10.5, color: foreground, fontWeight: FontWeight.w600)),
+        );
+    const light = Color(0xFFF2E8CF);
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: [
+        for (final b in joker.buffs) label('▲ $b', c.feltEdge, light),
+        for (final d in joker.debuffs) label('▼ $d', c.danger, light),
+        if (joker.cat) label('Cat', c.woodLight, c.ink),
+      ],
+    );
+  }
 }

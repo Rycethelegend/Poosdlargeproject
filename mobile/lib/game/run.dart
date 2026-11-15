@@ -145,8 +145,9 @@ class RunState {
     shop = null;
   }
 
-  /// Works out what the given cards would score. Also used for the live preview.
-  PlayResult? scorePlay(List<PlayingCard> played) {
+  /// Works out what the given cards would score. Also used for the live preview,
+  /// where roll is null so chance jokers (Dice) aren't rolled yet.
+  PlayResult? scorePlay(List<PlayingCard> played, {double? roll}) {
     final result = evaluateHand(played);
     if (result == null) return null;
 
@@ -178,6 +179,8 @@ class RunState {
       discardsUsed: discardsUsed,
       handsPlayedRun: handsPlayedRun + 1,
       jokerCount: jokers.length,
+      jokerIds: jokers.map((j) => j.id).toList(),
+      roll: roll,
     );
     final owned = jokers
         .where((j) => jokersById.containsKey(j.id))
@@ -212,6 +215,10 @@ class RunState {
             chips: e.chips, mult: e.mult, xmult: e.xmult));
       }
     }
+
+    // debuffs can't take a hand below 0 chips or 1 mult
+    totalChips = max(0, totalChips);
+    totalMult = max(1.0, totalMult);
 
     return PlayResult(
       handType: result.type,
@@ -266,7 +273,7 @@ class RunState {
     final played = selectedCards;
     if (played.isEmpty || played.length > rules.maxSelect) return;
 
-    final result = scorePlay(played)!;
+    final result = scorePlay(played, roll: Random().nextDouble())!;
     _replaceCards(selected);
     selected = [];
     roundScore += result.score;

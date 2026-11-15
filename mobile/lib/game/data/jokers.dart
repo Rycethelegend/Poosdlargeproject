@@ -6,8 +6,12 @@
 //     image: 'assets/sprites/jokers/my-joker.png',    // image file, add it to assets/sprites/jokers
 //     price: 5,                                       // shop price in $
 //     rarity: 5,                                      // 1 in 5 rarity (1 = most common, 0 = never in the shop)
+//     buffs: ['+5 Mult with a Flush'],                // green labels on the card (optional)
+//     debuffs: [],                                    // red labels on the card (optional)
+//     cat: true,                                      // counts as a cat for Dog, Mouse and Cat Leader (optional)
 //   ),
-// Then add what it does in joker_effects.dart
+// Then add what it does in joker_effects.dart. The website has its own copy in
+// frontend/src/game/data/jokers.ts; keep both the same.
 
 const String jokerPlaceholderImage = 'assets/sprites/jokers/placeholder.png';
 
@@ -18,6 +22,9 @@ class JokerInfo {
   final String image;
   final int price;
   final int rarity;
+  final List<String> buffs;
+  final List<String> debuffs;
+  final bool cat;
 
   const JokerInfo({
     required this.id,
@@ -26,6 +33,9 @@ class JokerInfo {
     this.image = jokerPlaceholderImage,
     required this.price,
     required this.rarity,
+    this.buffs = const [],
+    this.debuffs = const [],
+    this.cat = false,
   });
 }
 
@@ -37,6 +47,7 @@ const List<JokerInfo> jokers = [
     image: 'assets/sprites/jokers/duck.png',
     price: 5,
     rarity: 3, // 1 in x rarity
+    buffs: ['+3 Mult'],
   ),
   JokerInfo(
     id: 'chuckElephant',
@@ -45,6 +56,7 @@ const List<JokerInfo> jokers = [
     image: 'assets/sprites/jokers/elephant.png',
     price: 15,
     rarity: 10, // 1 in x rarity
+    buffs: ['×1.5 Mult'],
   ),
   JokerInfo(
     id: 'moneyBags',
@@ -53,6 +65,8 @@ const List<JokerInfo> jokers = [
     image: 'assets/sprites/jokers/moneybags.png',
     price: 8,
     rarity: 5, // 1 in x rarity
+    buffs: ['+\$2 per round'],
+    cat: true,
   ),
   JokerInfo(
     id: 'redTeam',
@@ -61,6 +75,8 @@ const List<JokerInfo> jokers = [
     image: 'assets/sprites/jokers/redteam.png',
     price: 8,
     rarity: 5, // 1 in x rarity
+    buffs: ['+2 Mult per ♥/♦'],
+    cat: true,
   ),
   JokerInfo(
     id: 'blueTeam',
@@ -69,5 +85,51 @@ const List<JokerInfo> jokers = [
     image: 'assets/sprites/jokers/blueteam.png',
     price: 8,
     rarity: 5, // 1 in x rarity
+    buffs: ['+25 Chips per ♠/♣'],
+    cat: true,
+  ),
+  JokerInfo(
+    id: 'sixSeven',
+    name: '67',
+    description: '+67 Chips and +6 Mult if the played cards include a 6 and a 7',
+    price: 7,
+    rarity: 5, // 1 in x rarity
+    buffs: ['+67 Chips, +6 Mult with a 6 and 7'],
+  ),
+  JokerInfo(
+    id: 'dog',
+    name: 'Dog',
+    description: '+2 Mult. +6 Mult instead if you have a cat joker.',
+    price: 6,
+    rarity: 4, // 1 in x rarity
+    buffs: ['+2 Mult', '+6 Mult with a cat'],
+  ),
+  JokerInfo(
+    id: 'mouse',
+    name: 'Mouse',
+    description: '+8 Mult, but -4 Mult instead if you have a cat joker.',
+    price: 7,
+    rarity: 6, // 1 in x rarity
+    buffs: ['+8 Mult'],
+    debuffs: ['-4 Mult with a cat'],
+  ),
+  JokerInfo(
+    id: 'dice',
+    name: 'Dice',
+    description:
+        'Rolls when you play a hand: -2 Mult, nothing, +3 Mult or +8 Mult (25% each).',
+    price: 5,
+    rarity: 4, // 1 in x rarity
+    buffs: ['25%: +3 Mult', '25%: +8 Mult'],
+    debuffs: ['25%: -2 Mult'],
+  ),
+  JokerInfo(
+    id: 'catLeader',
+    name: 'Cat Leader',
+    description: '+3 Mult for each other cat joker you have.',
+    price: 8,
+    rarity: 8, // 1 in x rarity
+    buffs: ['+3 Mult per other cat'],
+    cat: true,
   ),
 ];

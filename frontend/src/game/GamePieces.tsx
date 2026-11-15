@@ -29,6 +29,26 @@ export function ChipsTimesMult({ chips, mult, big = false }: { chips: number; mu
     );
 }
 
+// Green buffs, red debuffs, and a Cat tag for the cat jokers
+function JokerLabels({ joker }: { joker: JokerDef }) {
+    const buffs = joker.buffs ?? [];
+    const debuffs = joker.debuffs ?? [];
+    if (!buffs.length && !debuffs.length && !joker.cat) return null;
+    return (
+        <ul className="flex flex-wrap gap-1" aria-label="Effects">
+            {buffs.map((text) => (
+                <li key={text} className="text-xs leading-tight rounded-md px-1.5 py-0.5 bg-felt-edge text-[#f2e8cf]">▲ {text}</li>
+            ))}
+            {debuffs.map((text) => (
+                <li key={text} className="text-xs leading-tight rounded-md px-1.5 py-0.5 bg-danger text-[#f2e8cf]">▼ {text}</li>
+            ))}
+            {joker.cat && (
+                <li className="text-xs leading-tight rounded-md px-1.5 py-0.5 bg-wood-light text-ink">Cat</li>
+            )}
+        </ul>
+    );
+}
+
 export function JokerCard({ joker, footer, dim = false }: { joker: JokerDef; footer?: ReactNode; dim?: boolean }) {
     return (
         <div className={`w-36 sm:w-40 bg-cream rounded-2xl p-2 flex flex-col gap-1 shadow-md ${dim ? 'opacity-60' : ''}`}>
@@ -39,6 +59,7 @@ export function JokerCard({ joker, footer, dim = false }: { joker: JokerDef; foo
                     <p className="text-sm leading-snug">{joker.description}</p>
                 </div>
             </div>
+            <JokerLabels joker={joker} />
             {footer}
         </div>
     );

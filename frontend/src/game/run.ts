@@ -171,8 +171,9 @@ function applyEffect(totals: { chips: number; mult: number }, effect: Effect) {
     if (effect.xmult) totals.mult *= effect.xmult;
 }
 
-// Works out what the selected cards would score. Also used for the live preview.
-export function scorePlay(state: RunState, played: Card[]): PlayResult | null {
+// Works out what the selected cards would score. Also used for the live preview,
+// where roll is null so chance jokers (Dice) aren't rolled yet.
+export function scorePlay(state: RunState, played: Card[], roll: number | null = null): PlayResult | null {
     const hand = evaluateHand(played);
     if (!hand) return null;
 
@@ -194,6 +195,8 @@ export function scorePlay(state: RunState, played: Card[]): PlayResult | null {
         discardsUsed: state.discardsUsed,
         handsPlayedRun: state.handsPlayedRun + 1,
         jokerCount: state.jokers.length,
+        jokerIds: state.jokers.map(c => c.id),
+        roll,
     };
     const jokers = state.jokers.map(c => JOKERS_BY_ID[c.id]).filter(Boolean);
 
@@ -224,6 +227,10 @@ export function scorePlay(state: RunState, played: Card[]): PlayResult | null {
             steps.push({ source: joker.name, ...effect });
         }
     }
+
+    // debuffs can't take a hand below 0 chips or 1 mult
+    totals.chips = Math.max(0, totals.chips);
+    totals.mult = Math.max(1, totals.mult);
 
     return {
         handType: hand.type,
@@ -304,7 +311,7 @@ export function runReducer(state: RunState, action: RunAction): RunState {
             const played = selectedCards(state);
             if (played.length === 0 || played.length > rulesFor(state).maxSelect) return state;
 
-            const result = scorePlay(state, played)!;
+            const result = scorePlay(state, played, Math.random())!;
             const next: RunState = {
                 ...state,
                 ...replaceCards(state, state.selected),
