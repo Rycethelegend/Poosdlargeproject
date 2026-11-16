@@ -1,6 +1,6 @@
 # Poosdlargeproject - **Poosdalatro**
 
-# Description
+### Description
 
 A reimagining of the popular digital solitaire game Balatro retooled to work in a fast-paced single-player and multiplayer setting on both browser and android with a live leaderboard.
 
@@ -12,7 +12,7 @@ Created for COP4331C, Processes in Object-Oriented Software Development at UCF, 
 
 Once your server and database are set up you can use the frontend/api here to deploy your app on a domain of your choice.
 
-**Database Setup**
+### Database Setup
 
 ### Step 1: Login/Sign up to MongoDB Website
 - Go to MongoDB website and create an Account or Sign into one:
@@ -33,12 +33,12 @@ Once your server and database are set up you can use the frontend/api here to de
 
 ### Step 4: MongoDB User Connection
 - Make sure you create a database user for PoosdDatabase with Read & Write permissions.
-  - Make sure you remember its Username and Password for later connection steps.
+- Make sure you remember its Username and Password for later connection steps.
 
 ### Step 5: Connecting Database to Server
 - In your Env file and Github Secrets, replace the value for `DATABASE_LINK` with your database link.
 - Your database link should look like: `mongodb+srv://{Username}:{Password}@poosdbase.puafigd.mongodb.net/PoosdDatabase`
-  - Where `{Username}` and `{Password}` are replaced with your Username and Password for the database user created in Step 4.
+- Where `{Username}` and `{Password}` are replaced with your Username and Password for the database user created in Step 4.
 
 **Note: This `DATABASE_LINK` variable is used in the `server.js` file.**
 
@@ -56,28 +56,28 @@ The mobile app is not currently in the google play store. Requires a manual Inst
 
 # Team Members And Their Roles
 
-Levi Buffington - Project Manager:
+Levi Buffington - Project Manager:<br/>
 Facilitated planning and meetings and tasking, completed system engineering requirements for the project, assisted development for frontend team, designed presentation
 
-Frank Yang - API developer:
+Frank Yang - API developer:<br/>
 Worked on Search and Update Leaderboard endpoints. Also did some unit testing for functions in api.js
 
-Nathan Melloul - Frontend Developer:
+Nathan Melloul - Frontend Developer:<br/>
 Initially got the server running and configured NPM along with Tailwind CSS. Then I made the frontend, and desktop / overlay modes. Did work on the backend token architecture (simple token functions, along with API/checktoken for heavy verification).
 Took Alec's concept and made it multiplayer using AI. Created the API/multiplayer endpoints. Created the database schema for rooms, players, decks, etc. Created the windows for Lobbies / Room / Game / End / Timeout.
 Helped Alec by creating the Rat card sprite.
 
-Jake Arnold - Database Engineer:
+Jake Arnold - Database Engineer:<br/>
 Created and maintained MongoDB database. Centered on User separated table, making game data and specific user data organized in their respective table organizations.
 Revised js MongoDB server connections.
 
-Wenhuang Lin - Frontend Developer:
+Wenhuang Lin - Frontend Developer:<br/>
 Spearheaded mobile development, designing mobile pages and integrating design choices to be consistent across platforms.
 
-Rudolph Antoine - API Developer:
+Rudolph Antoine - API Developer:<br/>
 Worked on the Login and Register API endpoints. Also performed some of the Unit Testing for functions in api.js and multiplayer api.
 
-Alec Hayes - Frontend Developer:
+Alec Hayes - Frontend Developer:<br/>
 Worked on the Frontend with mainly developing the Singleplayer for both the website and mobile as well as getting the email for the email verification system to work. Also created the credits.
 
 
