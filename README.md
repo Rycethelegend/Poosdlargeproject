@@ -11,6 +11,40 @@ Created for COP4331C, Processes in Object-Oriented Software Development at UCF, 
 
 Once your server and database are set up you can use the frontend/api here to deploy your app on a domain of your choice.
 
+**Database Setup**
+
+#Step 1: Login/Sign up to MongoDB Website
+- Go to MongoDB website and create an Account or Sign into one:
+- Use this link: https://cloud.mongodb.com/
+
+#Step 2: On MongoDB, Create a Project
+- In your project, create a Cluster called `Poosdbase`
+- Inside of the `Poosdbase` Cluster, create a database called `PoosdDatabase`
+
+#Step 3: Making the Schema
+- In the `PoosdDatabase` create 4 tables:
+  - `Leaderboard`
+  - `Rooms`
+  - `Users`
+  - `VerificationCodes`
+**Use the Entity-Relationship Diagram in this GitHub's `docs/poosdatabase_erd-v4.png` file to see what each table's entries should look like.
+
+#Step 4: MongoDB User Connection
+- Make sure you create a database user for PoosdDatabase with Read & Write permissions.
+  - Make sure you remember its Username and Password for later connection steps.
+
+#Step 5: Connecting Database to Server
+- In your Env file and Github Secrets, replace the value for `DATABASE_LINK` with your database link.
+- Your database link should look like: `mongodb+srv://{Username}:{Password}@poosdbase.puafigd.mongodb.net/PoosdDatabase`
+  - Where `{Username}` and `{Password}` are replaced with your Username and Password for the database user created in Step 4.
+**Note: This database link variable is used in the `server.js` file.
+**Note: The `server.js` file uses Mongoose to connect to MongoDB.
+
+
+
+
+
+
 ## -- Access --
 
 The webapp is currently hosted at https://poosdbasecontactmanager.casa/
