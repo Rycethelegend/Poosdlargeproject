@@ -774,53 +774,6 @@ exports.setApp = function (app, mongoose) {
 
     }));
 
-
-    // Example endpoints from the class starter code, kept until the game's own search endpoint replaces them.
-    app.post('/api/addcard', route(async (req, res) => {
-
-        // incoming: userId, card, jwtToken
-        // outgoing: error, jwtToken
-
-        const { userId, card, jwtToken } = req.body;
-
-        if (token.isExpired(jwtToken)) {
-            return res.status(200).json({ error: 'The JWT is no longer valid', jwtToken: '' });
-        }
-
-        let error = '';
-        try {
-            await db.collection('Cards').insertOne({ Card: card, UserId: userId });
-        }
-        catch (e) {
-            error = e.toString();
-        }
-
-        res.status(200).json({ error: error, jwtToken: token.refresh(jwtToken) });
-    }));
-
-
-    app.post('/api/searchcards', route(async (req, res) => {
-
-        // incoming: userId, search, jwtToken
-        // outgoing: results[], error, jwtToken
-
-        const { search, jwtToken } = req.body;
-
-        if (token.isExpired(jwtToken)) {
-            return res.status(200).json({ error: 'The JWT is no longer valid', jwtToken: '' });
-        }
-
-        const _search = (search ?? '').trim();
-        const results = await db.collection('Cards')
-            .find({ Card: { $regex: _search + '.*', $options: 'i' } }).toArray();
-
-        res.status(200).json({
-            results: results.map(r => r.Card),
-            error: '',
-            jwtToken: token.refresh(jwtToken),
-        });
-    }));
-
     // Multiplayer API
     require('./multiplayer/api.js').setApp(app, { route, fail, requireLogin, users, recordScore });
 }
