@@ -1,8 +1,9 @@
-# Poosdlargeproject
+# Poosdlargeproject - **Poosdalatro**
 
 ## -- Description --
 
 A reimagining of the popular digital solitaire game Balatro retooled to work in a fast-paced single-player and multiplayer setting on both browser and android with a live leaderboard.
+
 Hosted using a Droplet on DigitalOcean using a Mern stack, on an Ubuntu Linux Server with MongoDB database. 
 
 Created for COP4331C, Processes in Object-Oriented Software Development at UCF, Fall 2026.
