@@ -68,7 +68,8 @@ Took Alec's concept and made it multiplayer using AI. Created the API/multiplaye
 Helped Alec by creating the Rat card sprite.
 
 Jake Arnold - Database Engineer:
-Created and maintained MongoDB database. Centered on User separated table, making game data and specific user data organized in their respective data organization.
+Created and maintained MongoDB database. Centered on User separated table, making game data and specific user data organized in their respective table organizations.
+Revised js MongoDB server connections.
 
 Wenhuang Lin - Frontend Developer:
 Spearheaded mobile development, designing mobile pages and integrating design choices to be consistent across platforms.
