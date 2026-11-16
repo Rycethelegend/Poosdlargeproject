@@ -27,6 +27,7 @@ Once your server and database are set up you can use the frontend/api here to de
   - `Rooms`
   - `Users`
   - `VerificationCodes`
+
 **Use the Entity-Relationship Diagram in this GitHub's `docs/poosdatabase_erd-v4.png` file to see what each table's entries should look like.
 
 #Step 4: MongoDB User Connection
@@ -37,8 +38,10 @@ Once your server and database are set up you can use the frontend/api here to de
 - In your Env file and Github Secrets, replace the value for `DATABASE_LINK` with your database link.
 - Your database link should look like: `mongodb+srv://{Username}:{Password}@poosdbase.puafigd.mongodb.net/PoosdDatabase`
   - Where `{Username}` and `{Password}` are replaced with your Username and Password for the database user created in Step 4.
-**Note: This database link variable is used in the `server.js` file.
-**Note: The `server.js` file uses Mongoose to connect to MongoDB.
+
+**Note: This `DATABASE_LINK` variable is used in the `server.js` file.
+
+**Note: The `server.js` file uses the mongoose Node.js library to connect to MongoDB.
 
 
 
