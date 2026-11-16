@@ -1,6 +1,6 @@
 # Poosdlargeproject - **Poosdalatro**
 
-## -- Description --
+# Description
 
 A reimagining of the popular digital solitaire game Balatro retooled to work in a fast-paced single-player and multiplayer setting on both browser and android with a live leaderboard.
 
@@ -8,21 +8,21 @@ Hosted using a Droplet on DigitalOcean using a Mern stack, on an Ubuntu Linux Se
 
 Created for COP4331C, Processes in Object-Oriented Software Development at UCF, Fall 2026.
 
-## -- Setup Instructions --
+# Setup Instructions
 
 Once your server and database are set up you can use the frontend/api here to deploy your app on a domain of your choice.
 
 **Database Setup**
 
-# Step 1: Login/Sign up to MongoDB Website
+### Step 1: Login/Sign up to MongoDB Website
 - Go to MongoDB website and create an Account or Sign into one:
 - Use this link: https://cloud.mongodb.com/
 
-# Step 2: On MongoDB, Create a Project
+### Step 2: On MongoDB, Create a Project
 - In your project, create a Cluster called `Poosdbase`
 - Inside of the `Poosdbase` Cluster, create a database called `PoosdDatabase`
 
-# Step 3: Making the Schema
+### Step 3: Making the Schema
 - In the `PoosdDatabase` create 4 tables:
   - `Leaderboard`
   - `Rooms`
@@ -31,11 +31,11 @@ Once your server and database are set up you can use the frontend/api here to de
 
 **Use the Entity-Relationship Diagram in this GitHub's `docs/poosdatabase_erd-v4.png` file to see what each table's entries should look like.
 
-# Step 4: MongoDB User Connection
+### Step 4: MongoDB User Connection
 - Make sure you create a database user for PoosdDatabase with Read & Write permissions.
   - Make sure you remember its Username and Password for later connection steps.
 
-# Step 5: Connecting Database to Server
+### Step 5: Connecting Database to Server
 - In your Env file and Github Secrets, replace the value for `DATABASE_LINK` with your database link.
 - Your database link should look like: `mongodb+srv://{Username}:{Password}@poosdbase.puafigd.mongodb.net/PoosdDatabase`
   - Where `{Username}` and `{Password}` are replaced with your Username and Password for the database user created in Step 4.
@@ -49,12 +49,12 @@ Once your server and database are set up you can use the frontend/api here to de
 
 
 
-## -- Access --
+# Access
 
 The webapp is currently hosted at https://poosdbasecontactmanager.casa/
 The mobile app is not currently in the google play store. Requires a manual Install.
 
-## -- Team Members And Their Roles --
+# Team Members And Their Roles
 
 Levi Buffington - Project Manager:
 Facilitated planning and meetings and tasking, completed system engineering requirements for the project, assisted development for frontend team, designed presentation
@@ -84,7 +84,7 @@ Worked on the Frontend with mainly developing the Singleplayer for both the webs
 
 
 
-## AI Assistance Disclosure
+# AI Assistance Disclosure
 
 This project was developed with assistance from generative AI tools:
 
