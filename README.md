@@ -45,6 +45,36 @@ Once your server and database are set up you can use the frontend/api here to de
 **Note: The `server.js` file uses the mongoose Node.js library to connect to MongoDB.**
 
 
+### Mobile App Setup
+
+### Step 1: Install Flutter and Android Studio
+- Download and install Android Studio: https://developer.android.com/studio
+- Download and install Flutter: https://docs.flutter.dev/get-started/install
+- In Android Studio, go to Settings → Plugins and install the `Flutter` plugin.
+
+### Step 2: Finish the Android Setup
+- In Android Studio's SDK Manager, install `Android SDK Command-line Tools`.
+- Open a terminal and run `flutter doctor` to check that everything is installed.
+- Run `flutter doctor --android-licenses` and accept the licenses.
+
+### Step 3: Open the Mobile App
+- Clone this GitHub repository.
+- In Android Studio, go to File → Open and choose the `mobile` folder inside the repository.
+- When asked, click `Pub get` to download the app's packages.
+
+### Step 4: Run the App
+- Start an Android emulator from the Device Manager, or connect an Android phone with USB debugging turned on.
+- Select the device and press Run.
+- Log in, or create an account in the app.
+
+### Step 5: Install the App on a Phone (Optional)
+- In a terminal inside the `mobile` folder, run `flutter build apk --release`.
+- Copy `app-release.apk` from `mobile/build/app/outputs/flutter-apk/` to your phone and open it to install.
+
+**Note: Make sure to open the `mobile` folder, not the top folder of the repository, or Android Studio won't recognize the app.**
+
+**Note: The app connects to the server at `https://poosdbasecontactmanager.casa`. If you host your own server, search the `mobile` folder for this address and replace it with yours.**
+
 
 
 
