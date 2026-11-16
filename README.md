@@ -3,7 +3,7 @@
 ## -- Description --
 
 A reimagining of the popular digital solitaire game Balatro retooled to work in a fast-paced single-player and multiplayer setting on both browser and android with a live leaderboard.
-Hosted using a Droplet on DigitalOcean, on an Ubuntu Linux Server with Apache. 
+Hosted using a Droplet on DigitalOcean using a Mern stack, on an Ubuntu Linux Server with MongoDB database. 
 
 Created for COP4331C, Processes in Object-Oriented Software Development at UCF, Fall 2026.
 
@@ -14,7 +14,7 @@ Once your server and database are set up you can use the frontend/api here to de
 ## -- Access --
 
 The webapp is currently hosted at https://poosdbasecontactmanager.casa/
-The mobile app is not currently in the google play store.
+The mobile app is not currently in the google play store. Requires a manual Install.
 
 ## -- Team Members And Their Roles --
 
