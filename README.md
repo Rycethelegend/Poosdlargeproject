@@ -65,7 +65,7 @@ Nathan Melloul - Frontend Developer:
 (here)
 
 Jake Arnold - Database Engineer:
-Created and maintained MongoDB database. Centred on User seperated tables.
+Created and maintained MongoDB database. Centered on User separated table, making game data and specific user data organized in their respective data organization.
 
 Wenhuang Lin - Frontend Developer:
 Spearheaded mobile development, designing mobile pages and integrating design choices to be consistent across platforms.
